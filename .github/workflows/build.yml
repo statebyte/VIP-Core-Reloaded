@@ -1,0 +1,80 @@
+name: Compile and release
+
+on:
+  create:
+    tags:
+      - v*
+    branches: main
+  push:
+    pull_request:
+    branches:
+      - main
+      - rc
+      - dev
+
+env:
+    SOURCENAME: VIP-Core-Reloaded
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sm_version: ["1.10", "1.11"]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set environment variables
+        run: |
+          echo SCRIPTS_PATH=$(pwd) >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Echo version
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+      - name: Setup SourcePawn Compiler ${{ matrix.sm_version }}
+        id: setup_sp
+        uses: rumblefrog/setup-sp@master
+        with:
+          version: ${{ matrix.sm_version }}
+          version-file: ./scripting/${{ env.SOURCENAME }}.sp
+
+      - name: Compile plugin ${{ env.SOURCENAME }}
+        run: |
+          mkdir plugins
+          cd scripting
+          spcomp -w234 -O2 -v2 -i"include" -o"../plugins/${{ env.SOURCENAME }}.smx" ${{ env.SOURCENAME }}.sp
+          echo "===OUT FILES==="
+          cd ../plugins
+          ls
+          echo "===VERSION==="
+          echo ${{ steps.setup_sp.outputs.plugin-version }}
+        working-directory: ${{ env.SCRIPTS_PATH }}
+
+      - name: Changelog
+        id: changelog
+        uses: mindsers/changelog-reader-action@v2.0.0
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: 
+          zip -qq -r ${{ env.SOURCENAME }}-${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip plugins configs translations
+        working-directory: ${{ env.SCRIPTS_PATH }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.RELEASE_VERSION }}
+          artifacts: "./${{ env.SOURCENAME }}-${{ matrix.sm_version }}-SM-${{ env.RELEASE_VERSION }}.zip"
+          body: ${{ steps.changelog.outputs.changes }}
+          draft: false
+          allowUpdates: true
+          prerelease: false
+          replacesArtifacts: true
