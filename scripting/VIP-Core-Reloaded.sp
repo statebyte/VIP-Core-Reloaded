@@ -25,7 +25,7 @@
 //#include "VIP-Core/Sounds.sp"
 //#include "VIP-Core/Info.sp"
 //#include "VIP-Core/menus.sp"
-#include "VIP-Core/Util.sp"
+#include "VIP-Core/UTIL.sp"
 #include "VIP-Core/API.sp"
 #include "VIP-Core/Events.sp"
 #include "VIP-Core/menus/MainMenu.sp"
