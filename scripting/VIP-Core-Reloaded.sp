@@ -14,7 +14,8 @@
 #define CONFIG_INFO_FILENAME		"info.ini"
 #define CONFIG_SORT_FILENAME		"sort.ini"
 #define CONFIG_TIMES_FILENAME		"times.ini"
-#define LOGS_FILENAME				"VIP-Core.logs"
+#define LOGS_FILENAME				"VIP-Core.log"
+#define LOGS_DUMP_FILENAME			"VIP-Core-Dump.log"
 
 #include "VIP-Core/Global.sp"
 #include "VIP-Core/Struct.sp"

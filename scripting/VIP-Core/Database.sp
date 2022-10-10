@@ -7,7 +7,8 @@ void LoadDatabase()
 	// Проверка на секцию в databases.cfg
 	if(SQL_CheckConfig("vip_core"))
 	{
-		
+		DBDriver mDriver = SQL_GetDriver("vip_core");
+
 
 	}
 	else

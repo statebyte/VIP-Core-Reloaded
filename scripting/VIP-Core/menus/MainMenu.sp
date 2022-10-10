@@ -4,7 +4,6 @@ void LoadMainMenu()
 {
 	g_hMainMenu = new Menu(MainMenuHandler, MenuAction_Select|MenuAction_Cancel|MenuAction_End|MenuAction_DrawItem|MenuAction_DisplayItem|MenuAction_Display);
 
-
 	g_hMainMenu.AddItem("NO_FEATURES", "NO_FEATURES", ITEMDRAW_DISABLED);
 }
 
@@ -48,15 +47,23 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 				//PrintToServer("MenuAction_Select %x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				
-				if(hFeature.OnSelectCB != INVALID_FUNCTION)
+				if(hFeature.Type == TOGGLABLE)
 				{
+					if(g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key)) g_ePlayerData[iClient].DisableFeature(hFeature.Key);
+					else g_ePlayerData[iClient].EnableFeature(hFeature.Key);
 
-					if (Function_OnItemSelect(hFeature.hPlugin, hFeature.OnSelectCB, iClient, sBuffer))
+					g_hMainMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);
+				}
+				else
+				{
+					if(hFeature.OnSelectCB != INVALID_FUNCTION)
 					{
-						hMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);
+						if (Function_OnItemSelect(hFeature.hPlugin, hFeature.OnSelectCB, iClient, sBuffer))
+						{
+							hMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);
+						}
 					}
 				}
-				
 			}
 			else g_hMainMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);
 		}
@@ -67,12 +74,10 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 			if(!strcmp(sBuffer, "NO_FEATURES"))
 			{
-				return  g_hFeatures.Length == 0 ? ITEMDRAW_RAWLINE : ITEMDRAW_DISABLED;
+				return  g_hFeatures.Length == 0 ? ITEMDRAW_DISABLED : ITEMDRAW_RAWLINE;
 			}
 
 			int iIndex = GetFeatureIDByKey(sBuffer);
-
-			
 
 			if(iIndex != -1)
 			{
@@ -81,6 +86,11 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 				//PrintToServer("%x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				
+				if(hFeature.Type == HIDE)
+				{
+					return ITEMDRAW_RAWLINE;
+				}
+
 				if(hFeature.OnDrawCB != INVALID_FUNCTION)
 				{
 					Call_StartFunction(hFeature.hPlugin, hFeature.OnDrawCB);
@@ -89,7 +99,12 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 					Call_PushCell(iStyle);
 					Call_Finish(iStyle);
 				}
-				
+			}
+
+			if(g_ePlayerData[iClient].GetFeatureIDByName(sBuffer) == -1) 
+			{
+				// TODO: Добавить проверку на видимость недоступных функций...
+				return ITEMDRAW_DISABLED;
 			}
 			
 			return iStyle;
@@ -100,8 +115,6 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			static char szDisplay[128];
 
 			hMenu.GetItem(iItem, sBuffer, sizeof(sBuffer));
-
-			
 
 			int iIndex = GetFeatureIDByKey(sBuffer);
 
@@ -120,6 +133,32 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 					Call_Finish(bResult);
 				}
 				
+				if(!bResult)
+				{
+					char sBuf[32];
+					bResult = true;
+					
+					if(hFeature.Type == TOGGLABLE)
+					{
+						FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key) ? "ENABLED" : "DISABLED", iClient)
+					}
+
+					if(g_ePlayerData[iClient].GetFeatureIDByName(hFeature.Key) == -1)
+					{
+						FormatEx(sBuf, sizeof(sBuf), "[%T]", "NO_ACCESS", iClient);
+					}
+
+					if(TranslationPhraseExists(hFeature.Key))
+					{
+						PrintToChat(iClient, "TranslationPhraseExists true");
+						FormatEx(szDisplay, sizeof(szDisplay), "%T %s", hFeature.Key, iClient, sBuf);
+					}
+					else
+					{
+						PrintToChat(iClient, "TranslationPhraseExists false");
+						FormatEx(szDisplay, sizeof(szDisplay), "%s %s", hFeature.Key, iClient, sBuf);
+					}
+				}
 			}
 
 			if (bResult)

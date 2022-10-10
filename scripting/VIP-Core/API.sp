@@ -121,8 +121,8 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 
 	Feature hFeature;
 	hFeature.Key = szFeature;
-	hFeature.ValType = view_as<int>(GetNativeCell(2));
-	hFeature.Type = view_as<int>(GetNativeCell(3));
+	hFeature.ValType = view_as<VIP_ValueType>(GetNativeCell(2));
+	hFeature.Type = view_as<VIP_FeatureType>(GetNativeCell(3));
 	
 	hFeature.OnSelectCB = GetNativeCell(4);
 	hFeature.OnDisplayCB = GetNativeCell(5);

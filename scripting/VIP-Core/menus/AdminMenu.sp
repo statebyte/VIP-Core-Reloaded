@@ -4,9 +4,10 @@ void LoadAdminMenu()
 	g_hAdminMainMenu = new Menu(AdminMenuHandler);
 	g_hAdminMainMenu.SetTitle("[VIP] Администрирование\n \n");
 
+	g_hAdminMainMenu.AddItem("search", "Найти игрока [TODO]", ITEMDRAW_DISABLED);
 	g_hAdminMainMenu.AddItem("list", "Список игроков\n \n");
 
-	g_hAdminMainMenu.AddItem("reload_modules", "Перезагрузить список модулей [TODO]");
+	g_hAdminMainMenu.AddItem("reload_modules", "Перезагрузить список модулей [TODO]", ITEMDRAW_DISABLED);
 	g_hAdminMainMenu.AddItem("reload_players", "Перезагрузить данные игроков");
 	g_hAdminMainMenu.AddItem("reload_config", "Перезагрузить настройки VIP");
 	

@@ -20,7 +20,6 @@ enum DatabaseUsage
 	DB_Postgre // TODO
 }
 
-
 enum struct Times
 {
 	char Phrase[64];
@@ -45,8 +44,8 @@ enum struct ServerData
 
 	void Init()
 	{
-		//BuildPath(Path_SM, this.GroupsConfigPath, sizeof(this.GroupsConfigPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);
-		//BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/%s", LOGS_FILENAME);
+		BuildPath(Path_SM, this.GroupsConfigPath, sizeof(this.GroupsConfigPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);
+		BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/%s", LOGS_FILENAME);
 	}
 }
 ServerData g_eServerData;
@@ -119,9 +118,9 @@ enum struct Feature
 	char Key[D_FEATURENAME_LENGTH];
 
 	
-	int ValType;
+	VIP_ValueType ValType;
 	// check VIP_FeatureType
-	int Type;
+	VIP_FeatureType Type;
 	
 
 	Function OnSelectCB;
@@ -130,7 +129,7 @@ enum struct Feature
 
 	Handle hPlugin;
 
-	int ToggleState;
+	VIP_ToggleState ToggleState;
 
 	bool bCookie;
 }
@@ -246,6 +245,18 @@ enum struct PlayerData
 		{
 			this.hFeatures.Set(iIndex, false, PlayerFeature::bEnabled);
 		}
+	}
+
+	bool IsFeatureEnable(char[] sFeature)
+	{
+		int iIndex = this.GetFeatureIDByName(sFeature);
+
+		if(iIndex != -1)
+		{
+			return this.hFeatures.Get(iIndex, PlayerFeature::bEnabled);
+		}
+
+		return false;
 	}
 
 	void AddFeature(char[] sKey, char[] sValue, int iPriority = 0)
