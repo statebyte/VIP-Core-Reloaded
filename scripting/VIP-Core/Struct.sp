@@ -12,6 +12,15 @@ enum ChatHookType
 	ChatHook_SearchPlayer
 }
 
+enum DatabaseUsage
+{
+	DB_None = 0,
+	DB_SQLite,
+	DB_MySQL,
+	DB_Postgre // TODO
+}
+
+
 enum struct Times
 {
 	char Phrase[64];
@@ -25,6 +34,7 @@ enum struct ServerData
 
 	EngineVersion Engine;
 
+	DatabaseUsage DB_Type;
 	Database DB;
 
 	char GroupsConfigPath[PLATFORM_MAX_PATH];

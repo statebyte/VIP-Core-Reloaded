@@ -51,6 +51,7 @@ public void OnPluginStart()
 	LoadConfigurationModule();
 
 	API_SetupForwards();
+	LoadDatabase();
 
 	HookEvents();
 	LoadAdminMenu();
