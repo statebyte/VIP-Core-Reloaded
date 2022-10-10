@@ -61,7 +61,7 @@ jobs:
 
       - name: Zip output
         run: 
-          zip -qq -r ${{ env.SOURCENAME }}-SM${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip plugins configs translations
+          zip -qq -r ${{ env.SOURCENAME }}-SM${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip plugins configs data translations
         working-directory: ${{ env.SCRIPTS_PATH }}
 
       - name: Create Release

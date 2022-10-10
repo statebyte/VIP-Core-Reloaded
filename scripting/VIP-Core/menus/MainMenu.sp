@@ -19,7 +19,7 @@ void RebuildVIPMenu()
 	{
 		Feature hFeature;
 		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
-		FormatEx(sBuffer, sizeof(sBuffer), "%s", hFeature.Key)
+		FormatEx(sBuffer, sizeof(sBuffer), "%s", hFeature.Key);
 		g_hMainMenu.AddItem(hFeature.Key, sBuffer);
 	}
 }
