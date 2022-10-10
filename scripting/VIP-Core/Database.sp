@@ -7,7 +7,7 @@ void LoadDatabase()
 	// Проверка на секцию в databases.cfg
 	if(SQL_CheckConfig("vip_core"))
 	{
-
+		
 
 	}
 	else
