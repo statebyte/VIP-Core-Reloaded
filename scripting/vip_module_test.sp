@@ -27,6 +27,7 @@ bool OnSelect(int iClient, char[] sFeature)
 
 bool OnDisplay(int iClient, char[] sFeature, char[] szDisplay, int iMaxLength)
 {
+	PrintToChat(iClient, "OnDisplay %s %s[%i]", sFeature, szDisplay, iMaxLength);
 	FormatEx(szDisplay, iMaxLength, "GRAVITACIA");
 	return true;
 }

@@ -124,41 +124,38 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
 				//PrintToServer("%x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				
+				char sBuf[32];
+				
+				if(g_ePlayerData[iClient].GetFeatureIDByName(hFeature.Key) == -1)
+				{
+					FormatEx(sBuf, sizeof(sBuf), "[%T]", "NO_ACCESS", iClient);
+				}
+				else if(hFeature.Type == TOGGLABLE)
+				{
+					FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key) ? "ENABLED" : "DISABLED", iClient);
+				}
+
+				if(TranslationPhraseExists(hFeature.Key))
+				{
+					PrintToChat(iClient, "TranslationPhraseExists true");
+					FormatEx(szDisplay, sizeof(szDisplay), "%T %s", hFeature.Key, iClient, sBuf);
+				}
+				else
+				{
+					PrintToChat(iClient, "TranslationPhraseExists false");
+					FormatEx(szDisplay, sizeof(szDisplay), "%s %s", hFeature.Key, sBuf);
+				}
+
 				if(hFeature.OnDisplayCB != INVALID_FUNCTION)
 				{
 					Call_StartFunction(hFeature.hPlugin, hFeature.OnDisplayCB);
 					Call_PushCell(iClient);
+					Call_PushString(hFeature.Key);
 					Call_PushStringEx(szDisplay, sizeof(szDisplay), SM_PARAM_STRING_UTF8 | SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 					Call_PushCell(sizeof(szDisplay));
 					Call_Finish(bResult);
 				}
-				
-				if(!bResult)
-				{
-					char sBuf[32];
-					bResult = true;
-					
-					if(hFeature.Type == TOGGLABLE)
-					{
-						FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key) ? "ENABLED" : "DISABLED", iClient)
-					}
-
-					if(g_ePlayerData[iClient].GetFeatureIDByName(hFeature.Key) == -1)
-					{
-						FormatEx(sBuf, sizeof(sBuf), "[%T]", "NO_ACCESS", iClient);
-					}
-
-					if(TranslationPhraseExists(hFeature.Key))
-					{
-						PrintToChat(iClient, "TranslationPhraseExists true");
-						FormatEx(szDisplay, sizeof(szDisplay), "%T %s", hFeature.Key, iClient, sBuf);
-					}
-					else
-					{
-						PrintToChat(iClient, "TranslationPhraseExists false");
-						FormatEx(szDisplay, sizeof(szDisplay), "%s %s", hFeature.Key, iClient, sBuf);
-					}
-				}
+				else bResult = true;
 			}
 
 			if (bResult)
