@@ -5,8 +5,7 @@ on:
     tags:
       - v*
     branches: main
-  push:
-    pull_request:
+  pull_request:
     branches:
       - main
       - rc
@@ -62,7 +61,7 @@ jobs:
 
       - name: Zip output
         run: 
-          zip -qq -r ${{ env.SOURCENAME }}-${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip plugins configs translations
+          zip -qq -r ${{ env.SOURCENAME }}-SM${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip plugins configs translations
         working-directory: ${{ env.SCRIPTS_PATH }}
 
       - name: Create Release
@@ -72,7 +71,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_VERSION }}
-          artifacts: "./${{ env.SOURCENAME }}-${{ matrix.sm_version }}-SM-${{ env.RELEASE_VERSION }}.zip"
+          artifacts: "./${{ env.SOURCENAME }}-SM${{ matrix.sm_version }}-${{ env.RELEASE_VERSION }}.zip"
           body: ${{ steps.changelog.outputs.changes }}
           draft: false
           allowUpdates: true
