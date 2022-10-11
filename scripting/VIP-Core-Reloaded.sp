@@ -39,7 +39,7 @@ public Plugin myinfo =
 	name = "VIP-Core-Reloaded",
 	author = "HLMod Community", // Special Thanks for R1KO
 	description = "Add vip status to player",
-	version = "4.0 Alpha", // D - Dev, RC - Release Condidate, R - Release
+	version = "4.0 Alpha", // MAJOR.MINOR D - Dev, RC - Release Condidate, R - Release
 	url = "https://hlmod.ru/resources/vip-core.245"
 };
 

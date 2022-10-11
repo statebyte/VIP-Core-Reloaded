@@ -186,9 +186,90 @@ int AdminPlayerGroupsInfoMenuHandler(Menu hMenu, MenuAction action, int iClient,
 		}
 		case MenuAction_Select:
 		{
-			PrintToServer("...");
+			char sInfo[32];
+			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
+
+			int iIndex = GetGroupIDByName(sInfo);
+
+			if(iIndex != -1)
+			{
+				g_ePlayerData[iClient].CurrentGroup = iIndex;
+				AdminTimesMenu(iClient);
+			}
+			else
+			{
+				OpenPlayerGroupsInfoMenu(iClient);
+			} 
 		}
 	}
+	return 0;
+}
+
+void AdminTimesMenu(int iClient)
+{
+	int iTarget = g_ePlayerData[iClient].CurrentTarget;
+	int iGroupID = g_ePlayerData[iClient].CurrentGroup;
+
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
+
+	Menu hMenu = new Menu(TimesMenuHandler);
+	hMenu.SetTitle("[VIP] Выдать группу %s - %N\n \n", hGroup.Name, iTarget);
+	hMenu.ExitBackButton = true;
+
+	char sBuffer[128], sBuf[32];
+
+	int iLen = g_hTimes.Length;
+	for(int i = 0; i < iLen; i++)
+	{
+		Times hTime;
+		g_hTimes.GetArray(i, hTime, sizeof(hTime));
+
+		IntToString(hTime.Time, sBuf, sizeof(sBuf));
+
+		if(TranslationPhraseExists(hTime.Phrase))
+		{
+			FormatEx(sBuffer, sizeof(sBuffer), "%T", hTime.Phrase, iClient);
+			hMenu.AddItem(sBuf, sBuffer);
+		}
+		else hMenu.AddItem(sBuf, hTime.Phrase);
+	}
+
+	hMenu.Display(iClient, MENU_TIME_FOREVER);
+}
+
+int TimesMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
+{
+	switch(action)
+	{
+		case MenuAction_End:
+		{
+			delete hMenu;
+		}
+		case MenuAction_Cancel:
+		{
+			if(iItem == MenuCancel_ExitBack)
+				OpenPlayerGroupsInfoMenu(iClient);
+		}
+		case MenuAction_Select:
+		{
+			PrintToChat(iClient, "TimesMenuHandler");
+			char sInfo[32];
+			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
+
+			int iTarget = g_ePlayerData[iClient].CurrentTarget;
+			int iTime = GetTime() + (StringToInt(sInfo));
+			PrintToChat(iClient, "%i", iTime);
+			int iGroupID = g_ePlayerData[iClient].CurrentGroup;
+
+			GroupInfo hGroup;
+			g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
+
+			g_ePlayerData[iTarget].AddGroup(hGroup.Name, iTime);
+			OpenPlayerGroupsInfoMenu(iClient);
+		}
+	}
+
 	return 0;
 }
 

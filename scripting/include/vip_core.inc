@@ -3,7 +3,7 @@
 #endif
 #define _vip_core_included
 
-#define VIP_INTERFACE_VERSION			040000
+#define VIP_INTERFACE_VERSION			0400
 
 /* Типы данных VIP-функций */
 enum VIP_ValueType
@@ -126,7 +126,7 @@ native bool VIP_IsVIPLoaded();
  *
  * @noparams
  *
- * @return					int
+ * @return					int VIP_INTERFACE_VERSION
 */
 native int VIP_GetCurrentVersionInterface();
 
@@ -166,5 +166,7 @@ public void __pl_vip_core_SetNTVOptional()
 	MarkNativeAsOptional("VIP_IsVIPLoaded");
 	MarkNativeAsOptional("VIP_RegisterFeature");
 	MarkNativeAsOptional("VIP_UnregisterFeature");
+	MarkNativeAsOptional("VIP_UnregisterMe");
+	MarkNativeAsOptional("VIP_GetCurrentVersionInterface");
 }
 #endif
