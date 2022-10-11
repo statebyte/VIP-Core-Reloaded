@@ -3,7 +3,7 @@
 #endif
 #define _vip_core_included
 
-#define VIP_INTERFACE_VERSION			0400
+#define VIP_INTERFACE_VERSION			400
 
 /* Типы данных VIP-функций */
 enum VIP_ValueType
@@ -131,6 +131,52 @@ native bool VIP_IsVIPLoaded();
 native int VIP_GetCurrentVersionInterface();
 
 /**
+ *	Получает VIP-группу игрока. (OLD)
+ *
+ * @param iClient			Индекс игрока.
+ * @param szGroup			Буфер, в который будет помещен результат.
+ * @param iMaxLength		Размер буфера.
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+#pragma deprecated Use VIP_GetClientGroupName() instead
+native bool VIP_GetClientVIPGroup(int iClient, char[] szGroup, int iMaxLength);
+
+/**
+ *	Получает VIP-группу игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szGroup			Буфер, в который будет помещен результат.
+ * @param iMaxLength		Размер буфера.
+ * @param iIndex			Номер группы в массиве...
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+native bool VIP_GetClientGroupName(int iClient, char[] szGroup, int iMaxLength, int iIndex = 0);
+
+/**
+ *	Получает кол-во VIP-групп у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ *
+ * @return					Кол-во групп в int
+*/
+native int VIP_GetClientGroupCount(int iClient);
+
+/**
+ *	Получает наличие VIP прав у игрока.
+ *	Если у игрока будет хотя бы одна функция, то у него есть VIP статус.
+ *
+ * @param iClient			Индекс игрока.
+ *
+ * @return					true - У игрока имеются VIP-статус.
+ * 							false - У игрока нет VIP-статуса.
+*/
+native bool VIP_IsClientVIP(int iClient);
+
+/**
  *	Вызывается когда VIP-плагин загрузился.
  *
  * @noparams
@@ -138,6 +184,33 @@ native int VIP_GetCurrentVersionInterface();
  * @noreturn
 */
 forward void VIP_OnVIPLoaded();
+
+/**
+ *	Вызывается когда у VIP-игрока обновился список функций
+ *
+ * @noparams
+ *
+ * @noreturn
+*/
+forward void VIP_OnRebuildFeatureList(int iClient);
+
+/**
+ *	Вызывается когда добавлена новая VIP-группа игрока
+ *
+ * @noparams
+ *
+ * @noreturn
+*/
+forward void VIP_OnAddGroup(int iClient, char[] szGroup);
+
+/**
+ *	Вызывается когда удалена VIP-группа игрока
+ *
+ * @noparams
+ *
+ * @noreturn
+*/
+forward void VIP_OnRemoveGroup(int iClient, char[] szGroup);
 
 /**
  * Проверяет что VIP ядро доступно без ThrowNativeError
@@ -164,9 +237,16 @@ public SharedPlugin __pl_vip_core=
 public void __pl_vip_core_SetNTVOptional()
 {
 	MarkNativeAsOptional("VIP_IsVIPLoaded");
+	MarkNativeAsOptional("VIP_GetCurrentVersionInterface");
+
 	MarkNativeAsOptional("VIP_RegisterFeature");
 	MarkNativeAsOptional("VIP_UnregisterFeature");
 	MarkNativeAsOptional("VIP_UnregisterMe");
-	MarkNativeAsOptional("VIP_GetCurrentVersionInterface");
+	
+	MarkNativeAsOptional("VIP_GetClientVIPGroup");
+	MarkNativeAsOptional("VIP_GetClientGroupName");
+	MarkNativeAsOptional("VIP_GetClientGroupCount");
+	MarkNativeAsOptional("VIP_IsClientVIP");
+	
 }
 #endif

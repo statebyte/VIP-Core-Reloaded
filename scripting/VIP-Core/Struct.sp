@@ -189,8 +189,8 @@ enum struct PlayerData
 		hGroup.ExpireTime = iExpire;
 		this.hGroups.PushArray(hGroup, sizeof(hGroup));
 
-		this.bVIP = this.IsVIP();
 		this.RebuildFeatureList();
+		CallForward_OnAddGroup(this.iClient, sGroup);
 	}
 
 	void RemoveGroup(char[] sGroup)
@@ -200,9 +200,9 @@ enum struct PlayerData
 		{
 			this.hGroups.Erase(iIndex);
 
-			this.bVIP = this.IsVIP();
 			this.RebuildFeatureList();
 		}
+		CallForward_OnRemoveGroup(this.iClient, sGroup);
 	}
 
 	int GetExpireTimeByGroupID(int iIndex)
@@ -401,6 +401,9 @@ enum struct PlayerData
 
 			this.AddFeature(hPFeature.Key, hPFeature.Value, -1);
 		}
+
+		this.bVIP = this.IsVIP();
+		CallForward_OnRebuildFeatureList(this.iClient);
 	}
 
 	void AddFeatureByGroupID(int iIndex, int iDeep = 0)
@@ -469,7 +472,7 @@ enum struct PlayerData
 
 	bool IsVIP()
 	{
-		return this.hGroups.Length > 0;
+		return this.hFeatures.Length > 0;
 	}
 }
 PlayerData g_ePlayerData[MAXPLAYERS+1];

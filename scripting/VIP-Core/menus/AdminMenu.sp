@@ -189,12 +189,26 @@ int AdminPlayerGroupsInfoMenuHandler(Menu hMenu, MenuAction action, int iClient,
 			char sInfo[32];
 			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
+			int iTarget = g_ePlayerData[iClient].CurrentTarget;
 			int iIndex = GetGroupIDByName(sInfo);
+
+			g_ePlayerData[iClient].CurrentGroup = iIndex;
 
 			if(iIndex != -1)
 			{
-				g_ePlayerData[iClient].CurrentGroup = iIndex;
-				AdminTimesMenu(iClient);
+				GroupInfo hGroup;
+				g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
+				if(g_ePlayerData[iTarget].GetGroupIDByName(hGroup.Name) == -1)
+				{
+					
+					OpenAdminTimesMenu(iClient);
+				}
+				else
+				{
+					char sBuffer[128];
+					FormatEx(sBuffer, sizeof(sBuffer), "Вы действительно хотите удалить группу %s у игрока %N", hGroup.Name, iTarget);
+					ConfirmMenu(iClient, sBuffer, OnDelete);
+				}
 			}
 			else
 			{
@@ -205,7 +219,25 @@ int AdminPlayerGroupsInfoMenuHandler(Menu hMenu, MenuAction action, int iClient,
 	return 0;
 }
 
-void AdminTimesMenu(int iClient)
+void OnDelete(int iClient, char[] sAns)
+{
+	int iGroupID = g_ePlayerData[iClient].CurrentGroup;
+	int iTarget = g_ePlayerData[iClient].CurrentTarget;
+
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
+
+	if(!strcmp(sAns, "yes"))
+	{
+		g_ePlayerData[iTarget].RemoveGroup(hGroup.Name);
+
+		// TODO Удаление в бд
+	}
+
+	OpenPlayerGroupsInfoMenu(iClient);
+}
+
+void OpenAdminTimesMenu(int iClient)
 {
 	int iTarget = g_ePlayerData[iClient].CurrentTarget;
 	int iGroupID = g_ePlayerData[iClient].CurrentGroup;
@@ -253,13 +285,11 @@ int TimesMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 		}
 		case MenuAction_Select:
 		{
-			PrintToChat(iClient, "TimesMenuHandler");
 			char sInfo[32];
 			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
 			int iTarget = g_ePlayerData[iClient].CurrentTarget;
 			int iTime = GetTime() + (StringToInt(sInfo));
-			PrintToChat(iClient, "%i", iTime);
 			int iGroupID = g_ePlayerData[iClient].CurrentGroup;
 
 			GroupInfo hGroup;
@@ -359,32 +389,48 @@ int AdminPlayerFeaturesInfoMenuHandler(Menu hMenu, MenuAction action, int iClien
 	return 0;
 }
 
-// void ConfirmMenu(int iClient, char[] sQues, Function hCallBack)
-// {
-// 	g_ePlayerData[iClient].hCallBack = hCallBack;
+void ConfirmMenu(int iClient, char[] sQues, Function hCallBack)
+{
+	g_ePlayerData[iClient].hCallBack = hCallBack;
 
-// 	Menu hMenu = new Menu(ConfirmMenuHandler);
-// 	hMenu.SetTitle("[VIP] Подтверждение\n \n%s?\n \n", sQues);
+	Menu hMenu = new Menu(ConfirmMenuHandler);
+	hMenu.SetTitle("[VIP] Подтверждение\n \n%s?\n \n", sQues);
 
-// 	hMenu.AddItem("yes", "Да");
-// 	hMenu.AddItem("no", "Нет");
+	hMenu.AddItem("yes", "Да");
+	hMenu.AddItem("no", "Нет");
 
-// 	hMenu.ExitBackButton = true;
-// 	hMenu.Display(iClient, MENU_TIME_FOREVER);
-// }
+	hMenu.ExitBackButton = true;
+	hMenu.Display(iClient, MENU_TIME_FOREVER);
+}
 
-// int ConfirmMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
-// {
-// 	switch(action)
-// 	{
-// 		case MenuAction_End:
-// 		{
+int ConfirmMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
+{
+	switch(action)
+	{
+		case MenuAction_End:
+		{
+			delete hMenu;
+		}
+		case MenuAction_Cancel:
+		{
+			if(iItem == MenuCancel_ExitBack)
+			{
+				Call_StartFunction(GetMyHandle(), g_ePlayerData[iClient].hCallBack);
+				Call_PushCell(iClient);
+				Call_PushString("exitback");
+				Call_Finish();
+			}
+		}
+		case MenuAction_Select:
+		{
+			char sInfo[32];
+			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
-// 		}
-// 		case MenuAction_Select:
-// 		{
-			
-// 		}
-// 	}
-// 	return 0;
-// }
+			Call_StartFunction(GetMyHandle(), g_ePlayerData[iClient].hCallBack);
+			Call_PushCell(iClient);
+			Call_PushString(sInfo);
+			Call_Finish();
+		}
+	}
+	return 0;
+}

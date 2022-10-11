@@ -2,16 +2,45 @@
 #define RegNative(%0)	CreateNative("VIP_" ... #%0, Native_%0)
 
 static Handle g_hGlobalForward_OnVIPLoaded;
+static Handle g_hGlobalForward_OnRebuildFeatureList;
+static Handle g_hGlobalForward_OnAddGroup;
+static Handle g_hGlobalForward_OnRemoveGroup;
 
 void API_SetupForwards()
 {
 	g_hGlobalForward_OnVIPLoaded					= CreateGlobalForward("VIP_OnVIPLoaded", ET_Ignore);
+	g_hGlobalForward_OnRebuildFeatureList			= CreateGlobalForward("VIP_OnRebuildFeatureList", ET_Ignore, Param_Cell);
+	g_hGlobalForward_OnAddGroup						= CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_Cell, Param_String);
 }
 
 void CallForward_OnVIPLoaded()
 {
 	g_eServerData.CoreIsReady = true;
 	Call_StartForward(g_hGlobalForward_OnVIPLoaded);
+	Call_Finish();
+}
+
+void CallForward_OnRebuildFeatureList(int iClient)
+{
+	Call_StartForward(g_hGlobalForward_OnRebuildFeatureList);
+	Call_PushCell(iClient);
+	Call_Finish();
+}
+
+void CallForward_OnAddGroup(int iClient, char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnAddGroup);
+	Call_PushCell(iClient);
+	Call_PushString(sGroup);
+	Call_Finish();
+}
+
+void CallForward_OnRemoveGroup(int iClient, char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnRemoveGroup);
+	Call_PushCell(iClient);
+	Call_PushString(sGroup);
 	Call_Finish();
 }
 
