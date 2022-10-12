@@ -166,6 +166,32 @@ native bool VIP_GetClientGroupName(int iClient, char[] szGroup, int iMaxLength, 
 native int VIP_GetClientGroupCount(int iClient);
 
 /**
+ *	Выдает игроку VIP-права.
+ *
+ * @param iAdmin			Индекс админа (0 - сервер, -1 - плагин).
+ * @param iClient			Индекс игрока.
+ * @param iTime				Время в секундах.
+ * @param szGroup			Имя VIP-группы.
+ * @param bAddToDB			Добавлять ли в базу данных.
+ *
+ * @noreturn
+*/
+native void VIP_GiveClientVIP(int iAdmin = -1, int iClient, int iTime, const char[] szGroup, bool bAddToDB = true);
+
+/**
+ *	Отнимает у игрока VIP-права.
+ *
+ * @param iAdmin			Индекс админа (0 - сервер, -1 - плагин).
+ * @param iClient			Индекс игрока.
+ * @param bInDB				Удалять ли из базы данных.
+ * @param bNotify			Уведомление игрока (true - уведомить/false - не уведомлять).
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+native bool VIP_RemoveClientVIP(int iAdmin = -1, int iClient, bool bInDB, bool bNotify);
+
+/**
  *	Получает наличие VIP прав у игрока.
  *	Если у игрока будет хотя бы одна функция, то у него есть VIP статус.
  *
@@ -175,6 +201,16 @@ native int VIP_GetClientGroupCount(int iClient);
  * 							false - У игрока нет VIP-статуса.
 */
 native bool VIP_IsClientVIP(int iClient);
+
+// TODO
+/**
+ *	Добавляет новую группу в список
+ *
+ * @param sGroup			Название группы
+ *
+ * @return					Индекс новой группы (GroupID)
+*/
+//native int VIP_NewGroup(char[] sGroup);
 
 /**
  *	Вызывается когда VIP-плагин загрузился.

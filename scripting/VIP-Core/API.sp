@@ -66,11 +66,68 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(UnregisterFeature);
 	RegNative(UnregisterMe);
 	RegNative(GetCurrentVersionInterface);
+
+	RegNative(IsClientVIP);
+	RegNative(GetClientVIPGroup);
+	RegNative(GetClientGroupName);
+	RegNative(GetClientGroupCount);
 	
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+public int Native_GetClientVIPGroup(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
+	{
+		PlayerGroup hGroup;
+		g_ePlayerData[iClient].hGroups.GetArray(0, hGroup, sizeof(hGroup));
+		SetNativeString(2, hGroup.Name, GetNativeCell(3), true);
+	}
+
+	return false;
+}
+
+public int Native_GetClientGroupCount(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(CheckValidClient(iClient))
+	{
+		return g_ePlayerData[iClient].hGroups.Length;
+	}
+
+	return 0;
+}
+
+public int Native_GetClientGroupName(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
+	{
+		PlayerGroup hGroup;
+		g_ePlayerData[iClient].hGroups.GetArray(0, hGroup, sizeof(hGroup));
+		SetNativeString(GetNativeCell(4), hGroup.Name, GetNativeCell(3), true);
+	}
+
+	return false;
+}
+
+public int Native_IsClientVIP(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(CheckValidClient(iClient))
+	{
+		return g_ePlayerData[iClient].bVIP;
+	}
+
+	return false;
 }
 
 public int Native_UnregisterMe(Handle hPlugin, int iNumParams)
@@ -172,4 +229,37 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 	RebuildVIPMenu();
 
 	return 1;
+}
+
+bool CheckValidClient(const int &iClient, bool bCheckVIP = true)
+{
+	if (iClient < 1 || iClient > MaxClients)
+	{
+		ThrowNativeError(SP_ERROR_NATIVE, "Invalid client index (%i)", iClient);
+		return false;
+	}
+	if (IsClientInGame(iClient) == false)
+	{
+		ThrowNativeError(SP_ERROR_NATIVE, "Client %i is not connected", iClient);
+		return false;
+	}
+	if (bCheckVIP)
+	{
+		/*
+		if (!(g_iClientInfo[iClient] & IS_LOADED))
+		{
+			ThrowNativeError(SP_ERROR_NATIVE, "Client %i is not loaded", iClient);
+			return false;
+		}
+		if (!(g_iClientInfo[iClient] & IS_VIP) || !(g_iClientInfo[iClient] & IS_AUTHORIZED))
+		{
+			ThrowNativeError(SP_ERROR_NATIVE, "Client %i is not VIP", iClient);
+			return false;
+		}
+		*/
+		
+		return g_ePlayerData[iClient].bVIP;
+	}
+	
+	return true;
 }

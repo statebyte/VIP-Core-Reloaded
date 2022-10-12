@@ -184,10 +184,20 @@ enum struct PlayerData
 
 	void AddGroup(char sGroup[D_GROUPNAME_LENGTH], int iExpire = 0)
 	{
+		int iIndex = GetGroupIDByName(sGroup);
+
 		PlayerGroup hGroup;
 		hGroup.Name = sGroup;
 		hGroup.ExpireTime = iExpire;
-		this.hGroups.PushArray(hGroup, sizeof(hGroup));
+
+		if(iIndex != -1) 
+		{
+			this.hGroups.PushArray(hGroup, sizeof(hGroup));
+		}
+		else
+		{
+			this.hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
+		}
 
 		this.RebuildFeatureList();
 		CallForward_OnAddGroup(this.iClient, sGroup);
@@ -201,8 +211,8 @@ enum struct PlayerData
 			this.hGroups.Erase(iIndex);
 
 			this.RebuildFeatureList();
+			CallForward_OnRemoveGroup(this.iClient, sGroup);
 		}
-		CallForward_OnRemoveGroup(this.iClient, sGroup);
 	}
 
 	int GetExpireTimeByGroupID(int iIndex)
