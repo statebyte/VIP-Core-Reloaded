@@ -48,10 +48,10 @@ public void OnPluginStart()
 	LoadTranslations("vip_core.phrases");
 	LoadTranslations("vip_modules.phrases");
 
+	API_SetupForwards();
 	LoadStructModule();
 	LoadConfigurationModule();
 
-	API_SetupForwards();
 	LoadDatabase();
 
 	HookEvents();

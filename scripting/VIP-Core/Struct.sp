@@ -184,13 +184,13 @@ enum struct PlayerData
 
 	void AddGroup(char sGroup[D_GROUPNAME_LENGTH], int iExpire = 0)
 	{
-		int iIndex = GetGroupIDByName(sGroup);
+		int iIndex = this.GetGroupIDByName(sGroup);
 
 		PlayerGroup hGroup;
 		hGroup.Name = sGroup;
 		hGroup.ExpireTime = iExpire;
 
-		if(iIndex != -1) 
+		if(iIndex == -1) 
 		{
 			this.hGroups.PushArray(hGroup, sizeof(hGroup));
 		}
@@ -205,8 +205,8 @@ enum struct PlayerData
 
 	void RemoveGroup(char[] sGroup)
 	{
-		int iIndex = GetGroupIDByName(sGroup);
-		if(iIndex != -1) 
+		int iIndex = this.GetGroupIDByName(sGroup);
+		if(iIndex != -1)
 		{
 			this.hGroups.Erase(iIndex);
 
