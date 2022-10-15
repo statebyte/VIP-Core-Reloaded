@@ -497,11 +497,16 @@ enum struct PlayerData
 		this.hStorage = new ArrayList();
 	}
 
+	void SetID()
+	{
+		this.AccountID = GetSteamAccountID(this.iClient);
+		this.UserID = GetClientUserId(this.iClient);
+	}
+
 	void LoadData()
 	{
 		// TODO: Загрузка данных...
-		this.AccountID = GetSteamAccountID(this.iClient);
-		this.UserID = GetClientUserId(this.iClient);
+		this.SetID();
 
 		DB_LoadPlayerData(this.iClient);
 
@@ -519,7 +524,7 @@ enum struct PlayerData
 
 	void UpdateData()
 	{
-
+		DB_UpdatePlayerData(this.iClient);
 	}
 
 	bool IsVIP()
@@ -592,6 +597,8 @@ void LoadPlayersData()
 {
 	for(int i = 1; i <= MaxClients; i++) if(IsClientInGame(i) && !IsFakeClient(i))
 	{
+		g_ePlayerData[i].SetID();
+		g_ePlayerData[i].UpdateData();
 		g_ePlayerData[i].LoadData();
 	}
 }

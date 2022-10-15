@@ -8,12 +8,18 @@ void HookEvents()
 
 public void OnClientPutInServer(int iClient)
 {
+	if(!IsClientInGame(iClient) || IsFakeClient(iClient)) return;
+
 	g_ePlayerData[iClient].ClearData();
+	g_ePlayerData[iClient].SetID();
+	g_ePlayerData[iClient].UpdateData();
 	g_ePlayerData[iClient].LoadData();
 }
 
 public void OnClientDisconnect(int iClient)
 {
+	if(IsFakeClient(iClient)) return;
+
 	g_ePlayerData[iClient].UpdateData();
 }
 
