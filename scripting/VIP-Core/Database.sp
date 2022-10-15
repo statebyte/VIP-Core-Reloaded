@@ -139,6 +139,11 @@ void DB_UpdatePlayerData(int iClient)
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery);
 }
 
+void DB_AddCustomFeature(int iClient, char[] sKey, char[] sValue, int iTarget = 0)
+{
+	
+}
+
 void DB_LoadPlayerData(int iClient)
 {
 	if(g_eServerData.DB_Type == DB_None) return;

@@ -37,18 +37,13 @@ enum struct ServerData
 	Database DB;
 
 	char GroupsConfigPath[PLATFORM_MAX_PATH];
+
 	char LogsPath[PLATFORM_MAX_PATH];
+	char DumpLogsPath[PLATFORM_MAX_PATH];
 	char DebugLogsPath[PLATFORM_MAX_PATH];
 
 	// VIP_IsLoaded
 	bool CoreIsReady;
-
-	void Init()
-	{
-		BuildPath(Path_SM, this.GroupsConfigPath, sizeof(this.GroupsConfigPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);
-		BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/%s", LOGS_FILENAME);
-		BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/Debug_%s", LOGS_FILENAME);
-	}
 }
 ServerData g_eServerData;
 
@@ -542,8 +537,25 @@ void LoadStructModule()
 	g_hFeatures = new ArrayList(sizeof(Feature));
 	g_hTimes = new ArrayList(sizeof(Times));
 
+	InitServerData();
 	InitPlayersData();
-	g_eServerData.Init();
+}
+
+void InitServerData()
+{
+	char sPath[PLATFORM_MAX_PATH];
+
+	BuildPath(Path_SM, sPath, sizeof(sPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);
+	g_eServerData.GroupsConfigPath = sPath;
+
+	BuildPath(Path_SM, sPath, sizeof(sPath), "logs/%s", LOGS_FILENAME);
+	g_eServerData.LogsPath = sPath;
+
+	BuildPath(Path_SM, sPath, sizeof(sPath), "logs/%s", LOGS_DEBUG_FILENAME);
+	g_eServerData.DebugLogsPath = sPath;
+
+	BuildPath(Path_SM, sPath, sizeof(sPath), "logs/%s", LOGS_DUMP_FILENAME);
+	g_eServerData.DumpLogsPath = sPath;
 }
 
 int GetGroupIDByName(char[] sKey)

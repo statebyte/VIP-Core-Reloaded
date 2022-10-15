@@ -4,6 +4,14 @@ void HookEvents()
 	AddCommandListener(ChatEvent, "say");
 	AddCommandListener(ChatEvent, "say2");
 	AddCommandListener(ChatEvent, "say_team");
+
+	CreateTimer(1.0, TimerChecker, _, TIMER_REPEAT);
+}
+
+Action TimerChecker(Handle hTimer, any data)
+{
+	
+	return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int iClient)
@@ -31,6 +39,8 @@ Action ChatEvent(int iClient, char[] sCommand, int iArgc)
 		{
 			int iTarget = g_ePlayerData[iClient].CurrentTarget;
 			g_ePlayerData[iTarget].AddCustomFeature(g_ePlayerData[iClient].CurrentFeature, sCommand);
+			
+			//DB_AddCustomFeature(iTarget, );
 			OpenPlayerFeaturesInfoMenu(iClient);
 		}
 

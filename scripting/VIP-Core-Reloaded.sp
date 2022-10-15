@@ -16,6 +16,7 @@
 #define CONFIG_TIMES_FILENAME		"times.ini"
 #define LOGS_FILENAME				"VIP-Core.log"
 #define LOGS_DUMP_FILENAME			"VIP-Core-Dump.log"
+#define LOGS_DEBUG_FILENAME			"VIP-Core-Debug.log"
 
 #include "VIP-Core/Global.sp"
 #include "VIP-Core/Struct.sp"
