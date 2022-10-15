@@ -8,6 +8,25 @@ void LoadTest()
 	addTestTimes();
 }
 
+enum DBG_Level
+{
+	DBG_None = 0,
+	DBG_ERROR,
+	DBG_WARNING,
+	DBG_INFO
+}
+DBG_Level g_iDBGLevel = DBG_None;
+
+void DebugMsg(DBG_Level iLevel, const char[] sMsg, any ...)
+{
+	if(iLevel < g_iDBGLevel) return;
+
+	static char szBuffer[512];
+	VFormat(szBuffer, sizeof(szBuffer), sMsg, 2);
+	LogToFile(g_eServerData.DebugLogsPath, szBuffer);
+}
+#define DebugMessage(%0) DebugMsg(%0)
+
 void addTestTimes()
 {
 	Times hTime;
@@ -72,7 +91,7 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 	{
 		PlayerFeature hPFeature;
 		g_ePlayerData[iClient].hFeatures.GetArray(i, hPFeature, sizeof(hPFeature));
-		PrintToConsole(iClient, "%s - %s | %i", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority);
+		PrintToConsole(iClient, "%s - %s | %i (%s)", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority, hPFeature.bEnabled ? "Enable" : "Disable");
 	}
 	
 	return Plugin_Handled;

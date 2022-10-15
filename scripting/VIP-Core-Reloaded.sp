@@ -61,5 +61,5 @@ public void OnPluginStart()
 
 	LoadTest();
 
-	CallForward_OnVIPLoaded();
+	//CallForward_OnVIPLoaded();
 }

@@ -68,14 +68,81 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetCurrentVersionInterface);
 
 	RegNative(IsClientVIP);
-	RegNative(GetClientVIPGroup);
 	RegNative(GetClientGroupName);
+	RegNative(GetClientGroupExpire);
 	RegNative(GetClientGroupCount);
+
+	RegNative(GetClientVIPGroup);
+	RegNative(GiveClientGroup);
+	RegNative(RemoveClientGroup);
+
+	RegNative(GetDatabase);
 	
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+public int Native_GetDatabase(Handle hPlugin, int iNumParams)
+{
+	return view_as<int>(CloneHandle(g_eServerData.DB, hPlugin));
+}
+
+public int Native_GetClientGroupExpire(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+	int iGroupID = GetNativeCell(2);
+
+	PlayerGroup hGroup;
+	g_ePlayerData[iClient].hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
+
+	return hGroup.ExpireTime;
+}
+
+public int Native_GiveClientGroup(Handle hPlugin, int iNumParams)
+{
+	int iAdmin = GetNativeCell(1);
+	int iClient = GetNativeCell(2);
+	int iTime = GetNativeCell(3);
+	bool bAddToDB = view_as<bool>(GetNativeCell(5));
+
+	char sGroup[D_GROUPNAME_LENGTH];
+	GetNativeString(4, sGroup, sizeof(sGroup));
+
+	if(bAddToDB)
+	{
+		// TODO
+	}
+
+	g_ePlayerData[iClient].AddGroup(sGroup, iTime);
+	return 1;
+}
+
+public int Native_RemoveClientGroup(Handle hPlugin, int iNumParams)
+{
+	int iAdmin = GetNativeCell(1);
+	int iClient = GetNativeCell(2);
+
+	char sGroup[D_GROUPNAME_LENGTH];
+	GetNativeString(3, sGroup, sizeof(sGroup));
+
+	bool bAddToDB = view_as<bool>(GetNativeCell(4));
+	bool bNotify = view_as<bool>(GetNativeCell(5));
+
+	if(bAddToDB)
+	{
+		// TODO
+	}
+
+	g_ePlayerData[iClient].RemoveGroup(sGroup);
+
+	if(bNotify)
+	{
+		// TODO
+	}
+
+	return 1;
 }
 
 public int Native_GetClientVIPGroup(Handle hPlugin, int iNumParams)
@@ -111,8 +178,8 @@ public int Native_GetClientGroupName(Handle hPlugin, int iNumParams)
 	if(CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
 	{
 		PlayerGroup hGroup;
-		g_ePlayerData[iClient].hGroups.GetArray(0, hGroup, sizeof(hGroup));
-		SetNativeString(GetNativeCell(4), hGroup.Name, GetNativeCell(3), true);
+		g_ePlayerData[iClient].hGroups.GetArray(GetNativeCell(4), hGroup, sizeof(hGroup));
+		SetNativeString(4, hGroup.Name, GetNativeCell(3), true);
 	}
 
 	return false;

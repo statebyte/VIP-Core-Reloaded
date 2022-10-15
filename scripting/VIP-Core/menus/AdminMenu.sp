@@ -200,7 +200,6 @@ int AdminPlayerGroupsInfoMenuHandler(Menu hMenu, MenuAction action, int iClient,
 				g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
 				if(g_ePlayerData[iTarget].GetGroupIDByName(hGroup.Name) == -1)
 				{
-					
 					OpenAdminTimesMenu(iClient);
 				}
 				else
@@ -230,8 +229,8 @@ void OnDelete(int iClient, char[] sAns)
 	if(!strcmp(sAns, "yes"))
 	{
 		g_ePlayerData[iTarget].RemoveGroup(hGroup.Name);
-
-		// TODO Удаление в бд
+		
+		DB_RemovePlayerGroup(iTarget, hGroup.Name, iClient);
 	}
 
 	OpenPlayerGroupsInfoMenu(iClient);
@@ -296,6 +295,8 @@ int TimesMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
 
 			g_ePlayerData[iTarget].AddGroup(hGroup.Name, iTime);
+			DB_AddPlayerGroup(iTarget, hGroup.Name, iTime, iClient);
+			
 			OpenPlayerGroupsInfoMenu(iClient);
 		}
 	}

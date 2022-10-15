@@ -157,6 +157,16 @@ native bool VIP_GetClientVIPGroup(int iClient, char[] szGroup, int iMaxLength);
 native bool VIP_GetClientGroupName(int iClient, char[] szGroup, int iMaxLength, int iIndex = 0);
 
 /**
+ *	Получает время до окончания VIP-группы в unix
+ *
+ * @param iClient			Индекс игрока.
+ * @param iIndex			Номер группы в массиве...
+ *
+*/
+native int VIP_GetClientGroupExpire(int iClient, int iIndex = 0);
+
+
+/**
  *	Получает кол-во VIP-групп у игрока.
  *
  * @param iClient			Индекс игрока.
@@ -189,7 +199,7 @@ native void VIP_GiveClientVIP(int iAdmin = -1, int iClient, int iTime, const cha
  * @return					true - Успешно.
  * 							false - Не удалось выполнить.
 */
-native bool VIP_RemoveClientVIP(int iAdmin = -1, int iClient, bool bInDB, bool bNotify);
+native bool VIP_RemoveClientVIP(int iAdmin = -1, int iClient, const char[] szGroup, bool bInDB, bool bNotify);
 
 /**
  *	Получает наличие VIP прав у игрока.
@@ -211,6 +221,34 @@ native bool VIP_IsClientVIP(int iClient);
  * @return					Индекс новой группы (GroupID)
 */
 //native int VIP_NewGroup(char[] sGroup);
+
+/**
+ *	Добавляет новую функцию в группу
+ *
+ * @param sGroup			Название группы
+ *
+ * @return					Индекс новой группы (GroupID)
+*/
+//native int VIP_AddFeatureSettingToGroup(int iGroupID, char[] sKey, char[] sValue);
+
+/**
+ *	Получает GroupID из названия группы.
+ *
+ * @param sGroup			Название группы
+ *
+ * @return					Индекс новой группы (GroupID)
+*/
+//native int VIP_GetGroupIDByName(char[] sKey);
+
+
+/**
+ *	Получает текущие подключение к БД.
+ *
+ * @noparams
+ *
+ * @noreturn
+*/
+native Database VIP_GetDatabase();
 
 /**
  *	Вызывается когда VIP-плагин загрузился.

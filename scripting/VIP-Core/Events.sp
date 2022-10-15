@@ -12,6 +12,11 @@ public void OnClientPutInServer(int iClient)
 	g_ePlayerData[iClient].LoadData();
 }
 
+public void OnClientDisconnect(int iClient)
+{
+	g_ePlayerData[iClient].UpdateData();
+}
+
 Action ChatEvent(int iClient, char[] sCommand, int iArgc)
 {
 	if(g_ePlayerData[iClient].HookChat > ChatHook_None)

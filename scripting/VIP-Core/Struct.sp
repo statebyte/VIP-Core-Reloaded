@@ -38,6 +38,7 @@ enum struct ServerData
 
 	char GroupsConfigPath[PLATFORM_MAX_PATH];
 	char LogsPath[PLATFORM_MAX_PATH];
+	char DebugLogsPath[PLATFORM_MAX_PATH];
 
 	// VIP_IsLoaded
 	bool CoreIsReady;
@@ -46,6 +47,7 @@ enum struct ServerData
 	{
 		BuildPath(Path_SM, this.GroupsConfigPath, sizeof(this.GroupsConfigPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);
 		BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/%s", LOGS_FILENAME);
+		BuildPath(Path_SM, this.LogsPath, sizeof(this.LogsPath), "logs/Debug_%s", LOGS_FILENAME);
 	}
 }
 ServerData g_eServerData;
@@ -91,12 +93,41 @@ enum struct GroupInfo
 		strcopy(hPFeature.Key, sizeof(hPFeature.Key), sKey);
 		strcopy(hPFeature.Value, sizeof(hPFeature.Value), sValue);
 
-		this.hFeatureList.PushArray(hPFeature, sizeof(hPFeature));
+		int iIndex = this.GetFeatureIDByKey(sKey);
+
+		if(iIndex == -1)
+		{
+			this.hFeatureList.PushArray(hPFeature, sizeof(hPFeature));
+		}
+		else
+		{
+			this.hFeatureList.SetArray(iIndex, hPFeature, sizeof(hPFeature));
+		}
 	}
 
-	void DelFeature(char[] sKey, char[] sValue)
+	void DelFeature(char[] sKey)
 	{
-		
+		int iIndex = this.GetFeatureIDByKey(sKey);
+
+		if(iIndex != -1)
+		{
+			this.hFeatureList.Erase(iIndex);
+		}
+	}
+
+	int GetFeatureIDByKey(char[] sKey)
+	{
+		int iLen = this.hFeatureList.Length;
+
+		for(int i = 0; i < iLen; i++)
+		{
+			PlayerFeature hFeature;
+			this.hFeatureList.GetArray(i, hFeature, sizeof(hFeature));
+
+			if(!strcmp(hFeature.Key, sKey)) return i;
+		}
+
+		return -1;
 	}
 
 	void AddExtend(char[] sKey)
@@ -166,6 +197,9 @@ enum struct PlayerData
 
 	// Unique for player (check PlayerFeature)
 	ArrayList hCustomFeatures;
+
+	// Settings Player...
+	ArrayList hStorage;
 
 	ChatHookType HookChat;
 	// For ConfirmMenu...
@@ -428,7 +462,7 @@ enum struct PlayerData
 			hGroup.hExtendList.GetString(i, sName, sizeof(sName));
 		
 			int iID = GetGroupIDByName(sName);
-			if(iID != -1) 
+			if(iID != -1)
 			{
 				char sBuffer[256];
 				for(int j = 0; j < iDeep+1; j++)
@@ -448,7 +482,9 @@ enum struct PlayerData
 			PlayerFeature hPFeature;
 			hGroup.hFeatureList.GetArray(i, hPFeature, sizeof(hPFeature));
 
-			this.AddFeature(hPFeature.Key, hPFeature.Value, iDeep == 0 ? 0 : iIndex);
+			// Приоритет группы по ее сортировке в groups.ini
+			int iGroupID = GetGroupIDByName(hGroup.Name);
+			this.AddFeature(hPFeature.Key, hPFeature.Value, iDeep == 0 ? 0 : iGroupID);
 		}
 	}
 
@@ -458,6 +494,7 @@ enum struct PlayerData
 		this.hGroups = new ArrayList(sizeof(PlayerGroup));
 		this.hFeatures = new ArrayList(sizeof(PlayerFeature));
 		this.hCustomFeatures = new ArrayList(sizeof(PlayerFeature));
+		this.hStorage = new ArrayList();
 	}
 
 	void LoadData()
@@ -466,7 +503,7 @@ enum struct PlayerData
 		this.AccountID = GetSteamAccountID(this.iClient);
 		this.UserID = GetClientUserId(this.iClient);
 
-
+		DB_LoadPlayerData(this.iClient);
 
 		this.RebuildFeatureList();
 	}
@@ -478,6 +515,11 @@ enum struct PlayerData
 		this.hFeatures.Clear();
 		this.hCustomFeatures.Clear();
 		this.bVIP = false;
+	}
+
+	void UpdateData()
+	{
+
 	}
 
 	bool IsVIP()
