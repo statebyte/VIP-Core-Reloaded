@@ -46,7 +46,6 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
 
 				//PrintToServer("MenuAction_Select %x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
-				
 				if(hFeature.Type == TOGGLABLE)
 				{
 					if(g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key)) g_ePlayerData[iClient].DisableFeature(hFeature.Key);
@@ -58,6 +57,7 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				{
 					if(hFeature.OnSelectCB != INVALID_FUNCTION)
 					{
+						g_ePlayerData[iClient].CurrentPage = hMenu.Selection;
 						if (Function_OnItemSelect(hFeature.hPlugin, hFeature.OnSelectCB, iClient, sBuffer))
 						{
 							hMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);

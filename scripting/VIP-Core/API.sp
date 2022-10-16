@@ -102,11 +102,24 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 
 	RegNative(GetDatabase);
 	RegNative(GetDatabaseType);
+	RegNative(SendClientVIPMenu);
 	
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+public int Native_SendClientVIPMenu(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+	if(GetNativeCell(2))
+	{
+		g_hMainMenu.DisplayAt(iClient, MENU_TIME_FOREVER, g_ePlayerData[iClient].CurrentPage);
+	}
+	else g_hMainMenu.Display(iClient, MENU_TIME_FOREVER);
+
+	return 1;
 }
 
 public int Native_GetDatabaseType(Handle hPlugin, int iNumParams)
@@ -143,7 +156,12 @@ public int Native_GiveClientGroup(Handle hPlugin, int iNumParams)
 	if(bAddToDB)
 	{
 		// TODO
+		DB_AddPlayerGroup(iClient, sGroup, iTime);
 	}
+
+	char sTime[64];
+	UTIL_GetTimeFromStamp(sTime, sizeof(sTime), iTime);
+	LogMessage("%L выдал группу %s игроку %L на срок %s", iAdmin, sGroup, iClient, sTime);
 
 	g_ePlayerData[iClient].AddGroup(sGroup, iTime);
 	return 1;
@@ -163,9 +181,12 @@ public int Native_RemoveClientGroup(Handle hPlugin, int iNumParams)
 	if(bAddToDB)
 	{
 		// TODO
+		DB_RemovePlayerGroup(iClient, sGroup);
 	}
 
 	g_ePlayerData[iClient].RemoveGroup(sGroup);
+
+	LogMessage("%L убрал группу %s игроку %L", iAdmin, sGroup, iClient);
 
 	if(bNotify)
 	{

@@ -173,7 +173,8 @@ void OpenPlayerGroupsInfoMenu(int iClient)
 			PrintToServer(hGroup.Name);
 			int iIndex = g_ePlayerData[iTarget].GetGroupIDByName(hGroup.Name);
 			int iExpireTime = g_ePlayerData[iTarget].GetExpireTimeByGroupID(iIndex);
-			UTIL_GetTimeFromStamp(sTime, sizeof(sTime), iExpireTime - GetTime(), iClient);
+			if(iExpireTime == 0) sTime = "NEVER";
+			else UTIL_GetTimeFromStamp(sTime, sizeof(sTime), iExpireTime - GetTime(), iClient);
 			FormatEx(sBuffer, sizeof(sBuffer), "[%s] %s [%s]", "-", hGroup.Name, sTime);
 		}
 		else FormatEx(sBuffer, sizeof(sBuffer), "[%s] %s", "+", hGroup.Name);
@@ -302,7 +303,9 @@ int TimesMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
 			int iTarget = g_ePlayerData[iClient].CurrentTarget;
-			int iTime = GetTime() + (StringToInt(sInfo));
+
+			int iTime = StringToInt(sInfo);
+			if(iTime != 0) iTime = GetTime() + (StringToInt(sInfo));
 			int iGroupID = g_ePlayerData[iClient].CurrentGroup;
 
 			GroupInfo hGroup;

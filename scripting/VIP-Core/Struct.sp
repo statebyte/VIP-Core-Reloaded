@@ -207,6 +207,9 @@ enum struct PlayerData
 	int CurrentTime;
 	char CurrentFeature[D_FEATURENAME_LENGTH];
 
+	// VIP Menu
+	int CurrentPage;
+
 	bool CheckGroup(char[] sGroup)
 	{
 		return this.GetGroupIDByName(sGroup) > -1;

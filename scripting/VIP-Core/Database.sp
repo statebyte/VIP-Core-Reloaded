@@ -7,6 +7,9 @@
 #define TABLE_FEATURES "vip_features"
 #define TABLE_STORAGE "vip_storage"
 
+// For SQLite
+// https://stackoverflow.com/questions/2717590/sqlite-insert-on-duplicate-key-update-upsert
+
 void LoadDatabase()
 {
 	// Проверка на секцию в databases.cfg
@@ -189,16 +192,18 @@ void DB_LoadPlayerData(int iClient)
 
 	Transaction hTxn = new Transaction();
 
-	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `group`, `expires` FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND `expires` >= %i AND `sid` = %i;", g_ePlayerData[iClient].AccountID, GetTime(), g_eServerData.ServerID);
+	char sQuery[1024], sServerID[128];
+	GetServerIDSelector(sServerID, sizeof(sServerID));
+
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `group`, `expires` FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND (`expires` >= %i OR `expires` = 0) AND %s;", g_ePlayerData[iClient].AccountID, GetTime(), sServerID);
 	PrintToServer(sQuery);
 	hTxn.AddQuery(sQuery);
 
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_FEATURES ... "` WHERE `account_id` = %i AND `sid` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID);
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_FEATURES ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
 	PrintToServer(sQuery);
 	hTxn.AddQuery(sQuery);
 
-	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_STORAGE ... "` WHERE `account_id` = %i AND `sid` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID);
+	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_STORAGE ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
 	PrintToServer(sQuery);
 	hTxn.AddQuery(sQuery);
 
@@ -261,7 +266,7 @@ void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultS
 
 		PrintToServer("STORAGE: %s - %s", sGroup, sBuffer);
 	
-		//g_ePlayerData[data].AddCustomFeature(sGroup, sBuffer);
+		g_ePlayerData[data].SaveStorage(sGroup, sBuffer);
 	}
 
 	g_ePlayerData[data].RebuildFeatureList();
@@ -289,4 +294,9 @@ void SQL_CallbackAddPlayerGroup(Database hOwner, DBResultSet hResult, const char
 	}
 
 	return;
+}
+
+void GetServerIDSelector(char[] sBuffer, int iMaxLen)
+{
+	FormatEx(sBuffer, iMaxLen, "(`sid` = %i OR `sid` = 0)", g_eServerData.ServerID);
 }

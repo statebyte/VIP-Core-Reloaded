@@ -55,6 +55,7 @@ API:
 [N] Native VIP_GetClientGroupName
 [N] Native VIP_GetClientGroupExpire
 [N] Native VIP_GetClientGroupCount
+[N] Native VIP_SaveToStorage
 [N-] Native VIP_GetGroupIDByName
 [N-] Native VIP_NewGroup
 [N-] Native VIP_AddFeatureSettingToGroup
