@@ -9,7 +9,15 @@ void RegCmds()
 
 Action cmd_OpenVipMenu(int iClient, int iArgs)
 {
-	if(g_ePlayerData[iClient].bVIP)
+	if(g_ePlayerData[iClient].Status == Status_Loading)
+	{
+		PrintToChat(iClient, "[VIP] Ваши данные загружаются...");
+	}
+	if(g_ePlayerData[iClient].Status == Status_Error)
+	{
+		PrintToChat(iClient, "[VIP] Ошибка получения данных из БД");
+	}
+	else if(g_ePlayerData[iClient].bVIP)
 	{
 		g_hMainMenu.Display(iClient, MENU_TIME_FOREVER);
 	}

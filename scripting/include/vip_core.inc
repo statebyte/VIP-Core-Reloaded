@@ -5,6 +5,15 @@
 
 #define VIP_INTERFACE_VERSION			400
 
+// Тип базы данных...
+enum VIP_DatabaseUsage
+{
+	DB_None = 0,
+	DB_SQLite,
+	DB_MySQL,
+	DB_Postgre // TODO
+}
+
 /* Типы данных VIP-функций */
 enum VIP_ValueType
 {
@@ -251,6 +260,18 @@ native bool VIP_IsClientVIP(int iClient);
 native Database VIP_GetDatabase();
 
 /**
+ *	Отправляет игроку VIP-меню.
+ *
+ * @param iClient			Индекс игрока.
+ * @param bSelection		Режим открытия:
+ * 							true - на первой странице;
+ * 							false - на странице последнего выбранного пункта.
+ *
+ * @noreturn
+*/
+native void VIP_SendClientVIPMenu(int iClient, bool bSelection = false);
+
+/**
  *	Вызывается когда VIP-плагин загрузился.
  *
  * @noparams
@@ -287,6 +308,31 @@ forward void VIP_OnAddGroup(int iClient, char[] szGroup);
 forward void VIP_OnRemoveGroup(int iClient, char[] szGroup);
 
 /**
+ *	Вызывается когда игрок возрождается.
+ *
+ * @param iClient			Индекс игрока.
+ * @param iTeam				Команда игрока (2 - Т, 3- КТ).
+ * @param bIsVIP			Имеет ли игрок VIP-статус.
+ *
+ * @noreturn
+*/
+forward void VIP_OnPlayerSpawn(int iClient, int iTeam, bool bIsVIP);
+
+/**
+ *	Формирует путь к файлу с настройками модуля.
+ *
+ * @param szBuffer			Буфер, в который будет помещен результат.
+ * @param iMaxLength		Размер буфера.
+ * @param szFileName		Имя файла.
+ *
+ * @noreturn
+*/
+stock void VIP_BuildModulesPath(char[] szBuffer, int iMaxLen, const char[] szFileName)
+{
+	BuildPath(Path_SM, szBuffer, iMaxLen, "data/vip/modules/%s", szFileName);
+}
+
+/**
  * Проверяет что VIP ядро доступно без ThrowNativeError
  * 
  * @return     Return description
@@ -320,7 +366,12 @@ public void __pl_vip_core_SetNTVOptional()
 	MarkNativeAsOptional("VIP_GetClientVIPGroup");
 	MarkNativeAsOptional("VIP_GetClientGroupName");
 	MarkNativeAsOptional("VIP_GetClientGroupCount");
+	
 	MarkNativeAsOptional("VIP_IsClientVIP");
+
+	MarkNativeAsOptional("VIP_GetDatabase");
+
+	MarkNativeAsOptional("VIP_SendClientVIPMenu");
 	
 }
 #endif

@@ -5,6 +5,7 @@ static Handle g_hGlobalForward_OnVIPLoaded;
 static Handle g_hGlobalForward_OnRebuildFeatureList;
 static Handle g_hGlobalForward_OnAddGroup;
 static Handle g_hGlobalForward_OnRemoveGroup;
+static Handle g_hGlobalForward_OnPlayerSpawn;
 
 void API_SetupForwards()
 {
@@ -12,11 +13,23 @@ void API_SetupForwards()
 	g_hGlobalForward_OnRebuildFeatureList			= CreateGlobalForward("VIP_OnRebuildFeatureList", ET_Ignore, Param_Cell);
 	g_hGlobalForward_OnAddGroup						= CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_Cell, Param_String);
 	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnPlayerSpawn", ET_Ignore, Param_Cell, Param_String);
 }
 
 void CallForward_OnVIPLoaded()
 {
 	g_eServerData.CoreIsReady = true;
+
+	PrintToServer("------------------- VIP Core ---------------------");
+	PrintToServer("VIP Core is ready to working!");
+	PrintToServer(" ");
+	PrintToServer("Groups: %i", g_hGroups.Length);
+	PrintToServer("Database: %s", g_eServerData.DB_Type == DB_None ? "No" : "Yes");
+	PrintToServer(" ");
+	PrintToServer("Authors: " ... PL_AUTHOR);
+	PrintToServer("Version: " ... PL_VERSION);
+	PrintToServer("------------------- VIP Core ---------------------");
+
 	Call_StartForward(g_hGlobalForward_OnVIPLoaded);
 	Call_Finish();
 }
@@ -25,6 +38,17 @@ void CallForward_OnRebuildFeatureList(int iClient)
 {
 	Call_StartForward(g_hGlobalForward_OnRebuildFeatureList);
 	Call_PushCell(iClient);
+	Call_Finish();
+}
+
+void CallForward_OnPlayerSpawn(int iClient)
+{
+	int iTeam = GetClientTeam(iClient);
+
+	Call_StartForward(g_hGlobalForward_OnPlayerSpawn);
+	Call_PushCell(iClient);
+	Call_PushCell(iTeam);
+	Call_PushCell(g_ePlayerData[iClient].bVIP);
 	Call_Finish();
 }
 
@@ -77,11 +101,17 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(RemoveClientGroup);
 
 	RegNative(GetDatabase);
+	RegNative(GetDatabaseType);
 	
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+public int Native_GetDatabaseType(Handle hPlugin, int iNumParams)
+{
+	return view_as<int>(g_eServerData.DB_Type);
 }
 
 public int Native_GetDatabase(Handle hPlugin, int iNumParams)

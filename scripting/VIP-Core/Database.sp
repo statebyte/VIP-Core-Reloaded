@@ -114,7 +114,7 @@ void DB_CreateTables()
 					CONSTRAINT `vip_users_ibfk_3` FOREIGN KEY (`account_id`) REFERENCES `"...TABLE_USERS..."` (`account_id`) \
 					) DEFAULT CHARSET=" ... CHARSET ... ";");
 
-	g_eServerData.DB.Execute(hTxn, SQL_Callback_TableCreate, SQL_TxnCallback_Failure, 150);
+	g_eServerData.DB.Execute(hTxn, SQL_Callback_TableCreate, SQL_TxnCallback_Failure, -1);
 }
 
 
@@ -130,9 +130,17 @@ public void SQL_Callback_TableCreate(Database hDatabase, any Data, int iNumQueri
 
 public void SQL_TxnCallback_Failure(Database hDatabase, any Data, int iNumQueries, const char[] szError, int iFailIndex, any[] QueryData)
 {
-	char sBuffer[256];
-	FormatEx(sBuffer, sizeof(sBuffer), "SQL_TxnCallback_Failure [%i]", iFailIndex);
-	Check_DatabaseConnection(sBuffer, szError, true);
+	if(Data == -1)
+	{
+		char sBuffer[256];
+		FormatEx(sBuffer, sizeof(sBuffer), "SQL_TxnCallback_Failure [%i]", iFailIndex);
+		Check_DatabaseConnection(sBuffer, szError, true);
+	}
+	else
+	{
+		g_ePlayerData[Data].Status = Status_Error;
+	}
+	
 
 	// if(iNumQueries != 0)
 	// {
@@ -143,7 +151,7 @@ public void SQL_TxnCallback_Failure(Database hDatabase, any Data, int iNumQuerie
 void DB_UpdatePlayerData(int iClient)
 {
 	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_USERS..."` (`account_id`,`name`,`sid`,`lastvisit`) VALUES (%i,'%N',%i,%i) ON DUPLICATE KEY UPDATE `lastvisit` = %i;", g_ePlayerData[iClient].AccountID, iClient, g_eServerData.ServerID, GetTime(), GetTime());
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_USERS..."` (`account_id`,`name`,`sid`,`lastvisit`) VALUES (%i,'%N',%i,%i) ON DUPLICATE KEY UPDATE `lastvisit` = VALUES(`lastvisit`);", g_ePlayerData[iClient].AccountID, iClient, g_eServerData.ServerID, GetTime());
 	PrintToServer(sQuery);
 
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery);
@@ -152,7 +160,16 @@ void DB_UpdatePlayerData(int iClient)
 void DB_AddCustomFeature(int iClient, char[] sKey, char[] sValue, int iTarget = 0)
 {
 	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_FEATURES..."` (`account_id`,`sid`,`key`,`value`,`update`) VALUES (%i, %i,'%s','%s',%i) ON DUPLICATE KEY UPDATE `value` = '%s' AND `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_FEATURES..."` (`account_id`,`sid`,`key`,`value`,`updated`) VALUES (%i, %i,'%s','%s',%i) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), `updated` = VALUES(`updated`);", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime());
+	PrintToServer(sQuery);
+
+	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery, iTarget);
+}
+
+void DB_RemoveCustomFeature(int iClient, char[] sKey, int iTarget = 0)
+{
+	char sQuery[1024];
+	FormatEx(sQuery, sizeof(sQuery), "DELETE FROM `"...TABLE_FEATURES..."` WHERE `account_id` = %i AND `sid` = %i AND `key` = '%s';", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey);
 	PrintToServer(sQuery);
 
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery, iTarget);
@@ -160,7 +177,11 @@ void DB_AddCustomFeature(int iClient, char[] sKey, char[] sValue, int iTarget = 
 
 void DB_LoadPlayerData(int iClient)
 {
-	if(g_eServerData.DB_Type == DB_None) return;
+	if(g_eServerData.DB_Type == DB_None) 
+	{
+		g_ePlayerData[iClient].Status = Status_Loaded;
+		return;
+	}
 
 	g_ePlayerData[iClient].ClearData();
 

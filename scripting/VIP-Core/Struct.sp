@@ -12,13 +12,6 @@ enum ChatHookType
 	ChatHook_SearchPlayer
 }
 
-enum DatabaseUsage
-{
-	DB_None = 0,
-	DB_SQLite,
-	DB_MySQL,
-	DB_Postgre // TODO
-}
 
 enum struct Times
 {
@@ -33,8 +26,10 @@ enum struct ServerData
 
 	EngineVersion Engine;
 
-	DatabaseUsage DB_Type;
+	VIP_DatabaseUsage DB_Type;
 	Database DB;
+
+	float SpawnDelay;
 
 	char GroupsConfigPath[PLATFORM_MAX_PATH];
 
@@ -53,7 +48,7 @@ enum struct PlayerFeature
 	char Value[D_VALUE_SIZE];
 
 	int CurrentPriority;
-	bool bEnabled;
+	bool bEnabled; // Для нормального Feature Manager
 }
 
 enum struct PlayerStorage
