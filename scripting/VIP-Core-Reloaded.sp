@@ -58,6 +58,7 @@ public void OnPluginStart()
 	HookEvents();
 	LoadAdminMenu();
 	LoadMainMenu();
+	LoadTypingPanel();
 	RegCmds();
 
 	LoadTest();

@@ -9,7 +9,15 @@ void RegCmds()
 
 Action cmd_OpenVipMenu(int iClient, int iArgs)
 {
-	g_hMainMenu.Display(iClient, MENU_TIME_FOREVER);
+	if(g_ePlayerData[iClient].bVIP)
+	{
+		g_hMainMenu.Display(iClient, MENU_TIME_FOREVER);
+	}
+	else
+	{
+		PrintToChat(iClient, "[VIP] У вас нет привилегий...");
+	}
+
 	return Plugin_Handled;
 }
 

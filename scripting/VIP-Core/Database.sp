@@ -34,6 +34,8 @@ bool Check_DatabaseConnection(char[] sFunction, const char[] sError, bool bFailS
 	return false;
 }
 
+
+
 void OnConnect(Database db, const char[] error, any data)
 {
 	LogMessage(error);
@@ -51,7 +53,7 @@ void OnConnect(Database db, const char[] error, any data)
 		g_eServerData.DB_Type = DB_MySQL;
 	}
 
-	if(!strcmp(sDriverName, "sqlite"))
+	if(!strcmp(sDriverName, "SQLite"))
 	{
 		g_eServerData.DB_Type = DB_SQLite;
 	}
@@ -64,6 +66,12 @@ void OnConnect(Database db, const char[] error, any data)
 void DB_CreateTables()
 {
 	// TODO Transaction
+
+	if(g_eServerData.CoreIsReady)
+	{
+		LoadPlayersData();
+		return;
+	}
 
 	Transaction hTxn = new Transaction();
 	
@@ -79,6 +87,7 @@ void DB_CreateTables()
 					`account_id` INT NOT NULL, \
 					`sid` INT UNSIGNED NOT NULL, \
 					`group` VARCHAR(64) NOT NULL, \
+					`added` INT UNSIGNED NOT NULL default 0, \
 					`expires` INT UNSIGNED NOT NULL default 0, \
 					CONSTRAINT pk_GroupID PRIMARY KEY (`account_id`, `sid`, `group`), \
 					CONSTRAINT `vip_users_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `"...TABLE_USERS..."` (`account_id`) \
@@ -89,7 +98,7 @@ void DB_CreateTables()
 					`sid` INT UNSIGNED NOT NULL, \
 					`key` VARCHAR(64) NOT NULL, \
 					`value` VARCHAR(64) NOT NULL, \
-					`updated` VARCHAR(64) NOT NULL, \
+					`updated` VARCHAR(64) NOT NULL default 0, \
 					CONSTRAINT pk_StorageID PRIMARY KEY (`account_id`, `sid`, `key`), \
 					CONSTRAINT `vip_users_ibfk_2` FOREIGN KEY (`account_id`) REFERENCES `"...TABLE_USERS..."` (`account_id`) \
 					) DEFAULT CHARSET=" ... CHARSET ... ";");
@@ -99,7 +108,8 @@ void DB_CreateTables()
 					`sid` INT UNSIGNED NOT NULL, \
 					`key` VARCHAR(64) NOT NULL, \
 					`value` VARCHAR(64) NOT NULL, \
-					`updated` VARCHAR(64) NOT NULL, \
+					`priority` VARCHAR(64) NOT NULL default 0, \
+					`updated` VARCHAR(64) NOT NULL default 0, \
 					CONSTRAINT pk_FeatureID PRIMARY KEY (`account_id`, `sid`, `key`), \
 					CONSTRAINT `vip_users_ibfk_3` FOREIGN KEY (`account_id`) REFERENCES `"...TABLE_USERS..."` (`account_id`) \
 					) DEFAULT CHARSET=" ... CHARSET ... ";");
@@ -141,12 +151,18 @@ void DB_UpdatePlayerData(int iClient)
 
 void DB_AddCustomFeature(int iClient, char[] sKey, char[] sValue, int iTarget = 0)
 {
-	
+	char sQuery[1024];
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_FEATURES..."` (`account_id`,`sid`,`key`,`value`,`update`) VALUES (%i, %i,'%s','%s',%i) ON DUPLICATE KEY UPDATE `value` = '%s' AND `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
+	PrintToServer(sQuery);
+
+	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery, iTarget);
 }
 
 void DB_LoadPlayerData(int iClient)
 {
 	if(g_eServerData.DB_Type == DB_None) return;
+
+	g_ePlayerData[iClient].ClearData();
 
 	g_ePlayerData[iClient].Status = Status_Loading;
 
@@ -178,7 +194,7 @@ void DB_AddPlayerGroup(int iClient, char[] sGroup, int iExpire, int iTarget = 0)
 	// 	}
 	// }
 	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_GROUPS ... "` SET `account_id` = %i, `sid` = %i, `group` = '%s', `expires` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sGroup, iExpire);
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_GROUPS ... "` (`account_id`, `sid`, `group`, `added`, `expires`) VALUES (%i, %i, '%s', %i, %i) ON DUPLICATE KEY UPDATE `expires` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sGroup, GetTime(), iExpire, iExpire);
 	PrintToServer(sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);

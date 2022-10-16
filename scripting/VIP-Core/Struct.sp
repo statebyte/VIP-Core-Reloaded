@@ -56,6 +56,12 @@ enum struct PlayerFeature
 	bool bEnabled;
 }
 
+enum struct PlayerStorage
+{
+	char Key[D_KEY_SIZE];
+	char Value[D_VALUE_SIZE];
+}
+
 enum struct GroupInfo
 {
 	char Name[D_GROUPNAME_LENGTH];
@@ -339,6 +345,39 @@ enum struct PlayerData
 		}
 	}
 
+	bool SaveStorage(char[] sKey, char[] sValue)
+	{
+		PlayerStorage hStorage;
+		strcopy(hStorage.Key, sizeof(hStorage.Key), sKey);
+		strcopy(hStorage.Value, sizeof(hStorage.Value), sValue);
+
+		int iIndex = this.GetStorageIDByName(sKey);
+
+		if(iIndex == -1)
+		{
+			this.hStorage.PushArray(hStorage, sizeof(hStorage));
+		}
+		else
+		{
+			this.hStorage.SetArray(iIndex, hStorage, sizeof(hStorage));
+		}
+
+		return true;
+	}
+
+	int GetStorageIDByName(char[] sKey)
+	{
+		int iLen = this.hStorage.Length;
+		for(int i = 0; i < iLen; i++)
+		{
+			PlayerStorage hStorage;
+			this.hStorage.GetArray(i, hStorage, sizeof(hStorage));
+			if(!strcmp(hStorage.Key, sKey)) return i;
+		}
+
+		return -1;
+	}
+
 	int GetFeatureIDByName(char[] sKey)
 	{
 		int iLen = this.hFeatures.Length;
@@ -352,9 +391,7 @@ enum struct PlayerData
 		return -1;
 	}
 
-
-
-	bool DelFeature(char[] sKey)
+	bool RemoveFeature(char[] sKey)
 	{
 		int iIndex = this.GetFeatureIDByName(sKey);
 
@@ -383,16 +420,22 @@ enum struct PlayerData
 		{
 			this.hCustomFeatures.PushArray(hFeature, sizeof(hFeature));
 		}
+
+		this.RebuildFeatureList();
+
 		return true;
 	}
 
-	bool DelCustomFeature(char[] sKey)
+	bool RemoveCustomFeature(char[] sKey)
 	{
 		int iIndex = this.GetCustomFeatureIDByKey(sKey);
 
 		if(iIndex != -1)
 		{
 			this.hCustomFeatures.Erase(iIndex);
+
+			this.RebuildFeatureList();
+
 			return true;
 		}
 
@@ -406,6 +449,8 @@ enum struct PlayerData
 		for(int i = 0; i < iLen; i++)
 		{
 			PlayerFeature hFeature;
+			this.hCustomFeatures.GetArray(i, hFeature, sizeof(hFeature));
+
 			if(!strcmp(hFeature.Key, sKey)) return i;
 		}
 
@@ -489,7 +534,7 @@ enum struct PlayerData
 		this.hGroups = new ArrayList(sizeof(PlayerGroup));
 		this.hFeatures = new ArrayList(sizeof(PlayerFeature));
 		this.hCustomFeatures = new ArrayList(sizeof(PlayerFeature));
-		this.hStorage = new ArrayList();
+		this.hStorage = new ArrayList(sizeof(PlayerStorage));
 	}
 
 	void SetID()
@@ -543,6 +588,7 @@ void LoadStructModule()
 
 void InitServerData()
 {
+	// FUCKING SM 1.10
 	char sPath[PLATFORM_MAX_PATH];
 
 	BuildPath(Path_SM, sPath, sizeof(sPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_GROUPS_FILENAME);

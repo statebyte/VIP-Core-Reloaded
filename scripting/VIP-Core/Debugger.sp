@@ -35,6 +35,10 @@ void addTestTimes()
 	hTime.Time = 0;
 	g_hTimes.PushArray(hTime, sizeof(hTime));
 
+	hTime.Phrase = "15 SECS";
+	hTime.Time = 15;
+	g_hTimes.PushArray(hTime, sizeof(hTime));
+
 	hTime.Phrase = "1_HOUR";
 	hTime.Time = 3600;
 	g_hTimes.PushArray(hTime, sizeof(hTime));

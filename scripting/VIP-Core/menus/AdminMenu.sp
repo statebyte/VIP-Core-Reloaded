@@ -10,7 +10,21 @@ void LoadAdminMenu()
 	g_hAdminMainMenu.AddItem("reload_modules", "Перезагрузить список модулей [TODO]", ITEMDRAW_DISABLED);
 	g_hAdminMainMenu.AddItem("reload_players", "Перезагрузить данные игроков");
 	g_hAdminMainMenu.AddItem("reload_config", "Перезагрузить настройки VIP");
-	
+}
+
+void LoadTypingPanel()
+{
+	g_hTypingPanel = new Menu(TypingPanelHandler);
+
+	g_hTypingPanel.SetTitle("[VIP] Настройка $FEATURE\n \n");
+
+	g_hTypingPanel.AddItem("search", "Вы ввели: $VALUE", ITEMDRAW_DISABLED);
+}
+
+int TypingPanelHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
+{
+
+	return 0;
 }
 
 int AdminMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
@@ -229,7 +243,7 @@ void OnDelete(int iClient, char[] sAns)
 	if(!strcmp(sAns, "yes"))
 	{
 		g_ePlayerData[iTarget].RemoveGroup(hGroup.Name);
-		
+
 		DB_RemovePlayerGroup(iTarget, hGroup.Name, iClient);
 	}
 
@@ -370,21 +384,26 @@ int AdminPlayerFeaturesInfoMenuHandler(Menu hMenu, MenuAction action, int iClien
 		}
 		case MenuAction_Select:
 		{
-			char sInfo[32];
+			char sInfo[D_FEATURENAME_LENGTH];
 			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
 			if(!strcmp(sInfo, "__save"))
 			{
+				//g_ePlayerData[iClient].HookChat = ChatHook_CustomFeature;
 				PrintToServer("...");
-				OpenPlayerFeaturesInfoMenu(iClient);
+				//OpenPlayerFeaturesInfoMenu(iClient);
 				return 0;
 			}
 
 			//strcopy(g_ePlayerData[iClient].CurrentFeature, sizeof(g_ePlayerData[iClient].CurrentFeature))
 
 			//ConfirmMenu(iClient, "");
+			//strcopy(g_ePlayerData[iClient].CurrentFeature, sizeof(g_ePlayerData[iClient].CurrentFeature), sInfo);
+			g_ePlayerData[iClient].CurrentFeature = sInfo;
+			g_ePlayerData[iClient].HookChat = ChatHook_CustomFeature;
+			g_hTypingPanel.Display(iClient, MENU_TIME_FOREVER);
 			
-			OpenPlayerFeaturesInfoMenu(iClient);
+			//OpenPlayerFeaturesInfoMenu(iClient);
 		}
 	}
 	return 0;

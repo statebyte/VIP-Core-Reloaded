@@ -10,13 +10,35 @@ void HookEvents()
 
 Action TimerChecker(Handle hTimer, any data)
 {
-	
+	PlayerGroup hGroup;
+	int iLen = 0;
+
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(g_ePlayerData[i].HookChat == ChatHook_CustomFeature)
+		{
+			g_hTypingPanel.Display(i, MENU_TIME_FOREVER);
+		}
+
+		iLen = g_ePlayerData[i].hGroups.Length;
+
+		for(int j = 0; j < iLen; j++)
+		{
+			g_ePlayerData[i].hGroups.GetArray(j, hGroup, sizeof(hGroup));
+
+			if(hGroup.ExpireTime != 0 && hGroup.ExpireTime < GetTime())
+			{
+				g_ePlayerData[i].RemoveGroup(hGroup.Name);
+				// TODO - Notify Player
+			}
+		}
+	}
 	return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int iClient)
 {
-	if(!IsClientInGame(iClient) || IsFakeClient(iClient)) return;
+	if(!IsClientInGame(iClient) || IsFakeClient(iClient) || IsClientSourceTV(iClient)) return;
 
 	g_ePlayerData[iClient].ClearData();
 	g_ePlayerData[iClient].SetID();
@@ -26,22 +48,39 @@ public void OnClientPutInServer(int iClient)
 
 public void OnClientDisconnect(int iClient)
 {
-	if(IsFakeClient(iClient)) return;
+	if(IsFakeClient(iClient) || IsClientSourceTV(iClient)) return;
 
 	g_ePlayerData[iClient].UpdateData();
 }
 
 Action ChatEvent(int iClient, char[] sCommand, int iArgc)
 {
+	char sValue[D_FEATUREVALUE_LENGTH];
 	if(g_ePlayerData[iClient].HookChat > ChatHook_None)
 	{
+		GetCmdArgString(sValue, sizeof(sValue));
+		ReplaceString(sValue, sizeof(sValue), "\"", "");
+		TrimString(sValue);
+
 		if(g_ePlayerData[iClient].HookChat == ChatHook_CustomFeature)
 		{
+			PrintToChatAll("ChatEvent: %s", sValue);
+			g_ePlayerData[iClient].HookChat = ChatHook_None;
 			int iTarget = g_ePlayerData[iClient].CurrentTarget;
-			g_ePlayerData[iTarget].AddCustomFeature(g_ePlayerData[iClient].CurrentFeature, sCommand);
-			
-			//DB_AddCustomFeature(iTarget, );
+
+			if(!strcmp(sValue, "clear"))
+			{
+				g_ePlayerData[iTarget].RemoveCustomFeature(g_ePlayerData[iClient].CurrentFeature);
+				
+				OpenPlayerFeaturesInfoMenu(iClient);
+				return Plugin_Handled;
+			}
+
+			g_ePlayerData[iTarget].AddCustomFeature(g_ePlayerData[iClient].CurrentFeature, sValue);
+			DB_AddCustomFeature(iTarget, g_ePlayerData[iClient].CurrentFeature, sValue, iClient);
+
 			OpenPlayerFeaturesInfoMenu(iClient);
+			return Plugin_Handled;
 		}
 
 		g_ePlayerData[iClient].HookChat = ChatHook_None;
