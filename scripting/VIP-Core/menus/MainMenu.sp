@@ -48,8 +48,14 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				//PrintToServer("MenuAction_Select %x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				if(hFeature.Type == TOGGLABLE)
 				{
-					if(g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key)) g_ePlayerData[iClient].DisableFeature(hFeature.Key);
-					else g_ePlayerData[iClient].EnableFeature(hFeature.Key);
+					g_ePlayerData[iClient].ToggleFeatureStatus(hFeature.Key);
+
+					char sBuf[4];
+					IntToString(view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key)), sBuf, sizeof(sBuf));
+					DB_SaveStorage(iClient, hFeature.Key, sBuf);
+
+					//if(g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key)) g_ePlayerData[iClient].DisableFeature(hFeature.Key);
+					//else g_ePlayerData[iClient].EnableFeature(hFeature.Key);
 
 					g_hMainMenu.DisplayAt(iClient, hMenu.Selection, MENU_TIME_FOREVER);
 				}
@@ -132,7 +138,7 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				}
 				else if(hFeature.Type == TOGGLABLE)
 				{
-					FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key) ? "ENABLED" : "DISABLED", iClient);
+					FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key) ? "ENABLED" : "DISABLED", iClient);
 				}
 
 				if(TranslationPhraseExists(hFeature.Key))

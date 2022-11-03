@@ -363,6 +363,30 @@ enum struct PlayerData
 		return true;
 	}
 
+	void ToggleFeatureStatus(char[] sKey)
+	{
+		bool bState = this.GetFeatureToggleStatus(sKey);
+
+		char sBuf[4];
+		IntToString(view_as<int>(!bState), sBuf, sizeof(sBuf));
+		this.SaveStorage(sKey, sBuf);
+	}
+
+	bool GetFeatureToggleStatus(char[] sKey)
+	{
+		int iIndex = this.GetStorageIDByName(sKey);
+
+		if(iIndex != -1)
+		{
+			PlayerStorage hStorage;
+			this.hStorage.GetArray(iIndex, hStorage, sizeof(hStorage));
+			return view_as<bool>(StringToInt(hStorage.Value));
+		}
+
+		// По умолчанию функция выкл или вкл?
+		return false;
+	}
+
 	int GetStorageIDByName(char[] sKey)
 	{
 		int iLen = this.hStorage.Length;

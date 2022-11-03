@@ -41,27 +41,44 @@ bool Check_DatabaseConnection(char[] sFunction, const char[] sError, bool bFailS
 
 void OnConnect(Database db, const char[] error, any data)
 {
-	LogMessage(error);
+	if(error[0])
+	{
+		//LogError("DB Error: %s", error);
+		SetFailState("DB Error: %s", error);
+		return;
+	}
 
 	g_eServerData.DB = db;
 	DBDriver driver = SQL_ReadDriver(db);
 
 	char sDriverName[64];
-	driver.GetProduct(sDriverName, sizeof(sDriverName));
+	//driver.GetProduct(sDriverName, sizeof(sDriverName));
+	driver.GetIdentifier(sDriverName, sizeof(sDriverName));
+
+	if(error[0])
+	{
+		LogError("Driver: %s Error: %s", sDriverName, error);
+		//SetFailState();
+		return;
+	}
 
 	PrintToServer(sDriverName);
 
-	if(!strcmp(sDriverName, "MySQL"))
+	if(!strcmp(sDriverName, "mysql"))
 	{
 		g_eServerData.DB_Type = DB_MySQL;
 	}
 
-	if(!strcmp(sDriverName, "SQLite"))
+	if(!strcmp(sDriverName, "sqlite"))
 	{
 		g_eServerData.DB_Type = DB_SQLite;
 	}
 
-	// TODO - PostgreSQL
+	if(!strcmp(sDriverName, "pgsql"))
+	{
+		// TODO - PostgreSQL
+		g_eServerData.DB_Type = DB_Postgre;
+	}
 
 	DB_CreateTables();
 }
@@ -224,6 +241,15 @@ void DB_AddPlayerGroup(int iClient, char[] sGroup, int iExpire, int iTarget = 0)
 	PrintToServer(sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
+}
+
+void DB_SaveStorage(int iClient, char[] sKey, char[] sValue)
+{
+	char sQuery[1024];
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', %i, %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
+	PrintToServer(sQuery);
+	
+	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery);
 }
 
 void DB_RemovePlayerGroup(int iClient, char[] sGroup, int iTarget = 0)
