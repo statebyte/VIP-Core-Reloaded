@@ -103,11 +103,143 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetDatabase);
 	RegNative(GetDatabaseType);
 	RegNative(SendClientVIPMenu);
+
+	RegNative(IsValidFeature);
+	RegNative(GetFeatureType);
+	RegNative(GetFeatureValueType);
+	RegNative(GetClientFeatureStatus);
+
+	RegNative(IsClientFeatureUse);
+	RegNative(GetClientFeatureInt);
 	
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	return g_ePlayerData[iClient].GetFeatureIDByName(sFeature) != -1 ? true : false;
+}
+
+public int Native_GetClientFeatureInt(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
+
+	if(iIndex != -1)
+	{
+		PlayerFeature hFeature;
+		g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
+
+		return StringToInt(hFeature.Value);
+	}
+
+	return 0;
+}
+
+public int Native_GetClientFeatureFloat(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
+
+	if(iIndex != -1)
+	{
+		PlayerFeature hFeature;
+		g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
+
+		return StringToInt(hFeature.Value);
+	}
+
+	return 0;
+}
+
+public int Native_GetClientFeatureStatus(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	return view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(sFeature));
+}
+
+public int Native_IsValidFeature(Handle hPlugin, int iNumParams)
+{
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(1, sFeature, sizeof(sFeature));
+
+	return IsFeatureExists(sFeature);
+}
+
+public int Native_GetFeatureType(Handle hPlugin, int iNumParams)
+{
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(1, sFeature, sizeof(sFeature));
+
+	int iIndex = GetFeatureIDByKey(sFeature);
+
+	if(iIndex == -1)
+	{
+		return ThrowNativeError(1, "Error index");
+	}
+
+	Feature hFreature;
+	g_hFeatures.GetArray(iIndex, hFreature, sizeof(hFreature));
+
+	return view_as<int>(hFreature.Type);
+}
+
+public int Native_GetFeatureValueType(Handle hPlugin, int iNumParams)
+{
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(1, sFeature, sizeof(sFeature));
+
+	int iIndex = GetFeatureIDByKey(sFeature);
+
+	if(iIndex == -1)
+	{
+		return ThrowNativeError(1, "Error index");
+	}
+
+	Feature hFreature;
+	g_hFeatures.GetArray(iIndex, hFreature, sizeof(hFreature));
+
+	return view_as<int>(hFreature.ValType);
 }
 
 public int Native_SendClientVIPMenu(Handle hPlugin, int iNumParams)

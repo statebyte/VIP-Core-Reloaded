@@ -27,7 +27,9 @@ void Event_PlayerSpawn(Event hEvent, char[] sName, bool bBroadcast)
 
 Action OnPlayerSpawn(Handle hTimer, any data)
 {
-	CallForward_OnPlayerSpawn(data);
+	if(IsClientInGame(data) && IsPlayerAlive(data))
+		CallForward_OnPlayerSpawn(data);
+		
 	return Plugin_Handled;
 }
 

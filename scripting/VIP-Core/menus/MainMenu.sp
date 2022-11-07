@@ -138,17 +138,17 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				}
 				else if(hFeature.Type == TOGGLABLE)
 				{
-					FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key) ? "ENABLED" : "DISABLED", iClient);
+					FormatEx(sBuf, sizeof(sBuf), "[%T]", g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key) == ENABLED ? "ENABLED" : "DISABLED", iClient);
 				}
 
 				if(TranslationPhraseExists(hFeature.Key))
 				{
-					PrintToChat(iClient, "TranslationPhraseExists true");
+					//PrintToChat(iClient, "TranslationPhraseExists true");
 					FormatEx(szDisplay, sizeof(szDisplay), "%T %s", hFeature.Key, iClient, sBuf);
 				}
 				else
 				{
-					PrintToChat(iClient, "TranslationPhraseExists false");
+					//PrintToChat(iClient, "TranslationPhraseExists false");
 					FormatEx(szDisplay, sizeof(szDisplay), "%s %s", hFeature.Key, sBuf);
 				}
 

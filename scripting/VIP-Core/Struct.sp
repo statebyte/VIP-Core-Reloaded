@@ -12,7 +12,6 @@ enum ChatHookType
 	ChatHook_SearchPlayer
 }
 
-
 enum struct Times
 {
 	char Phrase[64];
@@ -365,26 +364,35 @@ enum struct PlayerData
 
 	void ToggleFeatureStatus(char[] sKey)
 	{
-		bool bState = this.GetFeatureToggleStatus(sKey);
+		VIP_ToggleState State = this.GetFeatureToggleStatus(sKey);
+
+		if(State == NO_ACCESS) return;
 
 		char sBuf[4];
-		IntToString(view_as<int>(!bState), sBuf, sizeof(sBuf));
+		IntToString(State == ENABLED ? 0 : 1, sBuf, sizeof(sBuf));
 		this.SaveStorage(sKey, sBuf);
 	}
 
-	bool GetFeatureToggleStatus(char[] sKey)
+	VIP_ToggleState GetFeatureToggleStatus(char[] sKey)
 	{
-		int iIndex = this.GetStorageIDByName(sKey);
+		int iIndex = this.GetFeatureIDByName(sKey);
+
+		if(iIndex == -1)
+		{
+			return NO_ACCESS;
+		}
+
+		iIndex = this.GetStorageIDByName(sKey);
 
 		if(iIndex != -1)
 		{
 			PlayerStorage hStorage;
 			this.hStorage.GetArray(iIndex, hStorage, sizeof(hStorage));
-			return view_as<bool>(StringToInt(hStorage.Value));
+			return view_as<VIP_ToggleState>(StringToInt(hStorage.Value));
 		}
 
 		// По умолчанию функция выкл или вкл?
-		return false;
+		return DISABLED;
 	}
 
 	int GetStorageIDByName(char[] sKey)
@@ -546,7 +554,7 @@ enum struct PlayerData
 
 			// Приоритет группы по ее сортировке в groups.ini
 			int iGroupID = GetGroupIDByName(hGroup.Name);
-			this.AddFeature(hPFeature.Key, hPFeature.Value, iDeep == 0 ? 0 : iGroupID);
+			this.AddFeature(hPFeature.Key, hPFeature.Value, iIndex == 0 ? -1 : iGroupID);
 		}
 	}
 
@@ -641,15 +649,7 @@ int GetGroupIDByName(char[] sKey)
 
 bool IsFeatureExists(char[] sKey)
 {
-	int iLen = g_hFeatures.Length;
-	for(int i = 0; i < iLen; i++)
-	{
-		Feature hFeature;
-		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
-
-		if(!strcmp(hFeature.Key, sKey)) return true;
-	}
-	return false;
+	return GetFeatureIDByKey(sKey) != -1 ? true : false;
 }
 
 int GetFeatureIDByKey(char[] sKey)
