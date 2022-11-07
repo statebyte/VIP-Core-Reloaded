@@ -540,7 +540,7 @@ enum struct PlayerData
 					sBuffer[j] = '>';
 				}
 				sBuffer[iDeep+1] = '\0';
-				PrintToServer("Extend: %s %s", sBuffer, sName);
+				DebugMsg(DBG_INFO, "Extend: %s %s", sBuffer, sName);
 				iDeep++;
 				this.AddFeatureByGroupID(iID, iDeep);
 			}
@@ -554,7 +554,7 @@ enum struct PlayerData
 
 			// Приоритет группы по ее сортировке в groups.ini
 			int iGroupID = GetGroupIDByName(hGroup.Name);
-			this.AddFeature(hPFeature.Key, hPFeature.Value, iIndex == 0 ? -1 : iGroupID);
+			this.AddFeature(hPFeature.Key, hPFeature.Value, iGroupID);
 		}
 	}
 
@@ -632,6 +632,8 @@ void InitServerData()
 
 	BuildPath(Path_SM, sPath, sizeof(sPath), "logs/%s", LOGS_DUMP_FILENAME);
 	g_eServerData.DumpLogsPath = sPath;
+
+	g_eServerData.Engine = GetEngineVersion();
 }
 
 int GetGroupIDByName(char[] sKey)

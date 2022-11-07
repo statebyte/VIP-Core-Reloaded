@@ -15,7 +15,7 @@ enum DBG_Level
 	DBG_WARNING,
 	DBG_INFO
 }
-DBG_Level g_iDBGLevel = DBG_None;
+DBG_Level g_iDBGLevel = DBG_INFO;
 
 void DebugMsg(DBG_Level iLevel, const char[] sMsg, any ...)
 {

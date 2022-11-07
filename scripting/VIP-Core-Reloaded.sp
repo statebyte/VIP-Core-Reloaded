@@ -38,8 +38,6 @@
 
 #include "VIP-Core/Debugger.sp"
 
-
-
 public Plugin myinfo =
 {
 	name = "VIP-Core-Reloaded",

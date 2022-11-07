@@ -48,11 +48,55 @@ bool LoadGroupsConfig()
 		return false;
 	}
 
+	CheckRecursiveErrors();
+
 	RebuildFeatureList();
 
 	PrintToServer("%i", g_iCurrentLine);
 
 	return true;
+}
+
+// Проверка на рекурсию групп
+void CheckRecursiveErrors()
+{
+	int iLen = g_hGroups.Length;
+
+	for(int i = 0; i < iLen; i++)
+	{
+		GroupInfo hGroup;
+		g_hGroups.GetArray(i, hGroup, sizeof(hGroup));
+
+		if(CheckParanentGroup(i, hGroup.Name))
+		{
+			LogError("WARNING!!! - Recursive group %s", hGroup.Name);
+		}
+	}
+}
+
+bool CheckParanentGroup(int iIndex, char[] sGroup)
+{
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
+
+	char sBuf[D_GROUPNAME_LENGTH];
+
+	int iSize = hGroup.hExtendList.Length;
+	for(int i = 0; i < iSize; i++)
+	{
+		hGroup.hExtendList.GetString(i, sBuf, sizeof(sBuf));
+
+		if(!strcmp(sGroup, sBuf)) return true;
+
+		int iGID = GetGroupIDByName(sBuf);
+
+		if(CheckParanentGroup(iGID, sGroup))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Каллбек новой секции
