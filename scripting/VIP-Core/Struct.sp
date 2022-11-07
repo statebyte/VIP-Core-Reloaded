@@ -303,7 +303,7 @@ enum struct PlayerData
 
 	void AddFeature(char[] sKey, char[] sValue, int iPriority = 0)
 	{
-		PrintToServer("AddFeature - %s - %s | %i", sKey, sValue, iPriority);
+		DebugMsg(DBG_INFO, "AddFeature - %s - %s | %i", sKey, sValue, iPriority);
 		PlayerFeature hPFeature;
 		strcopy(hPFeature.Key, sizeof(hPFeature.Key), sKey);
 		strcopy(hPFeature.Value, sizeof(hPFeature.Value), sValue);
@@ -316,7 +316,7 @@ enum struct PlayerData
 		// Если функции нету, создаём новую...
 		if(iIndex == -1)
 		{
-			PrintToServer("PushArray - %s", sKey);
+			DebugMsg(DBG_INFO, "PushArray - %s", sKey);
 			this.hFeatures.PushArray(hPFeature, sizeof(hPFeature));
 		}
 		else 
@@ -324,19 +324,19 @@ enum struct PlayerData
 			// Если мы хотим удалить параметр из списка...
 			if(!sValue[0])
 			{
-				PrintToServer("Erase - %s", sKey);
+				DebugMsg(DBG_INFO, "Erase - %s", sKey);
 				this.hFeatures.Erase(iIndex);
 				return;
 			}
 
-			PrintToServer("GetArray - %s", sKey);
+			DebugMsg(DBG_INFO, "GetArray - %s", sKey);
 			// Если есть, проверяем текущий приоритет...
 			PlayerFeature hCurrentPFeature;
 			this.hFeatures.GetArray(iIndex, hCurrentPFeature, sizeof(hCurrentPFeature));
 
 			if(iPriority <= hCurrentPFeature.CurrentPriority)
 			{
-				PrintToServer("SetArray - %s", sKey);
+				DebugMsg(DBG_INFO, "SetArray - %s", sKey);
 				this.hFeatures.SetArray(iIndex, hPFeature, sizeof(hPFeature));
 			}
 		}
@@ -489,7 +489,7 @@ enum struct PlayerData
 
 	void RebuildFeatureList()
 	{
-		PrintToServer("Start - RebuildFeatureList - this.hFeatures.Clear()");
+		DebugMsg(DBG_INFO, "Start - RebuildFeatureList - this.hFeatures.Clear()");
 		this.hFeatures.Clear();
 
 		int iLen = g_hGroups.Length;
@@ -500,7 +500,7 @@ enum struct PlayerData
 
 			if(this.CheckGroup(hGroup.Name))
 			{
-				PrintToServer("Group: %s", hGroup.Name);
+				DebugMsg(DBG_INFO, "Group: %s", hGroup.Name);
 
 				this.AddFeatureByGroupID(i);
 			}
@@ -634,6 +634,9 @@ void InitServerData()
 	g_eServerData.DumpLogsPath = sPath;
 
 	g_eServerData.Engine = GetEngineVersion();
+
+	DebugMsg(DBG_INFO, "New log started VIP Core - version %s", PL_VERSION);
+	DumpMsg("New log started VIP Core - version %s", PL_VERSION);
 }
 
 int GetGroupIDByName(char[] sKey)

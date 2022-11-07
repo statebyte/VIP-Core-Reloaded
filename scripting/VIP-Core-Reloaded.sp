@@ -10,7 +10,7 @@
 #define D_GROUPNAME_LENGTH 			32
 
 #define PL_VERSION 					"4.0 Alpha"
-#define PL_AUTHOR 					"R1KO, FIVE and HLMod Comminity"
+#define PL_AUTHOR 					"R1KO, FIVE and HLmod Community"
 
 #define CONFIG_MAIN_PATH			"data/vip/cfg"
 #define CONFIG_GROUPS_FILENAME		"groups.ini"

@@ -45,7 +45,6 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 				Feature hFeature;
 				g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
 
-				//PrintToServer("MenuAction_Select %x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				if(hFeature.Type == TOGGLABLE)
 				{
 					g_ePlayerData[iClient].ToggleFeatureStatus(hFeature.Key);
@@ -89,8 +88,6 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			{
 				Feature hFeature;
 				g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
-
-				//PrintToServer("%x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				
 				if(hFeature.Type == HIDE)
 				{
@@ -128,7 +125,6 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			{
 				Feature hFeature;
 				g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
-				//PrintToServer("%x %x", view_as<int>(hFeature.hPlugin), view_as<int>(hFeature.OnSelectCB));
 				
 				char sBuf[32];
 				

@@ -20,6 +20,8 @@ void LoadConfigurationModule()
 // SMC Parser
 bool LoadGroupsConfig()
 {
+	DebugMsg(DBG_INFO, "LoadGroupsConfig");
+
 	g_hGroups.Clear();
 
 	if(!g_hConfigParser)
@@ -52,7 +54,7 @@ bool LoadGroupsConfig()
 
 	RebuildFeatureList();
 
-	PrintToServer("%i", g_iCurrentLine);
+	DebugMsg(DBG_INFO, "Current Line: %i", g_iCurrentLine);
 
 	return true;
 }
@@ -67,14 +69,14 @@ void CheckRecursiveErrors()
 		GroupInfo hGroup;
 		g_hGroups.GetArray(i, hGroup, sizeof(hGroup));
 
-		if(CheckParanentGroup(i, hGroup.Name))
+		if(CheckParentGroup(i, hGroup.Name))
 		{
 			LogError("WARNING!!! - Recursive group %s", hGroup.Name);
 		}
 	}
 }
 
-bool CheckParanentGroup(int iIndex, char[] sGroup)
+bool CheckParentGroup(int iIndex, char[] sGroup)
 {
 	GroupInfo hGroup;
 	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
@@ -90,7 +92,7 @@ bool CheckParanentGroup(int iIndex, char[] sGroup)
 
 		int iGID = GetGroupIDByName(sBuf);
 
-		if(CheckParanentGroup(iGID, sGroup))
+		if(iGID != -1 && CheckParentGroup(iGID, sGroup))
 		{
 			return true;
 		}
@@ -129,9 +131,9 @@ SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes)
 			strcopy(g_hGroup.Name, sizeof(g_hGroup.Name), section);
 			TrimString(g_hGroup.Name);
 
-			PrintToServer("> Start: %s", section);
-
 			eCurrentSection = Section_Group;
+
+			DebugMsg(DBG_INFO, "> Start: %s", g_hGroup.Name);
 		}
 		default:
 		{
@@ -154,6 +156,7 @@ SMCResult Config_KeyValue(Handle hParser, char[] sKey, char[] sValue, bool bKeyI
 	{
 		case Section_Groups:
 		{
+			// TODO - Добавить наследуемую группу по умолчанию...
 			if(strcmp(sKey, "extend_by_default") == 0)
 			{
 				//g_hGroup.AddExtend(sValue);
@@ -161,7 +164,6 @@ SMCResult Config_KeyValue(Handle hParser, char[] sKey, char[] sValue, bool bKeyI
 		}
 		case Section_Group:
 		{
-			PrintToServer("%s - %s", sKey, sValue);
 			if(strcmp(sKey, "extend") == 0)
 			{
 				g_hGroup.AddExtend(sValue);
@@ -170,6 +172,8 @@ SMCResult Config_KeyValue(Handle hParser, char[] sKey, char[] sValue, bool bKeyI
 			{
 				g_hGroup.AddFeature(sKey, sValue);
 			}
+
+			DebugMsg(DBG_INFO, "%s - %s", sKey, sValue);
 		}
 	}
 	
@@ -190,7 +194,7 @@ SMCResult Config_EndSection(Handle parser) // Калбек конца секци
 		{
 			eCurrentSection = Section_Groups;
 			g_hGroups.PushArray(g_hGroup, sizeof(g_hGroup));
-			PrintToServer("> End: %s", g_hGroup.Name);
+			DebugMsg(DBG_INFO, "> End: %s", g_hGroup.Name);
 		}
 		case Section_Groups:
 		{

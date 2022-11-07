@@ -16,6 +16,13 @@ stock bool IsValidClient(int iClient)
 	return IsClientInGame(iClient) && !IsFakeClient(iClient);
 }
 
+stock void VIP_LogMsg(const char[] sMessage, any ...)
+{
+	static char szBuffer[512];
+	VFormat(szBuffer, sizeof(szBuffer), sMessage, 2);
+	LogToFile(g_eServerData.LogsPath, szBuffer);
+}
+
 void UTIL_GetTimeFromStamp(char[] szBuffer, int iMaxLen, int iTimeStamp, int iClient = LANG_SERVER)
 {
 	if (iTimeStamp > 31536000)

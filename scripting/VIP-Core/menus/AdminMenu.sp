@@ -23,7 +23,13 @@ void LoadTypingPanel()
 
 int TypingPanelHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 {
+	switch(action)
+	{
+		case MenuAction_Display:
+		{
 
+		}
+	}
 	return 0;
 }
 
@@ -64,7 +70,7 @@ void OpenAdminPlayerList(int iClient, int iPage = 0)
 	{
 		int iUserID = GetClientUserId(i);
 		IntToString(iUserID, sBuf, sizeof(sBuf));
-		FormatEx(sBuffer, sizeof(sBuffer), "%N", i);
+		FormatEx(sBuffer, sizeof(sBuffer), "%N %s", i, g_ePlayerData[i].bVIP ? "*VIP*" : "");
 		hMenu.AddItem(sBuf, sBuffer);
 	}
 
@@ -170,7 +176,6 @@ void OpenPlayerGroupsInfoMenu(int iClient)
 
 		if(g_ePlayerData[iTarget].CheckGroup(hGroup.Name))
 		{
-			PrintToServer(hGroup.Name);
 			int iIndex = g_ePlayerData[iTarget].GetGroupIDByName(hGroup.Name);
 			int iExpireTime = g_ePlayerData[iTarget].GetExpireTimeByGroupID(iIndex);
 			if(iExpireTime == 0) sTime = "NEVER";
@@ -179,7 +184,6 @@ void OpenPlayerGroupsInfoMenu(int iClient)
 		}
 		else FormatEx(sBuffer, sizeof(sBuffer), "[%s] %s", "+", hGroup.Name);
 
-		
 		hMenu.AddItem(hGroup.Name, sBuffer);
 	}
 
@@ -339,7 +343,7 @@ void OpenPlayerFeaturesInfoMenu(int iClient)
 		hMenu.AddItem("", "No Features", ITEMDRAW_DISABLED);
 	}
 
-	hMenu.AddItem("__save", "Сохранить текущую конфигурацию как вип группу (TODO)\n \n");
+	hMenu.AddItem("__save", "Сохранить текущую конфигурацию как вип группу (TODO)\n \n", ITEMDRAW_DISABLED);
 
 	for(int i = 0; i < iLen; i++)
 	{
@@ -352,8 +356,6 @@ void OpenPlayerFeaturesInfoMenu(int iClient)
 		{
 			PlayerFeature hPFeature;
 			g_ePlayerData[iTarget].hFeatures.GetArray(iFeatureID, hPFeature, sizeof(hPFeature));
-
-			PrintToServer(hPFeature.Key);
 
 			GroupInfo hGroup;
 			if(hPFeature.CurrentPriority != -1)
@@ -393,7 +395,7 @@ int AdminPlayerFeaturesInfoMenuHandler(Menu hMenu, MenuAction action, int iClien
 			if(!strcmp(sInfo, "__save"))
 			{
 				//g_ePlayerData[iClient].HookChat = ChatHook_CustomFeature;
-				PrintToServer("...");
+				PrintToConsole(iClient, "...");
 				//OpenPlayerFeaturesInfoMenu(iClient);
 				return 0;
 			}

@@ -13,19 +13,27 @@ enum DBG_Level
 	DBG_None = 0,
 	DBG_ERROR,
 	DBG_WARNING,
-	DBG_INFO
+	DBG_INFO,
+	DBG_SQL
 }
-DBG_Level g_iDBGLevel = DBG_INFO;
+DBG_Level g_iDBGLevel = DBG_None;
 
 void DebugMsg(DBG_Level iLevel, const char[] sMsg, any ...)
 {
-	if(iLevel < g_iDBGLevel) return;
+	if(iLevel > g_iDBGLevel) return;
 
 	static char szBuffer[512];
-	VFormat(szBuffer, sizeof(szBuffer), sMsg, 2);
+	VFormat(szBuffer, sizeof(szBuffer), sMsg, 3);
 	LogToFile(g_eServerData.DebugLogsPath, szBuffer);
 }
 #define DebugMessage(%0) DebugMsg(%0)
+
+void DumpMsg(const char[] sMsg, any ...)
+{
+	static char szBuffer[512];
+	VFormat(szBuffer, sizeof(szBuffer), sMsg, 2);
+	LogToFile(g_eServerData.DumpLogsPath, szBuffer);
+}
 
 void addTestTimes()
 {
@@ -69,12 +77,12 @@ Action cmd_Test(int iClient, int iArgs)
 
 Action cmd_DumpPlayer(int iClient, int iArgs)
 {
-	PrintToConsole(iClient, "iClient: %i", g_ePlayerData[iClient].iClient);
+	DumpMsg("iClient: %i", g_ePlayerData[iClient].iClient);
 	
-	PrintToConsole(iClient, "bVIP: %i", g_ePlayerData[iClient].bVIP);
+	DumpMsg("bVIP: %i", g_ePlayerData[iClient].bVIP);
 
-	PrintToConsole(iClient, "hGroups:");
-	PrintToConsole(iClient, "------------------");
+	DumpMsg("hGroups:");
+	DumpMsg("------------------");
 
 	int iLen = g_ePlayerData[iClient].hGroups.Length;
 
@@ -83,11 +91,11 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 	for(int i = 0; i < iLen; i++)
 	{
 		g_ePlayerData[iClient].hGroups.GetString(i, sBuffer, sizeof(sBuffer));
-		PrintToConsole(iClient, "%s", sBuffer);
+		DumpMsg("%s", sBuffer);
 	}
 
-	PrintToConsole(iClient, "hFeatures:");
-	PrintToConsole(iClient, "------------------");
+	DumpMsg("hFeatures:");
+	DumpMsg("------------------");
 
 	iLen = g_ePlayerData[iClient].hFeatures.Length;
 
@@ -95,7 +103,7 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 	{
 		PlayerFeature hPFeature;
 		g_ePlayerData[iClient].hFeatures.GetArray(i, hPFeature, sizeof(hPFeature));
-		PrintToConsole(iClient, "%s - %s | %i (%s)", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority, hPFeature.bEnabled ? "Enable" : "Disable");
+		DumpMsg("%s - %s | %i (%s)", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority, hPFeature.bEnabled ? "Enable" : "Disable");
 	}
 	
 	return Plugin_Handled;
@@ -104,7 +112,7 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 Action cmd_Groups(int iClient, int iArgs)
 {
 	int iLen = g_hGroups.Length;
-	PrintToConsole(iClient, "> Start dump: \nLen%i", iLen);
+	DumpMsg("> Start dump: \nLen%i", iLen);
 	char sBuffer[256];
 
 	for(int i = 0; i < iLen; i++)
@@ -112,29 +120,29 @@ Action cmd_Groups(int iClient, int iArgs)
 		GroupInfo hGroup;
 		g_hGroups.GetArray(i, hGroup, sizeof(hGroup));
 
-		PrintToConsole(iClient, "> %s", hGroup.Name);
+		DumpMsg("> %s", hGroup.Name);
 
-		PrintToConsole(iClient, "> Feature List");
+		DumpMsg("> Feature List");
 		int iSize = hGroup.hFeatureList.Length;
 		for(int j = 0; j < iSize; j++)
 		{
 			PlayerFeature hPFeature;
 			hGroup.hFeatureList.GetArray(j, hPFeature, sizeof(hPFeature));
 
-			PrintToConsole(iClient, ">> %s - %s : %i", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority);
+			DumpMsg(">> %s - %s : %i", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority);
 		}
 
-		PrintToConsole(iClient, "> ");
+		DumpMsg("> ");
 		
-		PrintToConsole(iClient, "> Extend List");
+		DumpMsg("> Extend List");
 		iSize = hGroup.hExtendList.Length;
 		for(int j = 0; j < iSize; j++)
 		{
 			hGroup.hExtendList.GetString(j, sBuffer, sizeof(sBuffer));
-			PrintToConsole(iClient, ">> %s", sBuffer);
+			DumpMsg(">> %s", sBuffer);
 		}
 
-		PrintToConsole(iClient, "> -------------------");
+		DumpMsg("> -------------------");
 	}
 
 	return Plugin_Handled;

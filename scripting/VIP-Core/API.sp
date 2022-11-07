@@ -25,6 +25,14 @@ void CallForward_OnVIPLoaded()
 	PrintToServer(" ");
 	PrintToServer("Groups: %i", g_hGroups.Length);
 	PrintToServer("Database: %s", g_eServerData.DB_Type == DB_None ? "No" : "Yes");
+	
+	if(g_eServerData.DB_Type != DB_None)
+	{
+		char sDriverName[64];
+		SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
+		PrintToServer("Database Type: %s", sDriverName);
+	}
+	
 	PrintToServer(" ");
 	PrintToServer("Authors: " ... PL_AUTHOR);
 	PrintToServer("Version: " ... PL_VERSION);
@@ -70,7 +78,6 @@ void CallForward_OnRemoveGroup(int iClient, char[] sGroup)
 
 bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, const char[] szFeature)
 {
-	//PrintToServer("Function_OnItemSelect");
 	bool bResult;
 	Call_StartFunction(hPlugin, FuncSelect);
 	Call_PushCell(iClient);
@@ -448,7 +455,7 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 
 	char sPluginName[D_FEATURENAME_LENGTH];
 	GetPluginFilename(hPlugin, sPluginName, D_FEATURENAME_LENGTH);
-	PrintToServer("Register feature \"%s\" (%s)", szFeature, sPluginName);
+	DebugMsg(DBG_INFO, "Register feature \"%s\" (%s)", szFeature, sPluginName);
 
 	if(IsFeatureExists(szFeature))
 	{
@@ -464,15 +471,10 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 	hFeature.OnDisplayCB = GetNativeCell(5);
 	hFeature.OnDrawCB = GetNativeCell(6);
 
-
-
-	//PrintToServer("%x - %x %x %x", hPlugin, GetNativeCell(4), GetNativeCell(5), GetNativeCell(6));
 	hFeature.hPlugin = hPlugin;
 
 	hFeature.ToggleState = GetNativeCell(7);
 	hFeature.bCookie = GetNativeCell(8);
-
-	//PrintToServer("%x", view_as<int>(hFeature.OnSelectCB));
 
 	g_hFeatures.PushArray(hFeature, sizeof(hFeature));
 

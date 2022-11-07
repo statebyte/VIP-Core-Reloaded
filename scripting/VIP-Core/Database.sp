@@ -62,8 +62,6 @@ void OnConnect(Database db, const char[] error, any data)
 		return;
 	}
 
-	PrintToServer(sDriverName);
-
 	if(!strcmp(sDriverName, "mysql"))
 	{
 		g_eServerData.DB_Type = DB_MySQL;
@@ -172,7 +170,7 @@ void DB_UpdatePlayerData(int iClient)
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_USERS..."` (`account_id`,`name`,`sid`,`lastvisit`) VALUES (%i,'%N',%i,%i) ON DUPLICATE KEY UPDATE `lastvisit` = VALUES(`lastvisit`);", g_ePlayerData[iClient].AccountID, iClient, g_eServerData.ServerID, GetTime());
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery);
 }
@@ -181,7 +179,7 @@ void DB_AddCustomFeature(int iClient, char[] sKey, char[] sValue, int iTarget = 
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `"...TABLE_FEATURES..."` (`account_id`,`sid`,`key`,`value`,`updated`) VALUES (%i, %i,'%s','%s',%i) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), `updated` = VALUES(`updated`);", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime());
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery, iTarget);
 }
@@ -190,7 +188,7 @@ void DB_RemoveCustomFeature(int iClient, char[] sKey, int iTarget = 0)
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "DELETE FROM `"...TABLE_FEATURES..."` WHERE `account_id` = %i AND `sid` = %i AND `key` = '%s';", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 
 	g_eServerData.DB.Query(SQL_EmptyCallBack, sQuery, iTarget);
 }
@@ -213,15 +211,15 @@ void DB_LoadPlayerData(int iClient)
 	GetServerIDSelector(sServerID, sizeof(sServerID));
 
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `group`, `expires` FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND (`expires` >= %i OR `expires` = 0) AND %s;", g_ePlayerData[iClient].AccountID, GetTime(), sServerID);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	hTxn.AddQuery(sQuery);
 
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_FEATURES ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	hTxn.AddQuery(sQuery);
 
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_STORAGE ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	hTxn.AddQuery(sQuery);
 
 	g_eServerData.DB.Execute(hTxn, SQL_LoadPlayerData, SQL_TxnCallback_Failure, iClient);
@@ -238,7 +236,7 @@ void DB_AddPlayerGroup(int iClient, char[] sGroup, int iExpire, int iTarget = 0)
 	// }
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_GROUPS ... "` (`account_id`, `sid`, `group`, `added`, `expires`) VALUES (%i, %i, '%s', %i, %i) ON DUPLICATE KEY UPDATE `expires` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sGroup, GetTime(), iExpire, iExpire);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
 }
@@ -247,7 +245,7 @@ void DB_SaveStorage(int iClient, char[] sKey, char[] sValue)
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', %i, %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery);
 }
@@ -256,7 +254,7 @@ void DB_RemovePlayerGroup(int iClient, char[] sGroup, int iTarget = 0)
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "DELETE FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND `sid` = %i AND `group` = '%s';", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sGroup);
-	PrintToServer(sQuery);
+	DebugMsg(DBG_SQL, sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
 }
@@ -270,7 +268,7 @@ void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultS
 		results[0].FetchString(0, sGroup, sizeof(sGroup));
 		int iTime = results[0].FetchInt(1);
 
-		PrintToServer("GROUPS: %s - %i", sGroup, iTime);
+		DebugMsg(DBG_INFO, "GROUPS: %s - %i", sGroup, iTime);
 	
 		g_ePlayerData[data].AddGroup(sGroup, iTime);
 	}
@@ -280,7 +278,7 @@ void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultS
 		results[1].FetchString(0, sGroup, sizeof(sGroup));
 		results[1].FetchString(1, sBuffer, sizeof(sBuffer));
 
-		PrintToServer("CUSTOM FEATURE: %s - %s", sGroup, sBuffer);
+		DebugMsg(DBG_INFO, "CUSTOM FEATURE: %s - %s", sGroup, sBuffer);
 	
 		g_ePlayerData[data].AddCustomFeature(sGroup, sBuffer);
 	}
@@ -290,7 +288,7 @@ void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultS
 		results[2].FetchString(0, sGroup, sizeof(sGroup));
 		results[2].FetchString(1, sBuffer, sizeof(sBuffer));
 
-		PrintToServer("STORAGE: %s - %s", sGroup, sBuffer);
+		DebugMsg(DBG_INFO, "STORAGE: %s - %s", sGroup, sBuffer);
 	
 		g_ePlayerData[data].SaveStorage(sGroup, sBuffer);
 	}
@@ -309,7 +307,7 @@ void SQL_CallbackAddPlayerGroup(Database hOwner, DBResultSet hResult, const char
 {
 	if(szError[0])
 	{
-		PrintToServer(szError);
+		DebugMsg(DBG_INFO, szError);
 		PrintToChat(data, "[VIP] Ошибка добавления группы в БД");
 		return;
 	}
