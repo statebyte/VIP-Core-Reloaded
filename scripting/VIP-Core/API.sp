@@ -67,8 +67,10 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(IsValidVIPGroup);
 
 
-	//RegNative(SaveToStorage);
-	//RegNative(GetStorage);
+	RegNative(SaveClientStorageValue);
+	RegNative(GetClientStorageValue);
+
+	RegNative(GetTimeFromStamp);
 
 
 	
@@ -651,6 +653,60 @@ void SortFeatureList()
 	}
 
 	g_hFeatures = hArrSort.Clone();
+}
+
+public int Native_SaveClientStorageValue(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	char sFeature[D_FEATURENAME_LENGTH], sBuffer[1024];
+
+	GetNativeString(2, sFeature, sizeof(sFeature));
+	GetNativeString(3, sBuffer, sizeof(sBuffer));
+
+	DB_SaveStorage(iClient, sFeature, sBuffer);
+
+	return 1;
+}
+
+public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	char sFeature[D_FEATURENAME_LENGTH];
+
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	int iIndex = g_ePlayerData[iClient].GetStorageIDByName(sFeature);
+
+	if(iIndex != -1)
+	{
+		PlayerStorage hStorage;
+		g_ePlayerData[iClient].hStorage.GetArray(iIndex, hStorage, sizeof(hStorage));
+
+		SetNativeString(3, hStorage.Value, GetNativeCell(3));
+	}
+	
+
+	return 0;
+}
+
+public int Native_GetTimeFromStamp(Handle hPlugin, int iNumParams)
+{
+	int iTimeStamp = GetNativeCell(3);
+	if (iTimeStamp > 0)
+	{
+		int iClient = GetNativeCell(4);
+		if (iClient == LANG_SERVER || CheckValidClient(iClient, false))
+		{
+			char szBuffer[64];
+			UTIL_GetTimeFromStamp(szBuffer, sizeof(szBuffer), iTimeStamp, iClient);
+			SetNativeString(1, szBuffer, GetNativeCell(2), true);
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 bool CheckValidClient(const int &iClient, bool bCheckVIP = true)
