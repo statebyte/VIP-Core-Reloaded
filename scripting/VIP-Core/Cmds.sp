@@ -23,6 +23,7 @@ Action cmd_OpenVipMenu(int iClient, int iArgs)
 	}
 	else
 	{
+		// TODO Notify Panel
 		PrintToChat(iClient, "[VIP] У вас нет привилегий...");
 	}
 

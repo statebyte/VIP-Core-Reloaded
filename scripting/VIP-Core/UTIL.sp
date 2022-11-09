@@ -23,6 +23,13 @@ stock void VIP_LogMsg(const char[] sMessage, any ...)
 	LogToFile(g_eServerData.LogsPath, szBuffer);
 }
 
+stock int UTIL_GetConVarAdminFlag(ConVar hCvar)
+{
+	char szBuffer[32];
+	hCvar.GetString(szBuffer, sizeof(szBuffer));
+	return ReadFlagString(szBuffer);
+}
+
 void UTIL_GetTimeFromStamp(char[] szBuffer, int iMaxLen, int iTimeStamp, int iClient = LANG_SERVER)
 {
 	if (iTimeStamp > 31536000)

@@ -35,6 +35,7 @@
 #include "VIP-Core/menus/MainMenu.sp"
 #include "VIP-Core/menus/AdminMenu.sp"
 #include "VIP-Core/Cmds.sp"
+#include "VIP-Core/Cvars.sp"
 
 #include "VIP-Core/Debugger.sp"
 
@@ -54,6 +55,7 @@ public void OnPluginStart()
 
 	API_SetupForwards();
 	LoadStructModule();
+	LoadCvars();
 	LoadConfigurationModule();
 
 	LoadDatabase();

@@ -22,6 +22,7 @@ ArrayList g_hTimes;
 enum struct ServerData
 {
 	int ServerID;
+	int StorageID;
 
 	EngineVersion Engine;
 
@@ -160,6 +161,7 @@ enum struct Feature
 	bool bCookie;
 }
 ArrayList g_hFeatures;
+ArrayList g_hFeaturesSorted;
 
 enum StatusLoading
 {
@@ -610,6 +612,7 @@ void LoadStructModule()
 {
 	g_hGroups = new ArrayList(sizeof(GroupInfo));
 	g_hFeatures = new ArrayList(sizeof(Feature));
+	g_hFeaturesSorted = new ArrayList(ByteCountToCells(D_FEATURENAME_LENGTH));
 	g_hTimes = new ArrayList(sizeof(Times));
 
 	InitServerData();

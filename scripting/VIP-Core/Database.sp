@@ -198,6 +198,7 @@ void DB_LoadPlayerData(int iClient)
 	if(g_eServerData.DB_Type == DB_None) 
 	{
 		g_ePlayerData[iClient].Status = Status_Loaded;
+		CallForward_OnClientLoaded(iClient);
 		return;
 	}
 
@@ -209,7 +210,7 @@ void DB_LoadPlayerData(int iClient)
 
 	char sQuery[1024], sServerID[128];
 	GetServerIDSelector(sServerID, sizeof(sServerID));
-
+	
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `group`, `expires` FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND (`expires` >= %i OR `expires` = 0) AND %s;", g_ePlayerData[iClient].AccountID, GetTime(), sServerID);
 	DebugMsg(DBG_SQL, sQuery);
 	hTxn.AddQuery(sQuery);
@@ -217,6 +218,8 @@ void DB_LoadPlayerData(int iClient)
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_FEATURES ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
 	DebugMsg(DBG_SQL, sQuery);
 	hTxn.AddQuery(sQuery);
+
+	GetStorageIDSelector(sServerID, sizeof(sServerID));
 
 	FormatEx(sQuery, sizeof(sQuery), "SELECT `key`, `value` FROM `" ... TABLE_STORAGE ... "` WHERE `account_id` = %i AND %s;", g_ePlayerData[iClient].AccountID, sServerID);
 	DebugMsg(DBG_SQL, sQuery);
@@ -244,7 +247,7 @@ void DB_AddPlayerGroup(int iClient, char[] sGroup, int iExpire, int iTarget = 0)
 void DB_SaveStorage(int iClient, char[] sKey, char[] sValue)
 {
 	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', %i, %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', '%s', %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
 	DebugMsg(DBG_SQL, sQuery);
 	
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery);
@@ -295,6 +298,8 @@ void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultS
 
 	g_ePlayerData[data].RebuildFeatureList();
 	g_ePlayerData[data].Status = Status_Loaded;
+
+	CallForward_OnClientLoaded(data);
 	// CallForward_OnVipLoaded(data);
 }
 
@@ -323,4 +328,9 @@ void SQL_CallbackAddPlayerGroup(Database hOwner, DBResultSet hResult, const char
 void GetServerIDSelector(char[] sBuffer, int iMaxLen)
 {
 	FormatEx(sBuffer, iMaxLen, "(`sid` = %i OR `sid` = 0)", g_eServerData.ServerID);
+}
+
+void GetStorageIDSelector(char[] sBuffer, int iMaxLen)
+{
+	FormatEx(sBuffer, iMaxLen, "(`sid` = %i OR `sid` = 0)", g_eServerData.StorageID);
 }

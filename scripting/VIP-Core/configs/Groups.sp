@@ -15,6 +15,34 @@ GroupInfo g_hGroup;
 void LoadConfigurationModule()
 {
 	LoadGroupsConfig();
+	LoadFeatureSortList();
+}
+
+void LoadFeatureSortList()
+{
+	g_hFeaturesSorted.Clear();
+
+	char sPath[PLATFORM_MAX_PATH], sBuffer[D_FEATURENAME_LENGTH];
+	BuildPath(Path_SM, sPath, sizeof(sPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_SORT_FILENAME);
+
+	if(FileExists(sPath))
+	{
+		File hFile = OpenFile(sPath, "r");
+
+		if (hFile != null)
+		{
+			while (!hFile.EndOfFile() && hFile.ReadLine(sBuffer, 128))
+			{
+				TrimString(sBuffer);
+				if (sBuffer[0] && !(sBuffer[0] == '/' && sBuffer[1] == '/'))
+				{
+					g_hFeaturesSorted.PushString(sBuffer);
+				}
+			}
+		}
+		
+		delete hFile;
+	}
 }
 
 // SMC Parser
@@ -64,6 +92,8 @@ void CheckRecursiveErrors()
 {
 	int iLen = g_hGroups.Length;
 
+	bool bState = false;
+
 	for(int i = 0; i < iLen; i++)
 	{
 		GroupInfo hGroup;
@@ -72,7 +102,13 @@ void CheckRecursiveErrors()
 		if(CheckParentGroup(i, hGroup.Name))
 		{
 			LogError("WARNING!!! - Recursive group %s", hGroup.Name);
+			bState = true;
 		}
+	}
+
+	if(bState)
+	{
+		SetFailState("[CONFIG] You have recursive groups!");
 	}
 }
 

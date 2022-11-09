@@ -47,11 +47,15 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 				if(hFeature.Type == TOGGLABLE)
 				{
-					g_ePlayerData[iClient].ToggleFeatureStatus(hFeature.Key);
+					if(CallForward_OnFeatureToggle(iClient, hFeature.Key) == Plugin_Continue)
+					{
+						g_ePlayerData[iClient].ToggleFeatureStatus(hFeature.Key);
 
-					char sBuf[4];
-					IntToString(view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key)), sBuf, sizeof(sBuf));
-					DB_SaveStorage(iClient, hFeature.Key, sBuf);
+						char sBuf[4];
+						IntToString(view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(hFeature.Key)), sBuf, sizeof(sBuf));
+						DB_SaveStorage(iClient, hFeature.Key, sBuf);
+					}
+					
 
 					//if(g_ePlayerData[iClient].IsFeatureEnable(hFeature.Key)) g_ePlayerData[iClient].DisableFeature(hFeature.Key);
 					//else g_ePlayerData[iClient].EnableFeature(hFeature.Key);

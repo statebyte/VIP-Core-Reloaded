@@ -242,14 +242,21 @@ void OnDelete(int iClient, char[] sAns)
 	int iGroupID = g_ePlayerData[iClient].CurrentGroup;
 	int iTarget = g_ePlayerData[iClient].CurrentTarget;
 
-	GroupInfo hGroup;
-	g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
-
-	if(!strcmp(sAns, "yes"))
+	if(IsValidClient(iTarget))
 	{
-		g_ePlayerData[iTarget].RemoveGroup(hGroup.Name);
+		GroupInfo hGroup;
+		g_hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
 
-		DB_RemovePlayerGroup(iTarget, hGroup.Name, iClient);
+		if(!strcmp(sAns, "yes"))
+		{
+			g_ePlayerData[iTarget].RemoveGroup(hGroup.Name);
+
+			DB_RemovePlayerGroup(iTarget, hGroup.Name, iClient);
+
+			//char sBuffer[32];
+			//UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime);
+			VIP_LogMsg("Администратор %L удалил игроку %L группу %s со сроком s", iClient, iTarget, hGroup.Name);
+		}
 	}
 
 	OpenPlayerGroupsInfoMenu(iClient);
@@ -277,9 +284,9 @@ void OpenAdminTimesMenu(int iClient)
 
 		IntToString(hTime.Time, sBuf, sizeof(sBuf));
 
-		if(TranslationPhraseExists(hTime.Phrase))
+		if(hTime.Phrase[0] == '#' && TranslationPhraseExists(hTime.Phrase[1]))
 		{
-			FormatEx(sBuffer, sizeof(sBuffer), "%T", hTime.Phrase, iClient);
+			FormatEx(sBuffer, sizeof(sBuffer), "%T", hTime.Phrase[1], iClient);
 			hMenu.AddItem(sBuf, sBuffer);
 		}
 		else hMenu.AddItem(sBuf, hTime.Phrase);
@@ -318,6 +325,9 @@ int TimesMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			g_ePlayerData[iTarget].AddGroup(hGroup.Name, iTime);
 			DB_AddPlayerGroup(iTarget, hGroup.Name, iTime, iClient);
 			
+			UTIL_GetTimeFromStamp(sInfo, sizeof(sInfo), iTime);
+			VIP_LogMsg("Администратор %L выдал игроку %L вип группу %s со сроком %s", iClient, iTarget, hGroup.Name, sInfo);
+
 			OpenPlayerGroupsInfoMenu(iClient);
 		}
 	}

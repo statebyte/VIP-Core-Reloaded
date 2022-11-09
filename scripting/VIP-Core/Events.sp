@@ -75,6 +75,8 @@ public void OnClientDisconnect(int iClient)
 {
 	if(IsFakeClient(iClient) || IsClientSourceTV(iClient)) return;
 
+	CallForward_OnClientDisconnect(iClient);
+
 	g_ePlayerData[iClient].UpdateData();
 }
 
