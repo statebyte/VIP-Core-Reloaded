@@ -5,6 +5,10 @@
 
 #define VIP_INTERFACE_VERSION			400
 
+#define D_FEATURENAME_LENGTH			64
+#define D_FEATUREVALUE_LENGTH			128
+#define D_GROUPNAME_LENGTH 				32
+
 // Тип базы данных...
 enum VIP_DatabaseUsage
 {
@@ -123,7 +127,7 @@ native void VIP_UnregisterMe();
 // 
 enum struct VIP_Feature
 {
-	char Name[D_FEATURENAME_LENGTH];
+	char Name[256];
 
 	void Register(	VIP_ValueType			eValType				= VIP_NULL,
 					VIP_FeatureType			eType					= TOGGLABLE,
@@ -149,29 +153,29 @@ enum struct VIP_Feature
 	int GetInt(int iClient)
 	{
 		return VIP_GetClientFeatureInt(iClient, this.Name);
-	};
+	}
 
 	bool GetBool(int iClient)
 	{
 		return VIP_GetClientFeatureBool(iClient, this.Name);
-	};
-
-	bool IsUse(int iClient)
-	{
-		return VIP_IsClientFeatureUse(iClient, this.Name);
-	};
-
-	VIP_ToggleState GetStatus(int iClient)
-	{
-		return VIP_GetClientFeatureStatus(iClient, this.Name);
 	}
 
-	bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
-	{
-		return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
-	}
+	// TODO
+	// bool IsUse(int iClient)
+	// {
+	// 	return VIP_IsClientFeatureUse(iClient, this.Name);
+	// }
 
-};
+	// VIP_ToggleState GetStatus(int iClient)
+	// {
+	// 	return VIP_GetClientFeatureStatus(iClient, this.Name);
+	// }
+
+	// bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
+	// {
+	// 	return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
+	// }
+}
 //VIP_Feature hFeature = {"hp"};
 
 /**
