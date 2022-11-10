@@ -49,11 +49,14 @@ void OnConnect(Database db, const char[] error, any data)
 	}
 
 	g_eServerData.DB = db;
-	DBDriver driver = SQL_ReadDriver(db);
+	//DBDriver driver = SQL_ReadDriver(db);
+	Handle driver = SQL_ReadDriver(db);
 
 	char sDriverName[64];
 	//driver.GetProduct(sDriverName, sizeof(sDriverName));
-	driver.GetIdentifier(sDriverName, sizeof(sDriverName));
+
+	//driver.GetIdentifier(sDriverName, sizeof(sDriverName));
+	SQL_GetDriverIdent(driver, sDriverName, sizeof(sDriverName));
 
 	if(error[0])
 	{

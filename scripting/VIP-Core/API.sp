@@ -149,7 +149,8 @@ void CallForward_OnVIPLoaded()
 		if(g_eServerData.DB_Type != DB_None)
 		{
 			char sDriverName[64];
-			SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
+			//SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
+			SQL_GetDriverProduct(SQL_ReadDriver(g_eServerData.DB), sDriverName, sizeof(sDriverName));
 			PrintToServer("Database Type: %s", sDriverName);
 		}
 		

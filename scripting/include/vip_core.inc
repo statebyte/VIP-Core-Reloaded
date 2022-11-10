@@ -124,60 +124,6 @@ native void VIP_UnregisterFeature(const char[] szFeature);
 */
 native void VIP_UnregisterMe();
 
-// 
-enum struct VIP_Feature
-{
-	char Name[256];
-
-	void Register(	VIP_ValueType			eValType				= VIP_NULL,
-					VIP_FeatureType			eType					= TOGGLABLE,
-					ItemSelectCallback		Item_select_callback	= INVALID_FUNCTION,
-					ItemDisplayCallback		Item_display_callback	= INVALID_FUNCTION,
-					ItemDrawCallback		Item_draw_callback		= INVALID_FUNCTION,
-					VIP_ToggleState			eDefStatus				= NO_ACCESS,
-					bool					bCookie					= false)
-	{
-		VIP_RegisterFeature(this.Name, eValType, eType, Item_select_callback, Item_display_callback, Item_draw_callback, eDefStatus, bCookie);
-	}
-
-	void UnRegister()
-	{
-		VIP_UnregisterFeature(this.Name);
-	}
-
-	bool GetString(iClient, char[] sBuffer, int iMaxLen)
-	{
-		return VIP_GetClientFeatureString(iClient, this.Name, sBuffer, iMaxLen);
-	}
-
-	int GetInt(int iClient)
-	{
-		return VIP_GetClientFeatureInt(iClient, this.Name);
-	}
-
-	bool GetBool(int iClient)
-	{
-		return VIP_GetClientFeatureBool(iClient, this.Name);
-	}
-
-	// TODO
-	// bool IsUse(int iClient)
-	// {
-	// 	return VIP_IsClientFeatureUse(iClient, this.Name);
-	// }
-
-	// VIP_ToggleState GetStatus(int iClient)
-	// {
-	// 	return VIP_GetClientFeatureStatus(iClient, this.Name);
-	// }
-
-	// bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
-	// {
-	// 	return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
-	// }
-}
-//VIP_Feature hFeature = {"hp"};
-
 /**
  *	Возвращает статус VIP-функции у игрока.
  *
@@ -559,6 +505,60 @@ stock bool IsVipCoreAvailable()
 {
 	return CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "VIP_UnregisterFeature") == FeatureStatus_Available;
 }
+
+// 
+enum struct VIP_Feature
+{
+	char Name[256];
+
+	void Register(	VIP_ValueType			eValType				= VIP_NULL,
+					VIP_FeatureType			eType					= TOGGLABLE,
+					ItemSelectCallback		Item_select_callback	= INVALID_FUNCTION,
+					ItemDisplayCallback		Item_display_callback	= INVALID_FUNCTION,
+					ItemDrawCallback		Item_draw_callback		= INVALID_FUNCTION,
+					VIP_ToggleState			eDefStatus				= NO_ACCESS,
+					bool					bCookie					= false)
+	{
+		VIP_RegisterFeature(this.Name, eValType, eType, Item_select_callback, Item_display_callback, Item_draw_callback, eDefStatus, bCookie);
+	}
+
+	void UnRegister()
+	{
+		VIP_UnregisterFeature(this.Name);
+	}
+
+	bool GetString(int iClient, char[] sBuffer, int iMaxLen)
+	{
+		return VIP_GetClientFeatureString(iClient, this.Name, sBuffer, iMaxLen);
+	}
+
+	int GetInt(int iClient)
+	{
+		return VIP_GetClientFeatureInt(iClient, this.Name);
+	}
+
+	bool GetBool(int iClient)
+	{
+		return VIP_GetClientFeatureBool(iClient, this.Name);
+	}
+
+	// TODO
+	// bool IsUse(int iClient)
+	// {
+	// 	return VIP_IsClientFeatureUse(iClient, this.Name);
+	// }
+
+	// VIP_ToggleState GetStatus(int iClient)
+	// {
+	// 	return VIP_GetClientFeatureStatus(iClient, this.Name);
+	// }
+
+	// bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
+	// {
+	// 	return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
+	// }
+}
+//VIP_Feature hFeature = {"hp"};
 
 public SharedPlugin __pl_vip_core= 
 {
