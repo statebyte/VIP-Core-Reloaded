@@ -4,12 +4,13 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-#define DEBUG 						0
 #define D_FEATURENAME_LENGTH		64
 #define D_FEATUREVALUE_LENGTH		128
 #define D_GROUPNAME_LENGTH 			32
 
-#define PL_VERSION 					"4.0 Alpha"
+#if !defined PL_VERSION
+#define PL_VERSION 					"4.0 Alpha 1"
+#endif
 #define PL_AUTHOR 					"R1KO, FIVE and HLmod Community"
 
 #define CONFIG_MAIN_PATH			"data/vip/cfg"

@@ -44,13 +44,14 @@
 [+] Native VIP_GetClientFeatureString  
 [-] Native VIP_GiveClientFeature  
 [-] Native VIP_RemoveClientFeature  
-[-] Native VIP_SetClientStorageValue  
-[-] Native VIP_GetClientStorageValue  
+[R] Native VIP_SetClientStorageValue  
+[N] Native VIP_SaveClientStorageValue  
+[+] Native VIP_GetClientStorageValue  
 [+] Native VIP_GetDatabase  
 [+] Native VIP_GetDatabaseType  
 [-] Native VIP_TimeToSeconds  
 [-] Native VIP_SecondsToTime  
-[-] Native VIP_GetTimeFromStamp  
+[+] Native VIP_GetTimeFromStamp  
 [-] Native VIP_AddStringToggleStatus  
 [N] Native VIP_GetCurrentVersionInterface  
 [N] Native VIP_GetClientGroupName  
@@ -59,12 +60,13 @@
 [N] Native VIP_SaveToStorage  
 [N-] Native VIP_GetGroupIDByName  
 [N-] Native VIP_AddFeatureSettingToGroup // Добавляет функцию в существующую группу  
+[N-] Native VIP_IsEnabledClientFeature  
 [R] Native VIP_GetVIPClientTrie  
 [R] Native VIP_RemoveClientVIP2  
 
 [+] Forward VIP_OnPlayerSpawn  
 [-] Forward VIP_OnShowClientInfo  
-[-] Forward VIP_OnClientStorageLoaded  
+[R] Forward VIP_OnClientStorageLoaded  
 [+] Forward VIP_OnFeatureToggle  
 [+] Forward VIP_OnVIPLoaded  
 [-] Forward VIP_OnConfigsLoaded  

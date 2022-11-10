@@ -1,12 +1,17 @@
 
 void ReloadConfiguration(int iClient = 0)
 {
-	LoadGroupsConfig();
+	if(!g_eServerData.CoreIsReady) return;
+
+	LoadConfigurationModule();
+	RebuildFeatureList();
 	ReplyToCommand(iClient, "[VIP] Configuration reloaded successufaly");
 }
 
 void ReloadPlayerData(int iClient = 0)
 {
+	if(!g_eServerData.CoreIsReady) return;
+
 	LoadPlayersData();
 	ReplyToCommand(iClient, "[VIP] Reloading player data...");
 }

@@ -16,10 +16,53 @@ void LoadConfigurationModule()
 {
 	LoadGroupsConfig();
 	LoadFeatureSortList();
+	LoadTimesList();
+}
+
+void LoadTimesList()
+{
+	DebugMsg(DBG_INFO, "LoadTimesList");
+	g_hTimes.Clear();
+
+	char szPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, szPath, sizeof(szPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_TIMES_FILENAME);
+	
+	KeyValues hKeyValues = new KeyValues("TIMES");
+
+	if (!hKeyValues.ImportFromFile(szPath))
+	{
+		addTestTimes();
+		delete hKeyValues;
+		return;
+	}
+
+	hKeyValues.Rewind();
+	
+	if (hKeyValues.GotoFirstSubKey(false))
+	{
+		char szTime[32];
+		Times hTime;
+
+		do
+		{
+			hKeyValues.GetSectionName(szTime, sizeof(szTime));
+
+			hTime.Time = StringToInt(szTime);
+
+			hKeyValues.GetString("", hTime.Phrase, sizeof(hTime.Phrase));
+
+			g_hTimes.PushArray(hTime, sizeof(hTime));
+			
+		}
+		while (hKeyValues.GotoNextKey(false));
+	}
+	
+	delete hKeyValues;
 }
 
 void LoadFeatureSortList()
 {
+	DebugMsg(DBG_INFO, "LoadFeatureSortList");
 	g_hFeaturesSorted.Clear();
 
 	char sPath[PLATFORM_MAX_PATH], sBuffer[D_FEATURENAME_LENGTH];
@@ -151,7 +194,7 @@ SMCResult Config_NewSection(Handle parser, const char[] section, bool quotes)
 	{
 		case Section_None:
 		{
-			if(strcmp(section, "Groups") == 0)
+			if(strcmp(section, "VIP_GROUPS") == 0)
 			{
 				eCurrentSection = Section_Groups;
 			}

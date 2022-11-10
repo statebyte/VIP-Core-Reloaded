@@ -5,7 +5,7 @@ void LoadTest()
 	RegConsoleCmd("sm_vip_dump_groups", cmd_Groups);
 	RegConsoleCmd("sm_vip_dump_player", cmd_DumpPlayer);
 
-	addTestTimes();
+	//addTestTimes();
 }
 
 enum DBG_Level
