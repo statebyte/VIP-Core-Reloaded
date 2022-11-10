@@ -368,10 +368,17 @@ void OpenPlayerFeaturesInfoMenu(int iClient)
 			g_ePlayerData[iTarget].hFeatures.GetArray(iFeatureID, hPFeature, sizeof(hPFeature));
 
 			GroupInfo hGroup;
-			if(hPFeature.CurrentPriority != -1)
-			g_hGroups.GetArray(hPFeature.CurrentPriority, hGroup, sizeof(hGroup));
+			if(hPFeature.GroupID >= 0)
+			{
+				g_hGroups.GetArray(hPFeature.GroupID, hGroup, sizeof(hGroup));
+			}
+			else
+			{
+				g_hGroups.GetArray(g_ePlayerData[iTarget].GetGroupIDByMaxPriority(), hGroup, sizeof(hGroup));
+			}
 
-			FormatEx(sBuffer, sizeof(sBuffer), "%s [%s] (%s)", hFeature.Key, hPFeature.Value, hPFeature.CurrentPriority == -1 ? "Custom" : hGroup.Name);
+
+			FormatEx(sBuffer, sizeof(sBuffer), "%s [%s] (%s)", hFeature.Key, hPFeature.Value, hPFeature.CurrentPriority == PRIORITY_CUSTOM ? "Custom" : hGroup.Name);
 		}
 		else 
 		{

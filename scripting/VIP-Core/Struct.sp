@@ -12,6 +12,15 @@ enum ChatHookType
 	ChatHook_SearchPlayer
 }
 
+// Система приоритетов...
+enum
+{
+	PRIORITY_PLUGIN = -3,
+	PRIORITY_CUSTOM = -2,
+	PRIORITY_PARANT_GROUP = -1,
+	PRIORITY_NORMAL
+}
+
 enum struct Times
 {
 	char Phrase[64];
@@ -48,6 +57,7 @@ enum struct PlayerFeature
 	char Value[D_VALUE_SIZE];
 
 	int CurrentPriority;
+	int GroupID;
 	bool bEnabled; // Для нормального Feature Manager
 }
 
@@ -303,13 +313,14 @@ enum struct PlayerData
 		return false;
 	}
 
-	void AddFeature(char[] sKey, char[] sValue, int iPriority = 0)
+	void AddFeature(char[] sKey, char[] sValue, int iPriority = 0, int iGroupID = -1)
 	{
 		DebugMsg(DBG_INFO, "AddFeature - %s - %s | %i", sKey, sValue, iPriority);
 		PlayerFeature hPFeature;
 		strcopy(hPFeature.Key, sizeof(hPFeature.Key), sKey);
 		strcopy(hPFeature.Value, sizeof(hPFeature.Value), sValue);
 		hPFeature.CurrentPriority = iPriority;
+		hPFeature.GroupID = iGroupID;
 		hPFeature.bEnabled = true;
 
 		// Получаем индекс функции в массиве
@@ -515,7 +526,7 @@ enum struct PlayerData
 			PlayerFeature hPFeature;
 			this.hCustomFeatures.GetArray(i, hPFeature, sizeof(hPFeature));
 
-			this.AddFeature(hPFeature.Key, hPFeature.Value, -1);
+			this.AddFeature(hPFeature.Key, hPFeature.Value, PRIORITY_CUSTOM, PRIORITY_CUSTOM);
 		}
 
 		this.bVIP = this.IsVIP();
@@ -556,8 +567,33 @@ enum struct PlayerData
 
 			// Приоритет группы по ее сортировке в groups.ini
 			int iGroupID = GetGroupIDByName(hGroup.Name);
-			this.AddFeature(hPFeature.Key, hPFeature.Value, iGroupID);
+			this.AddFeature(hPFeature.Key, hPFeature.Value, iDeep == 0 ? PRIORITY_PARANT_GROUP : iGroupID, iGroupID);
 		}
+	}
+
+	// Получение ID группы с максимальным приоритетом
+	int GetGroupIDByMaxPriority()
+	{
+		int iLen = this.hGroups.Length;
+
+		int iResult = -1;
+
+		PlayerGroup hGroup;
+
+		for(int i = 0; i < iLen; i++)
+		{
+			this.hGroups.GetArray(i, hGroup, sizeof(hGroup));
+
+			int iPriorityID = GetGroupIDByName(hGroup.Name);
+
+			PrintToServer("%i - %s", iPriorityID, hGroup.Name);
+
+			if(iPriorityID != -1) iResult = iPriorityID;
+		}
+
+		PrintToServer("result %i", iResult);
+
+		return iResult;
 	}
 
 	void Init(int iClient)

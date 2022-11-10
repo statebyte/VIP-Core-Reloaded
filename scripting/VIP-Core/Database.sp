@@ -56,6 +56,8 @@ void OnConnect(Database db, const char[] error, any data)
 	//driver.GetProduct(sDriverName, sizeof(sDriverName));
 
 	//driver.GetIdentifier(sDriverName, sizeof(sDriverName));
+
+	//SM 1.10 FIX
 	SQL_GetDriverIdent(driver, sDriverName, sizeof(sDriverName));
 
 	if(error[0])

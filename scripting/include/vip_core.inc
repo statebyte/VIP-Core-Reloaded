@@ -178,6 +178,58 @@ native bool VIP_GetClientFeatureBool(int iClient, const char[] szFeature);
 native bool VIP_GetClientFeatureString(int iClient, const char[] szFeature, char[] szBuffer, int iMaxLength);
 
 /**
+ *	Возвращает статус VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает элемент списка VIP_ToggleState.
+*/
+native VIP_ToggleState VIP_GetClientFeatureStatus(int iClient, const char[] szFeature);
+
+/**
+ *	Устанавливает статус VIP-функции игроку.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ * @param eStatus			Статус VIP-функции.
+ * @param bCallback			Вызывать ли toggle каллбэк.
+ * @param bSave				Сохранить ли в куки.
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+native bool VIP_SetClientFeatureStatus(int iClient, const char[] szFeature, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false);
+
+/**
+ *	Проверяет существование функции.
+ *
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					true - VIP-функция существует.
+ * 							false - VIP-функция не существует.
+*/
+native bool VIP_IsValidFeature(const char[] szFeature);
+
+/**
+ *	Получает тип функции.
+ *
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает элемент списка VIP_FeatureType.
+*/
+native VIP_FeatureType VIP_GetFeatureType(const char[] szFeature);
+
+/**
+ *	Получает тип значения функции.
+ *
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает элемент списка VIP_ValueType.
+*/
+native VIP_ValueType VIP_GetFeatureValueType(const char[] szFeature);
+
+/**
  *	Выдает игроку VIP-функцию и устанавливает её значение (на время сессии).
  *
  * @param iClient			Индекс игрока.
@@ -187,7 +239,7 @@ native bool VIP_GetClientFeatureString(int iClient, const char[] szFeature, char
  * @return					true - Успешно.
  * 							false - Не удалось выполнить.
 */
-native bool VIP_GiveClientFeature(int iClient, const char[] szFeature, const char[] szValue);
+native bool VIP_GiveClientFeature(int iClient, const char[] szFeature, const char[] szValue, bool bSaveDB = false);
 
 /**
  *	Отнимает у VIP-игрока VIP-функцию (на время сессии).
@@ -198,7 +250,7 @@ native bool VIP_GiveClientFeature(int iClient, const char[] szFeature, const cha
  * @return					true - Успешно.
  * 							false - Не удалось выполнить.
 */
-native bool VIP_RemoveClientFeature(int iClient, const char[] szFeature);
+native bool VIP_RemoveClientFeature(int iClient, const char[] szFeature, bool bSaveDB = false);
 
 /**
  *  Сохраняет значение в хранилище игрока (сохраняется при переподключении)
@@ -241,6 +293,19 @@ native bool VIP_IsVIPLoaded();
  * @return					int VIP_INTERFACE_VERSION
 */
 native int VIP_GetCurrentVersionInterface();
+
+/**
+ *	Проверяет наличие группы.
+ *
+ * @param szGroup			Имя группы.
+ *
+ * @return					true - группа существует.
+ * 							false - группа не существует.
+*/	
+native bool VIP_IsGroupExists(const char[] szGroup);
+
+#pragma deprecated Use VIP_IsGroupExists() instead
+native bool VIP_IsValidVIPGroup(const char[] szGroup);
 
 /**
  *	Получает VIP-группу игрока. (OLD)
@@ -301,7 +366,7 @@ native int VIP_GetClientGroupCount(int iClient);
 native void VIP_GiveClientVIP(int iAdmin = -1, int iClient, int iTime, const char[] szGroup, bool bAddToDB = true);
 
 /**
- *	Отнимает у игрока VIP-права.
+ *	Отнимает у игрока VIP группу.
  *
  * @param iAdmin			Индекс админа (0 - сервер, -1 - плагин).
  * @param iClient			Индекс игрока.
@@ -311,7 +376,7 @@ native void VIP_GiveClientVIP(int iAdmin = -1, int iClient, int iTime, const cha
  * @return					true - Успешно.
  * 							false - Не удалось выполнить.
 */
-native bool VIP_RemoveClientVIP(int iAdmin = -1, int iClient, const char[] szGroup, bool bInDB, bool bNotify);
+native void VIP_RemoveClientGroup(int iAdmin = -1, int iClient, const char[] szGroup, bool bAddToDB = true, bool bNotify = false);
 
 /**
  *	Получает наличие VIP прав у игрока.
@@ -373,6 +438,16 @@ native Database VIP_GetDatabase();
  * @noreturn
 */
 native void VIP_SendClientVIPMenu(int iClient, bool bSelection = false);
+
+/**
+ *	Записывает сообщение в лог.
+ *
+ * @param szMessage			Правила форматирования сообщение.
+ * @param ...				Параметры форматирования.
+ *
+ * @noreturn
+*/
+native void VIP_LogMessage(const char[] szMessage, any ...);
 
 /**
  *	Вызывается когда VIP-плагин загрузился.
@@ -543,20 +618,20 @@ enum struct VIP_Feature
 	}
 
 	// TODO
-	// bool IsUse(int iClient)
-	// {
-	// 	return VIP_IsClientFeatureUse(iClient, this.Name);
-	// }
+	bool IsUse(int iClient)
+	{
+		return VIP_IsClientFeatureUse(iClient, this.Name);
+	}
 
-	// VIP_ToggleState GetStatus(int iClient)
-	// {
-	// 	return VIP_GetClientFeatureStatus(iClient, this.Name);
-	// }
+	VIP_ToggleState GetStatus(int iClient)
+	{
+		return VIP_GetClientFeatureStatus(iClient, this.Name);
+	}
 
-	// bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
-	// {
-	// 	return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
-	// }
+	bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
+	{
+		return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
+	}
 }
 //VIP_Feature hFeature = {"hp"};
 
@@ -574,22 +649,36 @@ public SharedPlugin __pl_vip_core=
 #if !defined REQUIRE_PLUGIN
 public void __pl_vip_core_SetNTVOptional()
 {
-	MarkNativeAsOptional("VIP_IsVIPLoaded");
-	MarkNativeAsOptional("VIP_GetCurrentVersionInterface");
-
 	MarkNativeAsOptional("VIP_RegisterFeature");
 	MarkNativeAsOptional("VIP_UnregisterFeature");
 	MarkNativeAsOptional("VIP_UnregisterMe");
-	
+	MarkNativeAsOptional("VIP_IsClientFeatureUse");
+	MarkNativeAsOptional("VIP_GetClientFeatureInt");
+	MarkNativeAsOptional("VIP_GetClientFeatureFloat");
+	MarkNativeAsOptional("VIP_GetClientFeatureBool");
+	MarkNativeAsOptional("VIP_GetClientFeatureString");
+	MarkNativeAsOptional("VIP_GetClientFeatureStatus");
+	MarkNativeAsOptional("VIP_SetClientFeatureStatus");
+	MarkNativeAsOptional("VIP_IsValidFeature");
+	MarkNativeAsOptional("VIP_GetFeatureType");
+	MarkNativeAsOptional("VIP_GetFeatureValueType");
+	MarkNativeAsOptional("VIP_GiveClientFeature");
+	MarkNativeAsOptional("VIP_RemoveClientFeature");
+	MarkNativeAsOptional("VIP_SaveClientStorageValue");
+	MarkNativeAsOptional("VIP_GetClientStorageValue");
+	MarkNativeAsOptional("VIP_IsVIPLoaded");
+	MarkNativeAsOptional("VIP_GetCurrentVersionInterface");
+	MarkNativeAsOptional("VIP_IsGroupExists");
+	MarkNativeAsOptional("VIP_IsValidVIPGroup");
 	MarkNativeAsOptional("VIP_GetClientVIPGroup");
 	MarkNativeAsOptional("VIP_GetClientGroupName");
+	MarkNativeAsOptional("VIP_GetClientGroupExpire");
 	MarkNativeAsOptional("VIP_GetClientGroupCount");
-	
+	MarkNativeAsOptional("VIP_GiveClientVIP");
+	MarkNativeAsOptional("VIP_RemoveClientGroup");
 	MarkNativeAsOptional("VIP_IsClientVIP");
-
 	MarkNativeAsOptional("VIP_GetDatabase");
-
 	MarkNativeAsOptional("VIP_SendClientVIPMenu");
-	
+	MarkNativeAsOptional("VIP_LogMessage");
 }
 #endif

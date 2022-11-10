@@ -56,12 +56,18 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetFeatureType);
 	RegNative(GetFeatureValueType);
 	RegNative(GetClientFeatureStatus);
+	//RegNative(SetClientFeatureStatus);
+
 
 	RegNative(IsClientFeatureUse);
 	RegNative(GetClientFeatureInt);
 	RegNative(GetClientFeatureBool);
 	RegNative(GetClientFeatureFloat);
 	RegNative(GetClientFeatureString);
+
+	// TODO
+	//RegNative(GiveClientFeature);
+	//RegNative(RemoveClientFeature);
 
 	RegNative(IsGroupExists);
 	RegNative(IsValidVIPGroup);
@@ -71,6 +77,7 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetClientStorageValue);
 
 	RegNative(GetTimeFromStamp);
+	RegNative(LogMessage);
 
 
 	
@@ -110,7 +117,7 @@ void CallForward_OnClientDisconnect(int iClient)
 
 Action CallForward_OnFeatureToggle(int iClient, char[] sFeature)
 {
-	Action PluginResult;
+	Action PluginResult = Plugin_Continue;
 
 	Call_StartForward(g_hGlobalForward_OnFeatureToggle);
 	Call_PushCell(iClient);
@@ -711,6 +718,17 @@ public int Native_GetTimeFromStamp(Handle hPlugin, int iNumParams)
 	}
 	
 	return false;
+}
+
+public int Native_LogMessage(Handle hPlugin, int iNumParams)
+{
+	char szMessage[512];
+	SetGlobalTransTarget(LANG_SERVER);
+	FormatNativeString(0, 1, 2, sizeof(szMessage), _, szMessage);
+	
+	VIP_LogMsg(szMessage);
+
+	return 0;
 }
 
 bool CheckValidClient(const int &iClient, bool bCheckVIP = true)

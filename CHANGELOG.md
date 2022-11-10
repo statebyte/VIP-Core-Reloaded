@@ -12,8 +12,8 @@
 [-] Native VIP_CheckClient  
 [+] Native VIP_IsClientVIP  
 [-] Native VIP_GetClientID  
-[x] Native VIP_GetClientAccessTime  
-[x] Native VIP_SetClientAccessTime  
+[R] Native VIP_GetClientAccessTime  
+[R] Native VIP_SetClientAccessTime  
 [x] Native VIP_GetClientVIPGroup  
 [-] Native VIP_SetClientVIPGroup  
 [+] Native VIP_IsGroupExists  
@@ -22,11 +22,12 @@
 [-] Native VIP_RemoveGroup  
 [-] Native VIP_PrintToChatClient  
 [-] Native VIP_PrintToChatAll  
-[-] Native VIP_LogMessage  
+[+] Native VIP_LogMessage  
 [+] Native VIP_SendClientVIPMenu  
 [+] Native VIP_GiveClientVIP  
-[-] Native VIP_SetClientVIP  
-[+] Native VIP_RemoveClientVIP  
+[R] Native VIP_SetClientVIP  
+[R] Native VIP_RemoveClientVIP  
+[N] Native VIP_RemoveClientGroup  
 [+] Native VIP_IsVIPLoaded  
 [+] Native VIP_RegisterFeature  
 [+] Native VIP_UnregisterFeature  
@@ -53,11 +54,11 @@
 [-] Native VIP_SecondsToTime  
 [+] Native VIP_GetTimeFromStamp  
 [-] Native VIP_AddStringToggleStatus  
+[N] Native VIP_GiveClientGroup  
 [N] Native VIP_GetCurrentVersionInterface  
 [N] Native VIP_GetClientGroupName  
 [N] Native VIP_GetClientGroupExpire  
 [N] Native VIP_GetClientGroupCount  
-[N] Native VIP_SaveToStorage  
 [N-] Native VIP_GetGroupIDByName  
 [N-] Native VIP_AddFeatureSettingToGroup // Добавляет функцию в существующую группу  
 [N-] Native VIP_IsEnabledClientFeature  
