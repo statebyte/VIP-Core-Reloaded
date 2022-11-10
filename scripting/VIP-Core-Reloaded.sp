@@ -4,6 +4,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+#tryinclude <vip_version>
+
 #if !defined PL_VERSION
 #define PL_VERSION 					"4.0 Alpha 1"
 #endif
