@@ -25,6 +25,7 @@ Action cmd_OpenVipMenu(int iClient, int iArgs)
 	{
 		// TODO Notify Panel
 		PrintToChat(iClient, "[VIP] У вас нет привилегий...");
+		PlaySound(iClient, NO_ACCESS_SOUND);
 	}
 
 	return Plugin_Handled;

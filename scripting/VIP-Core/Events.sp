@@ -10,6 +10,12 @@ void HookEvents()
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 }
 
+public void OnMapStart()
+{
+	LoadSounds();
+	//ReadDownloads();
+}
+
 void Event_PlayerSpawn(Event hEvent, char[] sName, bool bBroadcast)
 {
 	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));

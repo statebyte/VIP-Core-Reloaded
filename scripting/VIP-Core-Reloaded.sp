@@ -26,7 +26,7 @@
 #include "VIP-Core/configs/Groups.sp"
 #include "VIP-Core/Database.sp"
 //#include "VIP-Core/Downloads.sp"
-//#include "VIP-Core/Sounds.sp"
+#include "VIP-Core/Sounds.sp"
 //#include "VIP-Core/Info.sp"
 //#include "VIP-Core/menus.sp"
 #include "VIP-Core/UTIL.sp"
