@@ -120,6 +120,159 @@ native void VIP_UnregisterFeature(const char[] szFeature);
 */
 native void VIP_UnregisterMe();
 
+// 
+enum struct VIP_Feature
+{
+	char Name[D_FEATURENAME_LENGTH];
+
+	void Register(	VIP_ValueType			eValType				= VIP_NULL,
+					VIP_FeatureType			eType					= TOGGLABLE,
+					ItemSelectCallback		Item_select_callback	= INVALID_FUNCTION,
+					ItemDisplayCallback		Item_display_callback	= INVALID_FUNCTION,
+					ItemDrawCallback		Item_draw_callback		= INVALID_FUNCTION,
+					VIP_ToggleState			eDefStatus				= NO_ACCESS,
+					bool					bCookie					= false)
+	{
+		VIP_RegisterFeature(this.Name, eValType, eType, Item_select_callback, Item_display_callback, Item_draw_callback, eDefStatus, bCookie);
+	}
+
+	void UnRegister()
+	{
+		VIP_UnregisterFeature(this.Name);
+	}
+
+	bool GetString(iClient, char[] sBuffer, int iMaxLen)
+	{
+		return VIP_GetClientFeatureString(iClient, this.Name, sBuffer, iMaxLen);
+	}
+
+	int GetInt(int iClient)
+	{
+		return VIP_GetClientFeatureInt(iClient, this.Name);
+	};
+
+	bool GetBool(int iClient)
+	{
+		return VIP_GetClientFeatureBool(iClient, this.Name);
+	};
+
+	bool IsUse(int iClient)
+	{
+		return VIP_IsClientFeatureUse(iClient, this.Name);
+	};
+
+	VIP_ToggleState GetStatus(int iClient)
+	{
+		return VIP_GetClientFeatureStatus(iClient, this.Name);
+	}
+
+	bool SetStatus(int iClient, VIP_ToggleState eStatus, bool bCallback = true, bool bSave = false)
+	{
+		return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
+	}
+
+};
+//VIP_Feature hFeature = {"hp"};
+
+/**
+ *	Возвращает статус VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					true - VIP-функции включена.
+ * 							false - VIP-функции выключена или нет доступа.
+*/
+native bool VIP_IsClientFeatureUse(int iClient, const char[] szFeature);
+
+/**
+ *	Получает целочисленное значение параметра VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает целочисленное значение параметра VIP-функции у игрока.
+*/
+native int VIP_GetClientFeatureInt(int iClient, const char[] szFeature);
+
+/**
+ *	Получает дробное значение параметра VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает дробное значение параметра VIP-функции у игрока.
+*/
+native float VIP_GetClientFeatureFloat(int iClient, const char[] szFeature);
+
+/**
+ *	Получает логическое значение параметра VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					Возвращает логическое значение параметра VIP-функции у игрока (true/false).
+*/
+native bool VIP_GetClientFeatureBool(int iClient, const char[] szFeature);
+
+/**
+ *	Получает строчное значение параметра VIP-функции у игрока.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ * @param szBuffer			Буфер, в который будет помещен результат.
+ * @param iMaxLength		Размер буфера.
+ *
+ * @noreturn
+*/
+native bool VIP_GetClientFeatureString(int iClient, const char[] szFeature, char[] szBuffer, int iMaxLength);
+
+/**
+ *	Выдает игроку VIP-функцию и устанавливает её значение (на время сессии).
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ * @param szValue			Значение (автоматически будет приведено к типу ф-и).
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+native bool VIP_GiveClientFeature(int iClient, const char[] szFeature, const char[] szValue);
+
+/**
+ *	Отнимает у VIP-игрока VIP-функцию (на время сессии).
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @return					true - Успешно.
+ * 							false - Не удалось выполнить.
+*/
+native bool VIP_RemoveClientFeature(int iClient, const char[] szFeature);
+
+/**
+ *  Сохраняет значение в хранилище игрока (сохраняется при переподключении)
+ *
+ * @param iClient			Индекс игрока.
+ * @param szKey				Ключ
+ * @param szValue			Значение
+ *
+ * @noreturn
+*/
+native void VIP_SaveClientStorageValue(int iClient, const char[] szKey, const char[] szValue);
+
+/**
+ *	Получает значение из хранилища игрока
+ *
+ * @param szKey				Ключ
+ * @param szValue			Буфер, в который будет помещен результат.
+ * @param iMaxLength		Размер буфера.
+ *
+ * @noreturn
+*/
+native void VIP_GetClientStorageValue(int iClient, const char[] szKey, char[] szValue, int iMaxLength);
+
+
 /**
  *	Проверка что ядро загружено и готово к регистрации функций.
  *
@@ -317,6 +470,67 @@ forward void VIP_OnRemoveGroup(int iClient, char[] szGroup);
  * @noreturn
 */
 forward void VIP_OnPlayerSpawn(int iClient, int iTeam, bool bIsVIP);
+
+/**
+ *	Вызывается когда игрок был загружен.
+ *
+ * @param iClient			Индекс игрока.
+ * @param bIsVIP			Имеет ли игрок VIP-статус.
+ *
+ * @noreturn
+*/
+forward void VIP_OnClientLoaded(int iClient, bool bIsVIP);
+
+/**
+ *	Вызывается когда игрок на стадии отключения.
+ *
+ * @param iClient			Индекс игрока.
+ * @param bIsVIP			Имеет ли игрок VIP-статус.
+ *
+ * @noreturn
+*/
+forward void VIP_OnClientDisconnect(int iClient, bool bIsVIP);
+
+/**
+ *	Вызывается когда VIP-игрок был загружен.
+ *
+ * @param iClient			Индекс игрока.
+ *
+ * @noreturn
+*/
+forward void VIP_OnVIPClientLoaded(int iClient);
+
+/**
+ *	Вызывается когда VIP-функция была зарегистрирована.
+ *
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @noreturn
+*/
+forward void VIP_OnFeatureRegistered(const char[] szFeature);
+
+/**
+ *	Вызывается когда VIP-функция была удалена.
+ *
+ * @param szFeature			Уникальное имя ф-и.
+ *
+ * @noreturn
+*/
+forward void VIP_OnFeatureUnregistered(const char[] szFeature);
+
+/**
+ *	Вызывается когда у VIP-игрока изменяется статус функции.
+ *
+ * @param iClient			Индекс игрока.
+ * @param szFeature			Уникальное имя ф-и.
+ * @param eOldStatus		Старое значение статуса.
+ * @param eNewStatus		Новое значение статуса.
+ *
+ * @return					Plugin_Stop или Plugin_Handled  - остановит переключение статуса;
+ * 							Plugin_Continue  - разрешит переключение статуса без изменений;
+ * 							Plugin_Changed - разрешит переключение статуса на eNewStatus.
+*/
+forward Action VIP_OnFeatureToggle(int iClient, const char[] szFeature, VIP_ToggleState eOldStatus, VIP_ToggleState &eNewStatus);
 
 /**
  *	Формирует путь к файлу с настройками модуля.

@@ -22,6 +22,16 @@
 #define LOGS_DUMP_FILENAME			"VIP-Core-Dump.log"
 #define LOGS_DEBUG_FILENAME			"VIP-Core-Debug.log"
 
+enum DBG_Level
+{
+	DBG_None = 0,
+	DBG_ERROR,
+	DBG_WARNING,
+	DBG_INFO,
+	DBG_SQL
+}
+DBG_Level g_iDBGLevel = DBG_SQL;
+
 #include "VIP-Core/Global.sp"
 #include "VIP-Core/Struct.sp"
 #include "VIP-Core/configs/Groups.sp"

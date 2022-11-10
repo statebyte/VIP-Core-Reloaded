@@ -8,16 +8,6 @@ void LoadTest()
 	//addTestTimes();
 }
 
-enum DBG_Level
-{
-	DBG_None = 0,
-	DBG_ERROR,
-	DBG_WARNING,
-	DBG_INFO,
-	DBG_SQL
-}
-DBG_Level g_iDBGLevel = DBG_SQL;
-
 void DebugMsg(DBG_Level iLevel, const char[] sMsg, any ...)
 {
 	if(iLevel > g_iDBGLevel) return;

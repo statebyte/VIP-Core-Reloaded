@@ -138,25 +138,28 @@ void CallForward_OnFeatureUnregistered(char[] sFeature)
 
 void CallForward_OnVIPLoaded()
 {
-	g_eServerData.CoreIsReady = true;
-
-	PrintToServer("------------------- VIP Core ---------------------");
-	PrintToServer("VIP Core is ready to working!");
-	PrintToServer(" ");
-	PrintToServer("Groups: %i", g_hGroups.Length);
-	PrintToServer("Database: %s", g_eServerData.DB_Type == DB_None ? "No" : "Yes");
-	
-	if(g_eServerData.DB_Type != DB_None)
+	if(!g_eServerData.CoreIsReady)
 	{
-		char sDriverName[64];
-		SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
-		PrintToServer("Database Type: %s", sDriverName);
+		PrintToServer("------------------- VIP Core ---------------------");
+		PrintToServer("VIP Core is ready to working!");
+		PrintToServer(" ");
+		PrintToServer("Groups: %i", g_hGroups.Length);
+		PrintToServer("Database: %s", g_eServerData.DB_Type == DB_None ? "No" : "Yes");
+		
+		if(g_eServerData.DB_Type != DB_None)
+		{
+			char sDriverName[64];
+			SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
+			PrintToServer("Database Type: %s", sDriverName);
+		}
+		
+		PrintToServer(" ");
+		PrintToServer("Authors: " ... PL_AUTHOR);
+		PrintToServer("Version: " ... PL_VERSION);
+		PrintToServer("------------------- VIP Core ---------------------");
 	}
 	
-	PrintToServer(" ");
-	PrintToServer("Authors: " ... PL_AUTHOR);
-	PrintToServer("Version: " ... PL_VERSION);
-	PrintToServer("------------------- VIP Core ---------------------");
+	g_eServerData.CoreIsReady = true;
 
 	Call_StartForward(g_hGlobalForward_OnVIPLoaded);
 	Call_Finish();
