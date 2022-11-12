@@ -468,6 +468,15 @@ forward void VIP_OnVIPLoaded();
 forward void VIP_OnRebuildFeatureList(int iClient);
 
 /**
+ *	Вызывается когда у VIP-игрока обновилось хранилище данных
+ *
+ * @noparams
+ *
+ * @noreturn
+*/
+forward void VIP_OnStorageUpdate(int iClient, char[] szFeature);
+
+/**
  *	Вызывается когда добавлена новая VIP-группа игрока
  *
  * @noparams

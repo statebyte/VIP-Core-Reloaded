@@ -12,6 +12,7 @@ static Handle g_hGlobalForward_OnFeatureUnregistered;
 static Handle g_hGlobalForward_OnClientLoaded;
 static Handle g_hGlobalForward_OnVIPClientLoaded;
 static Handle g_hGlobalForward_OnClientDisconnect;
+static Handle g_hGlobalForward_OnStorageUpdate;
 
 void API_SetupForwards()
 {
@@ -26,6 +27,7 @@ void API_SetupForwards()
 	g_hGlobalForward_OnClientLoaded					= CreateGlobalForward("VIP_OnClientLoaded", ET_Ignore, Param_Cell, Param_Cell);
 	g_hGlobalForward_OnVIPClientLoaded				= CreateGlobalForward("VIP_OnVIPClientLoaded", ET_Ignore, Param_Cell);
 	g_hGlobalForward_OnClientDisconnect				= CreateGlobalForward("VIP_OnClientDisconnect", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForward_OnStorageUpdate				= CreateGlobalForward("VIP_OnStorageUpdate", ET_Ignore, Param_Cell, Param_String);
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_max) 
@@ -66,8 +68,8 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetClientFeatureString);
 
 	// TODO
-	//RegNative(GiveClientFeature);
-	//RegNative(RemoveClientFeature);
+	RegNative(GiveClientFeature);
+	RegNative(RemoveClientFeature);
 
 	RegNative(IsGroupExists);
 	RegNative(IsValidVIPGroup);
@@ -98,6 +100,14 @@ void CallForward_OnClientLoaded(int iClient)
 	{
 		CallForward_OnVIPClientLoaded(iClient);
 	}
+}
+
+void CallForward_OnStorageUpdate(int iClient, char[] szFeature)
+{
+	Call_StartForward(g_hGlobalForward_OnStorageUpdate);
+	Call_PushCell(iClient);
+	Call_PushString(szFeature);
+	Call_Finish();
 }
 
 void CallForward_OnVIPClientLoaded(int iClient)
@@ -216,6 +226,38 @@ bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, con
 	Call_Finish(bResult);
 	
 	return bResult;
+}
+
+public int Native_RemoveClientFeature(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	return g_ePlayerData[iClient].RemoveCustomFeature(sFeature);
+}
+
+public int Native_GiveClientFeature(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH], sValue[D_FEATUREVALUE_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	GetNativeString(3, sValue, sizeof(sValue));
+
+	return g_ePlayerData[iClient].AddCustomFeature(sFeature, sValue);
 }
 
 public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
@@ -676,6 +718,8 @@ public int Native_SaveClientStorageValue(Handle hPlugin, int iNumParams)
 	GetNativeString(3, sBuffer, sizeof(sBuffer));
 
 	DB_SaveStorage(iClient, sFeature, sBuffer);
+
+	g_ePlayerData[iClient].SaveStorage(sFeature, sBuffer);
 
 	return 1;
 }

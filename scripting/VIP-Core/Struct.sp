@@ -372,6 +372,8 @@ enum struct PlayerData
 			this.hStorage.SetArray(iIndex, hStorage, sizeof(hStorage));
 		}
 
+		CallForward_OnStorageUpdate(this.iClient, sKey);
+
 		return true;
 	}
 

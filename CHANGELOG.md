@@ -9,6 +9,7 @@
 [R] - Функция будет удалена в новой версии API  
 [x] - Функция переработана и может быть неправельная работа в старых модулях  
 
+- Natives:  
 [-] Native VIP_CheckClient  
 [+] Native VIP_IsClientVIP  
 [-] Native VIP_GetClientID  
@@ -43,8 +44,8 @@
 [+] Native VIP_GetClientFeatureFloat  
 [+] Native VIP_GetClientFeatureBool  
 [+] Native VIP_GetClientFeatureString  
-[-] Native VIP_GiveClientFeature  
-[-] Native VIP_RemoveClientFeature  
+[+] Native VIP_GiveClientFeature  
+[+] Native VIP_RemoveClientFeature  
 [R] Native VIP_SetClientStorageValue  
 [N] Native VIP_SaveClientStorageValue  
 [+] Native VIP_GetClientStorageValue  
@@ -65,6 +66,7 @@
 [R] Native VIP_GetVIPClientTrie  
 [R] Native VIP_RemoveClientVIP2  
 
+- Forawrds:  
 [+] Forward VIP_OnPlayerSpawn  
 [-] Forward VIP_OnShowClientInfo  
 [R] Forward VIP_OnClientStorageLoaded  
@@ -82,3 +84,4 @@
 [N] Forward VIP_OnRebuildFeatureList  
 [N] Forward VIP_OnAddGroup  
 [N] Forward VIP_OnRemoveGroup  
+[N] Forward VIP_OnStorageUpdate 

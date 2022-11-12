@@ -13,7 +13,7 @@ void HookEvents()
 public void OnMapStart()
 {
 	LoadSounds();
-	//ReadDownloads();
+	ReadDownloadList();
 }
 
 void Event_PlayerSpawn(Event hEvent, char[] sName, bool bBroadcast)

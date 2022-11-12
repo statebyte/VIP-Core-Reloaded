@@ -2,8 +2,9 @@
 void RegCmds()
 {
 	RegConsoleCmd("sm_vip", cmd_OpenVipMenu);
+	
 	RegAdminCmd("sm_vipadmin", cmd_AdminMenu, ADMFLAG_ROOT);
-	RegAdminCmd("sm_vip_reload", cmd_AdminReloadConfig, ADMFLAG_ROOT);
+	RegAdminCmd("sm_reload_vip_cfg", cmd_AdminReloadConfig, ADMFLAG_ROOT);
 	RegAdminCmd("sm_refresh_vips", cmd_AdminReloadPlayerData, ADMFLAG_ROOT);
 }
 

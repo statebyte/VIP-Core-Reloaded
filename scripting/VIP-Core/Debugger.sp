@@ -4,6 +4,7 @@ void LoadTest()
 	RegConsoleCmd("sm_vip_test", cmd_Test);
 	RegConsoleCmd("sm_vip_dump_groups", cmd_Groups);
 	RegConsoleCmd("sm_vip_dump_player", cmd_DumpPlayer);
+	RegConsoleCmd("sm_vip_dump_features", cmd_DumpFeatures);
 
 	//addTestTimes();
 }
@@ -58,6 +59,35 @@ void addTestTimes()
 	g_hTimes.PushArray(hTime, sizeof(hTime));
 }
 
+Action cmd_DumpFeatures(int iClient, int iArgs)
+{
+	int iLen = g_hFeatures.Length;
+
+	for(int i = 0; i < iLen; i++)
+	{
+		Feature hFeature;
+		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
+		DumpMsg("Key: %s", hFeature.Key);
+		DumpMsg("------------------");
+		DumpMsg("ValType: %i", hFeature.ValType);
+		DumpMsg("Type: %i", hFeature.Type);
+
+		//DumpMsg("OnSelectCB: %x", view_as<int>(hFeature.OnSelectCB));
+		//DumpMsg("OnDisplayCB: %x", view_as<int>(hFeature.OnDisplayCB));
+		//DumpMsg("OnDrawCB: %x", view_as<int>(hFeature.OnDrawCB));
+
+		DumpMsg("hPlugin: %i", view_as<int>(hFeature.hPlugin));
+
+		DumpMsg("ToggleState: %x", view_as<int>(hFeature.ToggleState));
+
+		DumpMsg("bCookie: %i", hFeature.bCookie);
+
+		DumpMsg("------------------");
+	}
+
+	return Plugin_Handled;
+}
+
 Action cmd_Test(int iClient, int iArgs)
 {
 	g_ePlayerData[iClient].AddGroup("vip2", 1665577639);
@@ -68,8 +98,10 @@ Action cmd_Test(int iClient, int iArgs)
 Action cmd_DumpPlayer(int iClient, int iArgs)
 {
 	DumpMsg("iClient: %i", g_ePlayerData[iClient].iClient);
+
+	DumpMsg("StatusLoading: %i\n", g_ePlayerData[iClient].Status);
 	
-	DumpMsg("bVIP: %i", g_ePlayerData[iClient].bVIP);
+	DumpMsg("bVIP: %i\n", g_ePlayerData[iClient].bVIP);
 
 	DumpMsg("hGroups:");
 	DumpMsg("------------------");
@@ -83,6 +115,7 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 		g_ePlayerData[iClient].hGroups.GetString(i, sBuffer, sizeof(sBuffer));
 		DumpMsg("%s", sBuffer);
 	}
+	DumpMsg("------------------\n");
 
 	DumpMsg("hFeatures:");
 	DumpMsg("------------------");
@@ -95,6 +128,33 @@ Action cmd_DumpPlayer(int iClient, int iArgs)
 		g_ePlayerData[iClient].hFeatures.GetArray(i, hPFeature, sizeof(hPFeature));
 		DumpMsg("%s - %s | %i (%s)", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority, hPFeature.bEnabled ? "Enable" : "Disable");
 	}
+	DumpMsg("------------------\n");
+
+	DumpMsg("hCustomFeatures:");
+	DumpMsg("------------------");
+
+	iLen = g_ePlayerData[iClient].hCustomFeatures.Length;
+
+	for(int i = 0; i < iLen; i++)
+	{
+		PlayerFeature hPFeature;
+		g_ePlayerData[iClient].hCustomFeatures.GetArray(i, hPFeature, sizeof(hPFeature));
+		DumpMsg("%s - %s | %i (%s)", hPFeature.Key, hPFeature.Value, hPFeature.CurrentPriority, hPFeature.bEnabled ? "Enable" : "Disable");
+	}
+	DumpMsg("------------------\n");
+
+	DumpMsg("hStorage:");
+	DumpMsg("------------------");
+
+	iLen = g_ePlayerData[iClient].hStorage.Length;
+
+	for(int i = 0; i < iLen; i++)
+	{
+		PlayerStorage hStorage;
+		g_ePlayerData[iClient].hStorage.GetArray(i, hStorage, sizeof(hStorage));
+		DumpMsg("%s - %s", hStorage.Key, hStorage.Value);
+	}
+	DumpMsg("------------------\n");
 	
 	return Plugin_Handled;
 }
