@@ -7,11 +7,78 @@ void LoadMainMenu()
 	g_hMainMenu.AddItem("NO_FEATURES", "NO_FEATURES", ITEMDRAW_DISABLED);
 }
 
+void OpenVIPInfo(int iClient)
+{
+	SetGlobalTransTarget(iClient);
+
+	char sBuffer[256];
+	Menu hMenu = new Menu(VIPInfoMenuHandler);
+	hMenu.ExitBackButton = true;
+	hMenu.SetTitle("Информация о VIP-статусе\n \n");
+
+	int iLen = g_ePlayerData[iClient].hGroups.Length;
+
+	if(iLen > 0)
+	{
+		hMenu.AddItem("", "Список ваших групп:", ITEMDRAW_DISABLED);
+
+		for(int i = 0; i < iLen; i++)
+		{
+			PlayerGroup hGroup;
+			g_ePlayerData[iClient].hGroups.GetArray(i, hGroup, sizeof(hGroup));
+
+			UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime - GetTime(), iClient);
+			Format(sBuffer, sizeof(sBuffer), "%s [%s]", hGroup.Name, sBuffer);
+
+			hMenu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
+		}
+	}
+
+	hMenu.AddItem("", "Список ваших функций:", ITEMDRAW_DISABLED);
+
+	iLen = g_hFeatures.Length;
+
+	for(int i = 0; i < iLen; i++)
+	{
+		Feature hFeature;
+		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
+		int iIndex;
+		if((iIndex = g_ePlayerData[iClient].GetFeatureIDByName(hFeature.Key)) != -1)
+		{
+			PlayerFeature hPFeature;
+			g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hPFeature, sizeof(hPFeature));
+
+			if(hFeature.ValType == BOOL)
+			{
+				FormatEx(sBuffer, sizeof(sBuffer), TranslationPhraseExists(hFeature.Key) ? "%t [%s]" : "%s [%s]", hFeature.Key, StringToInt(hPFeature.Value) ? "Enabled" : "Disabled");
+			}
+			else FormatEx(sBuffer, sizeof(sBuffer), TranslationPhraseExists(hFeature.Key) ? "%t [%s]" : "%s [%s]", hFeature.Key, hPFeature.Value);
+
+			// if(TranslationPhraseExists(hFeature.Key))
+			// {
+			// 	FormatEx(sBuffer, sizeof(sBuffer), "%t [%s]", hFeature.Key, hPFeature.Value);
+			// }
+			// else
+			// {
+			// 	FormatEx(sBuffer, sizeof(sBuffer), "%s [%s]", hFeature.Key, hPFeature.Value);
+			// }
+
+			hMenu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
+		}
+	}
+
+
+
+	hMenu.Display(iClient, MENU_TIME_FOREVER);
+}
+
 void RebuildVIPMenu()
 {
 	g_hMainMenu.RemoveAllItems();
 
 	char sBuffer[256];
+
+	g_hMainMenu.AddItem("__info", "Информация о VIP-статусе\n \n");
 
 	int iLen = g_hFeatures.Length;
 	for(int i = 0; i < iLen; i++)
@@ -23,6 +90,22 @@ void RebuildVIPMenu()
 	}
 }
 
+int VIPInfoMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
+{
+	switch(action)
+	{
+		case MenuAction_End: delete hMenu;
+		case MenuAction_Cancel:
+		{
+			if(iItem == MenuCancel_ExitBack)
+			{
+				g_hMainMenu.Display(iClient, MENU_TIME_FOREVER);
+			}
+		}
+	}
+	return 0;
+}
+
 int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 {
 	char sBuffer[D_FEATURENAME_LENGTH];
@@ -31,13 +114,21 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 	{
 		case MenuAction_Display:
 		{
+			SetGlobalTransTarget(iClient);
 			char szTitle[256];
-			FormatEx(szTitle, sizeof(szTitle), "%s\n \n", "VIP_MENU");
+			FormatEx(szTitle, sizeof(szTitle), "%t\n \n", "VIP_MENU_TITLE");
 			(view_as<Panel>(iItem)).SetTitle(szTitle);
 		}
 		case MenuAction_Select:
 		{
 			hMenu.GetItem(iItem, sBuffer, sizeof(sBuffer));
+
+			if(!strcmp(sBuffer, "__info"))
+			{
+				OpenVIPInfo(iClient);
+				return 0;
+			}
+
 			int iIndex = GetFeatureIDByKey(sBuffer);
 
 			if(iIndex != -1)
@@ -84,6 +175,11 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 			if(!strcmp(sBuffer, "NO_FEATURES"))
 			{
 				return  g_hFeatures.Length == 0 ? ITEMDRAW_DISABLED : ITEMDRAW_RAWLINE;
+			}
+
+			if(!strcmp(sBuffer, "__info"))
+			{
+				return ITEMDRAW_DEFAULT;
 			}
 
 			int iIndex = GetFeatureIDByKey(sBuffer);
