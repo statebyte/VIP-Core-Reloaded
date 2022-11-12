@@ -1,6 +1,11 @@
 name: Test build
 
 on:
+  push:
+    branches:
+      - main
+      - rc
+      - dev
   pull_request:
     branches:
       - main
