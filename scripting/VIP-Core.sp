@@ -11,7 +11,7 @@
 #tryinclude <vip_version>
 
 #if !defined PL_VERSION
-#define PL_VERSION 					"4.0 Alpha 6"
+#define PL_VERSION 					"4.0 Alpha 7"
 #endif
 #define PL_AUTHOR 					"R1KO, FIVE and HLmod Community"
 
