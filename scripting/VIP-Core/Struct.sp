@@ -601,12 +601,12 @@ enum struct PlayerData
 
 			int iPriorityID = GetGroupIDByName(hGroup.Name);
 
-			PrintToServer("%i - %s", iPriorityID, hGroup.Name);
+			DebugMsg(DBG_INFO, "%i - %s", iPriorityID, hGroup.Name);
 
 			if(iPriorityID != -1) iResult = iPriorityID;
 		}
 
-		PrintToServer("result %i", iResult);
+		DebugMsg(DBG_INFO, "result %i", iResult);
 
 		return iResult;
 	}

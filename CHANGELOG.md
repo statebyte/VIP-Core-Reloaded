@@ -25,7 +25,8 @@
 [-] Native VIP_PrintToChatAll  
 [+] Native VIP_LogMessage  
 [+] Native VIP_SendClientVIPMenu  
-[+] Native VIP_GiveClientVIP  
+[R] Native VIP_GiveClientVIP  
+[N] Native VIP_GiveClientGroup  
 [R] Native VIP_SetClientVIP  
 [R] Native VIP_RemoveClientVIP  
 [N] Native VIP_RemoveClientGroup  

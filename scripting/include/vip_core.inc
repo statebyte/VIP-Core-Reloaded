@@ -353,7 +353,7 @@ native int VIP_GetClientGroupExpire(int iClient, int iIndex = 0);
 native int VIP_GetClientGroupCount(int iClient);
 
 /**
- *	Выдает игроку VIP-права.
+ *	Выдает игроку VIP группу.
  *
  * @param iAdmin			Индекс админа (0 - сервер, -1 - плагин).
  * @param iClient			Индекс игрока.
@@ -684,6 +684,7 @@ public void __pl_vip_core_SetNTVOptional()
 	MarkNativeAsOptional("VIP_GetClientGroupExpire");
 	MarkNativeAsOptional("VIP_GetClientGroupCount");
 	MarkNativeAsOptional("VIP_GiveClientVIP");
+	MarkNativeAsOptional("VIP_GiveClientGroup");
 	MarkNativeAsOptional("VIP_RemoveClientGroup");
 	MarkNativeAsOptional("VIP_IsClientVIP");
 	MarkNativeAsOptional("VIP_GetDatabase");

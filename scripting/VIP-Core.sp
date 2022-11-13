@@ -11,7 +11,7 @@
 #tryinclude <vip_version>
 
 #if !defined PL_VERSION
-#define PL_VERSION 					"4.0 Alpha 1"
+#define PL_VERSION 					"4.0 Alpha 6"
 #endif
 #define PL_AUTHOR 					"R1KO, FIVE and HLmod Community"
 
@@ -42,6 +42,7 @@ DBG_Level g_iDBGLevel = DBG_SQL;
 #include "VIP-Core/Downloads.sp"
 #include "VIP-Core/Sounds.sp"
 //#include "VIP-Core/Info.sp"
+//#include "VIP-Core/Colors.sp"
 #include "VIP-Core/UTIL.sp"
 #include "VIP-Core/API.sp"
 #include "VIP-Core/menus/MainMenu.sp"
