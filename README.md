@@ -20,7 +20,7 @@
         src="https://img.shields.io/github/repo-size/theelsaud/VIP-Core-Reloaded"
     />
     <img
-        src="https://img.shields.io/github/workflow/status/theelsaud/VIP-Core-Reloaded/Compile%20and%20release"
+        src="https://img.shields.io/github/workflow/status/theelsaud/VIP-Core-Reloaded/Test%20build"
     />
   </p>
 </div>
@@ -62,8 +62,8 @@
 - Поддержка Storage [+]
 - Поддрежка MySQL [+]
 - Поддержка большенства старых функций и совместимость с новым API [-]
-- Поддрежка SQLite [-]
-- Поддрежка PostgreSQL (Только на SM 1.11) [-]
+- Поддержка SQLite [-]
+- Поддержка PostgreSQL (Только на SM 1.11) [-]
 - Полная поддержка переводов во всём плагине [-]
 
 Trigger  🥚

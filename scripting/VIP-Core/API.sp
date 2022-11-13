@@ -272,11 +272,6 @@ public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
 	char sFeature[D_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
-	if(GetNativeCell(3))
-	{
-		DB_RemoveCustomFeature(iClient, sFeature);
-	}
-
 	return g_ePlayerData[iClient].GetFeatureIDByName(sFeature) != -1 ? true : false;
 }
 
