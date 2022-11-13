@@ -1,7 +1,4 @@
 
-#undef REQUIRE_PLUGIN
-#include <adminmenu>
-#define REQUIRE_PLUGIN
 
 static const char g_szAdminMenuLibrary[] = "adminmenu";
 

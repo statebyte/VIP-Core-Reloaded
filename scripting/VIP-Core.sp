@@ -4,6 +4,10 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+#undef REQUIRE_PLUGIN
+#include <adminmenu>
+#define REQUIRE_PLUGIN
+
 #tryinclude <vip_version>
 
 #if !defined PL_VERSION
