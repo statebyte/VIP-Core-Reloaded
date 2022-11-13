@@ -363,7 +363,7 @@ native int VIP_GetClientGroupCount(int iClient);
  *
  * @noreturn
 */
-native void VIP_GiveClientVIP(int iAdmin = -1, int iClient, int iTime, const char[] szGroup, bool bAddToDB = true);
+native void VIP_GiveClientGroup(int iAdmin = -1, int iClient, int iTime, const char[] szGroup, bool bAddToDB = true);
 
 /**
  *	Отнимает у игрока VIP группу.
