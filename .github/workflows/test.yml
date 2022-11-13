@@ -63,6 +63,6 @@ jobs:
             echo "===OUT FILES==="
             cd ../plugins
             ls
-            echo "===VERSION===
+            echo "===VERSION==="
             echo ${{ env.GITHUB_SHA_SHORT }}
           working-directory: ${{ env.SCRIPTS_PATH }}

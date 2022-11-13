@@ -2,6 +2,7 @@
 
 static const char g_szAdminMenuLibrary[] = "adminmenu";
 
+
 void LoadTopMenu()
 {
 	if(LibraryExists(g_szAdminMenuLibrary))
