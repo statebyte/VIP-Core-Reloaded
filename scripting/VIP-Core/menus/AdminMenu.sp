@@ -383,7 +383,12 @@ void OpenPlayerFeaturesInfoMenu(int iClient)
 			}
 			else
 			{
-				g_hGroups.GetArray(g_ePlayerData[iTarget].GetGroupIDByMaxPriority(), hGroup, sizeof(hGroup));
+				int iPriority = g_ePlayerData[iTarget].GetGroupIDByMaxPriority();
+
+				if(iPriority != -1)
+				{
+					g_hGroups.GetArray(iPriority, hGroup, sizeof(hGroup));
+				}
 			}
 
 
