@@ -384,14 +384,20 @@ enum struct PlayerData
 		return true;
 	}
 
-	void ToggleFeatureStatus(char[] sKey)
+	void ToggleFeatureStatus(char[] sKey, int iAuto = -1)
 	{
 		VIP_ToggleState State = this.GetFeatureToggleStatus(sKey);
 
-		if(State == NO_ACCESS) return;
-
 		char sBuf[4];
-		IntToString(State == ENABLED ? 0 : 1, sBuf, sizeof(sBuf));
+		if(iAuto == -1)
+		{
+			IntToString(State == ENABLED ? 0 : 1, sBuf, sizeof(sBuf));
+		}
+		else
+		{
+			IntToString(iAuto, sBuf, sizeof(sBuf));
+		}
+
 		this.SaveStorage(sKey, sBuf);
 	}
 

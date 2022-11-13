@@ -58,8 +58,7 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetFeatureType);
 	RegNative(GetFeatureValueType);
 	RegNative(GetClientFeatureStatus);
-	//RegNative(SetClientFeatureStatus);
-
+	RegNative(SetClientFeatureStatus);
 
 	RegNative(IsClientFeatureUse);
 	RegNative(GetClientFeatureInt);
@@ -67,7 +66,6 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetClientFeatureFloat);
 	RegNative(GetClientFeatureString);
 
-	// TODO
 	RegNative(GiveClientFeature);
 	RegNative(RemoveClientFeature);
 
@@ -80,9 +78,6 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 
 	RegNative(GetTimeFromStamp);
 	RegNative(LogMessage);
-
-
-	
 
 	RegPluginLibrary("vip_core");
 	
@@ -257,6 +252,11 @@ public int Native_GiveClientFeature(Handle hPlugin, int iNumParams)
 
 	GetNativeString(3, sValue, sizeof(sValue));
 
+	if(GetNativeCell(4))
+	{
+		DB_AddCustomFeature(iClient, sFeature, sValue);
+	}
+
 	return g_ePlayerData[iClient].AddCustomFeature(sFeature, sValue);
 }
 
@@ -271,6 +271,11 @@ public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
 
 	char sFeature[D_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	if(GetNativeCell(3))
+	{
+		DB_RemoveCustomFeature(iClient, sFeature);
+	}
 
 	return g_ePlayerData[iClient].GetFeatureIDByName(sFeature) != -1 ? true : false;
 }
@@ -372,6 +377,46 @@ public int Native_GetClientFeatureStatus(Handle hPlugin, int iNumParams)
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	return view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(sFeature));
+}
+
+public int Native_SetClientFeatureStatus(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if(!CheckValidClient(iClient))
+	{
+		return ThrowNativeError(1, "Invalid Client index %i", iClient);
+	}
+
+	char sFeature[D_FEATURENAME_LENGTH];
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
+
+	if(iIndex == -1)
+	{
+		return ThrowNativeError(1, "Invalid Feature index - %s", sFeature);
+	}
+
+	int State = GetNativeCell(3);
+	bool bCallback = GetNativeCell(4);
+	bool bSave = GetNativeCell(5);
+	
+	g_ePlayerData[iClient].ToggleFeatureStatus(sFeature, State);
+
+	if(bCallback)
+	{
+		CallForward_OnFeatureToggle(iClient, sFeature);
+	}
+
+	if(bSave)
+	{
+		char sBuf[4];
+		IntToString(State, sBuf, sizeof(sBuf));
+		DB_SaveStorage(iClient, sFeature, sBuf);
+	}
+
+	return 1;
 }
 
 public int Native_IsGroupExists(Handle hPlugin, int iNumParams)
@@ -590,8 +635,6 @@ public int Native_UnregisterMe(Handle hPlugin, int iNumParams)
 		i--;
 		iLen--;
 	}
-	
-	RebuildVIPMenu();
 
 	return 1;
 }
@@ -624,6 +667,8 @@ void UnregisterFeature(char[] szFeature)
 		g_hFeatures.Erase(iIndex);
 		CallForward_OnFeatureUnregistered(szFeature);
 	}
+
+	RebuildVIPMenu();
 }
 
 public int Native_IsVIPLoaded(Handle hPlugin, int iNumParams)
