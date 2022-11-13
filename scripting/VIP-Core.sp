@@ -11,19 +11,19 @@
 #tryinclude <vip_version>
 
 #if !defined PL_VERSION
-#define PL_VERSION 					"4.0 Alpha 7"
+#define PL_VERSION 						"4.0 Alpha 8"
 #endif
-#define PL_AUTHOR 					"R1KO, FIVE and HLmod Community"
+#define PL_AUTHOR 						"R1KO, FIVE and HLmod Community"
 
-#define CONFIG_MAIN_PATH			"data/vip/cfg"
-#define CONFIG_GROUPS_FILENAME		"groups.ini"
-#define CONFIG_INFO_FILENAME		"info.ini"
-#define CONFIG_SORT_FILENAME		"sort.ini"
-#define CONFIG_TIMES_FILENAME		"times.ini"
-#define CONFIG_DOWNLOADLIST_FILENAME "downloadlist.txt"
-#define LOGS_FILENAME				"VIP-Core.log"
-#define LOGS_DUMP_FILENAME			"VIP-Core-Dump.log"
-#define LOGS_DEBUG_FILENAME			"VIP-Core-Debug.log"
+#define CONFIG_MAIN_PATH				"data/vip/cfg"
+#define CONFIG_GROUPS_FILENAME			"groups.ini"
+#define CONFIG_INFO_FILENAME			"info.ini"
+#define CONFIG_SORT_FILENAME			"sort.ini"
+#define CONFIG_TIMES_FILENAME			"times.ini"
+#define CONFIG_DOWNLOADLIST_FILENAME	"downloadlist.txt"
+#define LOGS_FILENAME					"VIP-Core.log"
+#define LOGS_DUMP_FILENAME				"VIP-Core-Dump.log"
+#define LOGS_DEBUG_FILENAME				"VIP-Core-Debug.log"
 
 enum DBG_Level
 {
