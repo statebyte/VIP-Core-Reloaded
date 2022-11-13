@@ -12,7 +12,8 @@ on:
       - dev
 
 env:
-    SOURCENAME: VIP-Core-Reloaded
+    SOURCENAME: VIP-Core
+    TEST_PLUGIN: vip_module_test
 
 jobs:
   build:
@@ -52,5 +53,15 @@ jobs:
             cd ../plugins
             ls
             echo "===VERSION==="
-            echo ${{ steps.setup_sp.outputs.plugin-version }}
+            echo ${{ env.GITHUB_SHA_SHORT }}
+          working-directory: ${{ env.SCRIPTS_PATH }}
+        
+        - name: Compile test plugin ${{ env.SOURCENAME }}
+          run: |
+            spcomp -w234 -E -O2 -v2 -i"include" -o"../plugins/${{ env.TEST_PLUGIN }}.smx" ${{ env.TEST_PLUGIN }}.sp
+            echo "===OUT FILES==="
+            cd ../plugins
+            ls
+            echo "===VERSION===
+            echo ${{ env.GITHUB_SHA_SHORT }}
           working-directory: ${{ env.SCRIPTS_PATH }}

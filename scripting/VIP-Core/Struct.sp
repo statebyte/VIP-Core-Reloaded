@@ -12,6 +12,12 @@ enum ChatHookType
 	ChatHook_SearchPlayer
 }
 
+enum
+{
+	ADMIN_MENU,
+	TOP_MENU
+}
+
 // Система приоритетов...
 enum
 {
@@ -217,6 +223,7 @@ enum struct PlayerData
 	int CurrentGroup;
 	int CurrentTime;
 	char CurrentFeature[D_FEATURENAME_LENGTH];
+	int LastMenuType;
 
 	// VIP Menu
 	int CurrentPage;
@@ -637,9 +644,12 @@ enum struct PlayerData
 		DB_UpdatePlayerData(this.iClient);
 	}
 
+	/* VIP-статус
+	Может быть выдан не только, если есть хотя бы одна группа, но и когда у игрока есть хотя бы одна функция!
+	*/
 	bool IsVIP()
 	{
-		return this.hFeatures.Length > 0;
+		return this.hFeatures.Length > 0 || this.hGroups.Length > 0;
 	}
 }
 PlayerData g_ePlayerData[MAXPLAYERS+1];

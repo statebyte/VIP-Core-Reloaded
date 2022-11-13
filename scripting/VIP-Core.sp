@@ -40,9 +40,11 @@ DBG_Level g_iDBGLevel = DBG_SQL;
 //#include "VIP-Core/Info.sp"
 #include "VIP-Core/UTIL.sp"
 #include "VIP-Core/API.sp"
-#include "VIP-Core/Events.sp"
 #include "VIP-Core/menus/MainMenu.sp"
 #include "VIP-Core/menus/AdminMenu.sp"
+#include "VIP-Core/menus/TopMenu.sp"
+#include "VIP-Core/menus/InfoMenu.sp"
+#include "VIP-Core/Events.sp"
 #include "VIP-Core/Cmds.sp"
 #include "VIP-Core/Cvars.sp"
 
@@ -72,6 +74,7 @@ public void OnPluginStart()
 	HookEvents();
 	LoadAdminMenu();
 	LoadMainMenu();
+	LoadTopMenu();
 	LoadTypingPanel();
 	RegCmds();
 

@@ -16,6 +16,10 @@ void LoadCvars()
 	hCvar.AddChangeHook(OnStorageIDChange);
 	OnStorageIDChange(hCvar, NULL_STRING, NULL_STRING);
 
+	hCvar = CreateConVar("sm_vip_spawn_delay", "1.0", "Задержка перед установкой привилегий при возрождении игрока", _, true, 0.1, true, 60.0);
+	hCvar.AddChangeHook(OnSpawnDelayChange);
+	OnSpawnDelayChange(hCvar, NULL_STRING, NULL_STRING);
+
 
 	AutoExecConfig(true, "VIP_Core", "vip");
 }
@@ -46,4 +50,9 @@ public void OnStorageIDChange(ConVar hCvar, const char[] szOldValue, const char[
 	g_eServerData.StorageID = hCvar.IntValue;
 
 	ReloadPlayerData();
+}
+
+public void OnSpawnDelayChange(ConVar hCvar, const char[] szOldValue, const char[] szNewValue)
+{
+	g_eServerData.SpawnDelay = hCvar.FloatValue;
 }

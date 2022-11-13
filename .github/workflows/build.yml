@@ -7,7 +7,7 @@ on:
     branches: main
 
 env:
-    SOURCENAME: VIP-Core-Reloaded
+    SOURCENAME: VIP-Core
 
 jobs:
   build:

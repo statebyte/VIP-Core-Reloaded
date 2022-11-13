@@ -34,6 +34,8 @@ Action cmd_OpenVipMenu(int iClient, int iArgs)
 
 Action cmd_AdminMenu(int iClient, int iArgs)
 {
+	g_ePlayerData[iClient].LastMenuType = ADMIN_MENU;
+
 	g_hAdminMainMenu.Display(iClient, MENU_TIME_FOREVER);
 	return Plugin_Handled;
 }

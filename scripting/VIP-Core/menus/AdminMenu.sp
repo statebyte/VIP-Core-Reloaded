@@ -12,6 +12,15 @@ void LoadAdminMenu()
 	g_hAdminMainMenu.AddItem("reload_config", "Перезагрузить настройки VIP");
 }
 
+void BackToAdminMenu(int iClient)
+{
+	switch(g_ePlayerData[iClient].LastMenuType)
+	{
+		case TOP_MENU:			RedisplayAdminMenu(g_hTopMenu, iClient);
+		case ADMIN_MENU:		g_hAdminMainMenu.Display(iClient, MENU_TIME_FOREVER);
+	}
+}
+
 void LoadTypingPanel()
 {
 	g_hTypingPanel = new Menu(TypingPanelHandler);
@@ -52,7 +61,7 @@ int AdminMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 			if(!strcmp(sInfo, "reload_players")) ReloadPlayerData(iClient);
 
-			g_hAdminMainMenu.Display(iClient, MENU_TIME_FOREVER);
+			BackToAdminMenu(iClient);
 		}
 	}
 	return 0;
@@ -88,7 +97,7 @@ int AdminPlayerListMenuHandler(Menu hMenu, MenuAction action, int iClient, int i
 		case MenuAction_Cancel:
 		{
 			if(iItem == MenuCancel_ExitBack)
-			g_hAdminMainMenu.Display(iClient, MENU_TIME_FOREVER);
+			BackToAdminMenu(iClient);
 		}
 		case MenuAction_Select:
 		{
