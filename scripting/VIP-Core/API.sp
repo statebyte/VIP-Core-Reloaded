@@ -272,7 +272,7 @@ public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
 	char sFeature[D_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
-	return g_ePlayerData[iClient].GetFeatureIDByName(sFeature) != -1 ? true : false;
+	return g_ePlayerData[iClient].GetFeatureToggleStatus(sFeature) == ENABLED;
 }
 
 public int Native_GetClientFeatureBool(Handle hPlugin, int iNumParams)
