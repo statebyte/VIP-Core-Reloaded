@@ -1,7 +1,4 @@
 
-#define D_KEY_SIZE 32
-#define D_VALUE_SIZE 256
-
 // Structure...
 
 enum ChatHookType

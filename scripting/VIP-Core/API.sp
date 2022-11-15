@@ -3,23 +3,28 @@
 
 static Handle g_hGlobalForward_OnVIPLoaded;
 static Handle g_hGlobalForward_OnRebuildFeatureList;
-static Handle g_hGlobalForward_OnAddGroup;
-static Handle g_hGlobalForward_OnRemoveGroup;
+//static Handle g_hGlobalForward_OnAddGroup;
+//static Handle g_hGlobalForward_OnRemoveGroup;
+static Handle g_hGlobalForward_OnClientGroupAdded;
+static Handle g_hGlobalForward_OnClientGroupRemoved;
 static Handle g_hGlobalForward_OnPlayerSpawn;
 static Handle g_hGlobalForward_OnFeatureToggle;
 static Handle g_hGlobalForward_OnFeatureRegistered;
 static Handle g_hGlobalForward_OnFeatureUnregistered;
+//static Handle g_hGlobalForward_OnClientLoadedPre;
 static Handle g_hGlobalForward_OnClientLoaded;
 static Handle g_hGlobalForward_OnVIPClientLoaded;
 static Handle g_hGlobalForward_OnClientDisconnect;
 static Handle g_hGlobalForward_OnStorageUpdate;
+//static Handle g_hGlobalForward_OnShowClientInfo;
+//static Handle g_hGlobalForward_OnConfigsLoaded;
 
 void API_SetupForwards()
 {
 	g_hGlobalForward_OnVIPLoaded					= CreateGlobalForward("VIP_OnVIPLoaded", ET_Ignore);
 	g_hGlobalForward_OnRebuildFeatureList			= CreateGlobalForward("VIP_OnRebuildFeatureList", ET_Ignore, Param_Cell);
-	g_hGlobalForward_OnAddGroup						= CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_Cell, Param_String);
-	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnClientGroupAdded				= CreateGlobalForward("VIP_OnClientGroupAdded", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnClientGroupRemoved			= CreateGlobalForward("VIP_OnClientGroupRemoved", ET_Ignore, Param_Cell, Param_String);
 	g_hGlobalForward_OnPlayerSpawn					= CreateGlobalForward("VIP_OnPlayerSpawn", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hGlobalForward_OnFeatureToggle				= CreateGlobalForward("VIP_OnFeatureToggle", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
 	g_hGlobalForward_OnFeatureRegistered			= CreateGlobalForward("VIP_OnFeatureRegistered", ET_Ignore, Param_String);
@@ -34,29 +39,49 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 {
 	g_eServerData.Engine = GetEngineVersion();
 
+	// Global
 	RegNative(IsVIPLoaded);
+	RegNative(GetCurrentVersionInterface);
 
+	// Database
+	RegNative(GetDatabase);
+	RegNative(GetDatabaseType);
+
+	// Features
 	RegNative(RegisterFeature);
 	RegNative(UnregisterFeature);
 	RegNative(UnregisterMe);
-	RegNative(GetCurrentVersionInterface);
+	RegNative(IsValidFeature);
+	RegNative(GetFeatureType);
+	RegNative(GetFeatureValueType);
+	RegNative(FillArrayByFeatures);
+	
+	// Groups
+	RegNative(IsGroupExists);
+	RegNative(IsValidVIPGroup);
+	//RegNative(AddGroup);
+	//RegNative(RemoveGroup);
+	//RegNative(GroupAddFeature);
+	//RegNative(GroupRemoveFeature);
+	//RegNative(GetGroupIDByName);
+	//RegNative(FillArrayByGroups);
+	
 
+	// Clients
+	//RegNative(CheckClient);
 	RegNative(IsClientVIP);
+
 	RegNative(GetClientGroupName);
 	RegNative(GetClientGroupExpire);
 	RegNative(GetClientGroupCount);
 
 	RegNative(GetClientVIPGroup);
+
 	RegNative(GiveClientGroup);
 	RegNative(RemoveClientGroup);
 
-	RegNative(GetDatabase);
-	RegNative(GetDatabaseType);
 	RegNative(SendClientVIPMenu);
 
-	RegNative(IsValidFeature);
-	RegNative(GetFeatureType);
-	RegNative(GetFeatureValueType);
 	RegNative(GetClientFeatureStatus);
 	RegNative(SetClientFeatureStatus);
 
@@ -69,15 +94,18 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GiveClientFeature);
 	RegNative(RemoveClientFeature);
 
-	RegNative(IsGroupExists);
-	RegNative(IsValidVIPGroup);
-
-
+	// Storage
 	RegNative(SaveClientStorageValue);
 	RegNative(GetClientStorageValue);
 
+	// Helpers
 	RegNative(GetTimeFromStamp);
 	RegNative(LogMessage);
+	//RegNative(PrintToChatClient);
+	//RegNative(PrintToChatAll);
+	//RegNative(AddStringToggleStatus);
+	//RegNative(TimeToSeconds);
+	//RegNative(SecondsToTime);
 
 	RegPluginLibrary("vip_core");
 	
@@ -198,7 +226,7 @@ void CallForward_OnPlayerSpawn(int iClient)
 
 void CallForward_OnAddGroup(int iClient, char[] sGroup)
 {
-	Call_StartForward(g_hGlobalForward_OnAddGroup);
+	Call_StartForward(g_hGlobalForward_OnClientGroupAdded);
 	Call_PushCell(iClient);
 	Call_PushString(sGroup);
 	Call_Finish();
@@ -206,7 +234,7 @@ void CallForward_OnAddGroup(int iClient, char[] sGroup)
 
 void CallForward_OnRemoveGroup(int iClient, char[] sGroup)
 {
-	Call_StartForward(g_hGlobalForward_OnRemoveGroup);
+	Call_StartForward(g_hGlobalForward_OnClientGroupRemoved);
 	Call_PushCell(iClient);
 	Call_PushString(sGroup);
 	Call_Finish();
@@ -221,6 +249,23 @@ bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, con
 	Call_Finish(bResult);
 	
 	return bResult;
+}
+
+public int Native_FillArrayByFeatures(Handle hPlugin, int iNumParams)
+{
+	ArrayList hArray = view_as<ArrayList>(GetNativeCell(1));
+
+	hArray.Clear();
+	
+	int iLen = g_hFeatures.Length;
+	for (int i = 0; i < iLen; i++)
+	{
+		Feature hFeature;
+		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
+		hArray.PushString(hFeature.Key);
+	}
+	
+	return hArray.Length;
 }
 
 public int Native_RemoveClientFeature(Handle hPlugin, int iNumParams)

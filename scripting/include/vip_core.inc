@@ -7,7 +7,7 @@
 
 #define VIP_FEATURENAME_LENGTH			64
 #define VIP_FEATUREVALUE_LENGTH			128
-#define VIP_GROUPNAME_LENGTH 			32
+#define VIP_GROUPNAME_LENGTH			32
 
 // Тип базы данных...
 enum VIP_DatabaseUsage
@@ -451,6 +451,15 @@ native void VIP_SendClientVIPMenu(int iClient, bool bSelection = false);
 native void VIP_LogMessage(const char[] szMessage, any ...);
 
 /**
+ *	Заполняет adt массив ф-ями.
+ *
+ * @param hArray			Массив типа ArrayList.
+ *
+ * @return					Количество добавленных элементов.
+*/
+native int VIP_FillArrayByFeatures(ArrayList hArray);
+
+/**
  *	Вызывается когда VIP-плагин загрузился.
  *
  * @noparams
@@ -484,7 +493,7 @@ forward void VIP_OnStorageUpdate(int iClient, char[] szFeature);
  *
  * @noreturn
 */
-forward void VIP_OnAddGroup(int iClient, char[] szGroup);
+forward void VIP_OnClientGroupAdded(int iClient, char[] szGroup);
 
 /**
  *	Вызывается когда удалена VIP-группа игрока
@@ -493,7 +502,7 @@ forward void VIP_OnAddGroup(int iClient, char[] szGroup);
  *
  * @noreturn
 */
-forward void VIP_OnRemoveGroup(int iClient, char[] szGroup);
+forward void VIP_OnClientGroupRemoved(int iClient, char[] szGroup);
 
 /**
  *	Вызывается когда игрок возрождается.
@@ -594,7 +603,7 @@ stock bool IsVipCoreAvailable()
 // Начиная с 4.0
 enum struct VIP_Feature
 {
-	char Name[256];
+	char Name[VIP_FEATURENAME_LENGTH];
 
 	void Register(	VIP_ValueType			eValType				= VIP_NULL,
 					VIP_FeatureType			eType					= TOGGLABLE,
@@ -671,6 +680,11 @@ enum struct VIP_Feature
 	bool SetString(int iClient, char[] sValue, bool bSaveDB = false)
 	{
 		return VIP_GiveClientFeature(iClient, this.Name, sValue, bSaveDB);
+	}
+
+	void Remove(int iClient, bool bSaveDB = false)
+	{
+		VIP_RemoveClientFeature(iClient, this.Name, bSaveDB)
 	}
 }
 
@@ -792,5 +806,6 @@ public void __pl_vip_core_SetNTVOptional()
 	MarkNativeAsOptional("VIP_GetDatabase");
 	MarkNativeAsOptional("VIP_SendClientVIPMenu");
 	MarkNativeAsOptional("VIP_LogMessage");
+	MarkNativeAsOptional("VIP_FillArrayByFeatures");
 }
 #endif

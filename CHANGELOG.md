@@ -12,7 +12,7 @@
 - Natives:  
 [-] Native VIP_CheckClient  
 [+] Native VIP_IsClientVIP  
-[-] Native VIP_GetClientID  
+[R] Native VIP_GetClientID  
 [R] Native VIP_GetClientAccessTime  
 [R] Native VIP_SetClientAccessTime  
 [x] Native VIP_GetClientVIPGroup  
@@ -37,7 +37,7 @@
 [+] Native VIP_IsValidFeature  
 [+] Native VIP_GetFeatureType  
 [+] Native VIP_GetFeatureValueType  
-[-] Native VIP_FillArrayByFeatures  
+[+] Native VIP_FillArrayByFeatures  
 [+] Native VIP_GetClientFeatureStatus  
 [+] Native VIP_SetClientFeatureStatus  
 [+] Native VIP_IsClientFeatureUse  

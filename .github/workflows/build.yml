@@ -41,7 +41,7 @@ jobs:
         run: |
           mkdir plugins
           cd scripting
-          echo '#define PL_VERSION "${{ env.RELEASE_VERSION }} [build: ${{ env.GITHUB_SHA_SHORT }}]"' > include/vip_version.inc
+          echo '#define PL_VERSION "${{ env.RELEASE_VERSION }} - build: ${{ env.GITHUB_SHA_SHORT }}"' > include/vip_version.inc
           spcomp -w234 -E -O2 -v2 -i"include" -o"../plugins/${{ env.SOURCENAME }}.smx" ${{ env.SOURCENAME }}.sp
           echo "===OUT FILES==="
           cd ../plugins
