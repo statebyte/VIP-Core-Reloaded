@@ -25,7 +25,7 @@ public void OnPluginEnd()
 
 bool OnSelect(int iClient, char[] sFeature)
 {
-	char sValue[D_FEATUREVALUE_LENGTH];
+	char sValue[VIP_FEATUREVALUE_LENGTH];
 
 	VIP_GetClientFeatureString(iClient, sFeature, sValue, sizeof(sValue));
 

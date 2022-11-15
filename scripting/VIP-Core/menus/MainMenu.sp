@@ -27,7 +27,9 @@ void OpenVIPInfo(int iClient)
 			PlayerGroup hGroup;
 			g_ePlayerData[iClient].hGroups.GetArray(i, hGroup, sizeof(hGroup));
 
-			UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime - GetTime(), iClient);
+			if(hGroup.ExpireTime == 0) sBuffer = "NEVER";
+			else UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime - GetTime(), iClient);
+			
 			Format(sBuffer, sizeof(sBuffer), "%s [%s]", hGroup.Name, sBuffer);
 
 			hMenu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
@@ -108,7 +110,7 @@ int VIPInfoMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 {
-	char sBuffer[D_FEATURENAME_LENGTH];
+	char sBuffer[VIP_FEATURENAME_LENGTH];
 
 	switch(action)
 	{

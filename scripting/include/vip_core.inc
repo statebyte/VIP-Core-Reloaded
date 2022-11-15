@@ -5,9 +5,9 @@
 
 #define VIP_INTERFACE_VERSION			400
 
-#define D_FEATURENAME_LENGTH			64
-#define D_FEATUREVALUE_LENGTH			128
-#define D_GROUPNAME_LENGTH 				32
+#define VIP_FEATURENAME_LENGTH			64
+#define VIP_FEATUREVALUE_LENGTH			128
+#define VIP_GROUPNAME_LENGTH			32
 
 // Тип базы данных...
 enum VIP_DatabaseUsage
@@ -270,9 +270,10 @@ native void VIP_SaveClientStorageValue(int iClient, const char[] szKey, const ch
  * @param szValue			Буфер, в который будет помещен результат.
  * @param iMaxLength		Размер буфера.
  *
- * @noreturn
+ * @return					true - Данные получены
+ * 							false - Данные отсуствуют
 */
-native void VIP_GetClientStorageValue(int iClient, const char[] szKey, char[] szValue, int iMaxLength);
+native bool VIP_GetClientStorageValue(int iClient, const char[] szKey, char[] szValue, int iMaxLength);
 
 
 /**
@@ -450,6 +451,15 @@ native void VIP_SendClientVIPMenu(int iClient, bool bSelection = false);
 native void VIP_LogMessage(const char[] szMessage, any ...);
 
 /**
+ *	Заполняет adt массив ф-ями.
+ *
+ * @param hArray			Массив типа ArrayList.
+ *
+ * @return					Количество добавленных элементов.
+*/
+native int VIP_FillArrayByFeatures(ArrayList hArray);
+
+/**
  *	Вызывается когда VIP-плагин загрузился.
  *
  * @noparams
@@ -483,7 +493,7 @@ forward void VIP_OnStorageUpdate(int iClient, char[] szFeature);
  *
  * @noreturn
 */
-forward void VIP_OnAddGroup(int iClient, char[] szGroup);
+forward void VIP_OnClientGroupAdded(int iClient, char[] szGroup);
 
 /**
  *	Вызывается когда удалена VIP-группа игрока
@@ -492,7 +502,7 @@ forward void VIP_OnAddGroup(int iClient, char[] szGroup);
  *
  * @noreturn
 */
-forward void VIP_OnRemoveGroup(int iClient, char[] szGroup);
+forward void VIP_OnClientGroupRemoved(int iClient, char[] szGroup);
 
 /**
  *	Вызывается когда игрок возрождается.
@@ -590,10 +600,10 @@ stock bool IsVipCoreAvailable()
 	return CanTestFeatures() && GetFeatureStatus(FeatureType_Native, "VIP_UnregisterFeature") == FeatureStatus_Available;
 }
 
-// 
+// Начиная с 4.0
 enum struct VIP_Feature
 {
-	char Name[256];
+	char Name[VIP_FEATURENAME_LENGTH];
 
 	void Register(	VIP_ValueType			eValType				= VIP_NULL,
 					VIP_FeatureType			eType					= TOGGLABLE,
@@ -621,12 +631,16 @@ enum struct VIP_Feature
 		return VIP_GetClientFeatureInt(iClient, this.Name);
 	}
 
+	float GetFloat(int iClient)
+	{
+		return VIP_GetClientFeatureFloat(iClient, this.Name);
+	}
+
 	bool GetBool(int iClient)
 	{
 		return VIP_GetClientFeatureBool(iClient, this.Name);
 	}
 
-	// TODO
 	bool IsUse(int iClient)
 	{
 		return VIP_IsClientFeatureUse(iClient, this.Name);
@@ -641,8 +655,110 @@ enum struct VIP_Feature
 	{
 		return VIP_SetClientFeatureStatus(iClient, this.Name, eStatus, bCallback, bSave);
 	}
+
+	bool SetInt(int iClient, int iValue, bool bSaveDB = false)
+	{
+		char sBuf[4];
+		IntToString(iValue, sBuf, sizeof(sBuf));
+		return VIP_GiveClientFeature(iClient, this.Name, sBuf, bSaveDB);
+	}
+
+	bool SetBool(int iClient, bool bValue, bool bSaveDB = false)
+	{
+		char sBuf[4];
+		IntToString(bValue, sBuf, sizeof(sBuf));
+		return VIP_GiveClientFeature(iClient, this.Name, sBuf, bSaveDB);
+	}
+
+	bool SetFloat(int iClient, float fValue, bool bSaveDB = false)
+	{
+		char sBuf[4];
+		FloatToString(fValue, sBuf, sizeof(sBuf));
+		return VIP_GiveClientFeature(iClient, this.Name, sBuf, bSaveDB);
+	}
+
+	bool SetString(int iClient, char[] sValue, bool bSaveDB = false)
+	{
+		return VIP_GiveClientFeature(iClient, this.Name, sValue, bSaveDB);
+	}
+
+	void Remove(int iClient, bool bSaveDB = false)
+	{
+		VIP_RemoveClientFeature(iClient, this.Name, bSaveDB)
+	}
 }
-//VIP_Feature hFeature = {"hp"};
+
+enum struct VIP_Storage
+{
+	char Name[VIP_FEATURENAME_LENGTH];
+
+	void SaveInt(int iClient, int iValue)
+	{
+		char sBuf[4];
+		IntToString(iValue, sBuf, sizeof(sBuf));
+		VIP_SaveClientStorageValue(iClient, this.Name, sBuf);
+	}
+
+	void SaveFloat(int iClient, float fValue)
+	{
+		char sBuf[4];
+		FloatToString(fValue, sBuf, sizeof(sBuf));
+		VIP_SaveClientStorageValue(iClient, this.Name, sBuf);
+	}
+
+	void SaveBool(int iClient, bool bValue)
+	{
+		char sBuf[4];
+		IntToString(bValue, sBuf, sizeof(sBuf));
+		VIP_SaveClientStorageValue(iClient, this.Name, sBuf);
+	}
+
+	void SaveString(int iClient, char[] sBuffer)
+	{
+		VIP_SaveClientStorageValue(iClient, this.Name, sBuffer);
+	}
+
+	bool GetString(int iClient, char[] sBuffer, int iMaxLen)
+	{
+		return VIP_GetClientStorageValue(iClient, this.Name, sBuffer, iMaxLen);
+	}
+
+	int GetInt(int iClient, char[] sBuffer, int iMaxLen)
+	{
+		char sBuf[4];
+
+		if(VIP_GetClientStorageValue(iClient, this.Name, sBuf, sizeof(sBuf)))
+		{
+			return StringToInt(sBuf);
+		}
+
+		return 0;
+	}
+
+	bool GetBool(int iClient, char[] sBuffer, int iMaxLen)
+	{
+		char sBuf[4];
+
+		if(VIP_GetClientStorageValue(iClient, this.Name, sBuf, sizeof(sBuf)))
+		{
+			return StringToInt(sBuf) == 1 ? true : false;
+		}
+
+		return false;
+	}
+
+	float GetFloat(int iClient, char[] sBuffer, int iMaxLen)
+	{
+		char sBuf[4];
+
+		if(VIP_GetClientStorageValue(iClient, this.Name, sBuf, sizeof(sBuf)))
+		{
+			return StringToFloat(sBuf);
+		}
+
+		return 0.0;
+	}
+}
 
 public SharedPlugin __pl_vip_core= 
 {
@@ -690,5 +806,6 @@ public void __pl_vip_core_SetNTVOptional()
 	MarkNativeAsOptional("VIP_GetDatabase");
 	MarkNativeAsOptional("VIP_SendClientVIPMenu");
 	MarkNativeAsOptional("VIP_LogMessage");
+	MarkNativeAsOptional("VIP_FillArrayByFeatures");
 }
 #endif

@@ -88,7 +88,7 @@ public void OnClientDisconnect(int iClient)
 
 Action ChatEvent(int iClient, char[] sCommand, int iArgc)
 {
-	char sValue[D_FEATUREVALUE_LENGTH];
+	char sValue[VIP_FEATUREVALUE_LENGTH];
 	if(g_ePlayerData[iClient].HookChat > ChatHook_None)
 	{
 		GetCmdArgString(sValue, sizeof(sValue));

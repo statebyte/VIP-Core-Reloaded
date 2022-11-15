@@ -1,17 +1,15 @@
 #include <sourcemod>
 #undef REQUIRE_PLUGIN
 #include <vip_core>
-#pragma newdecls required
-#pragma semicolon 1
-
-#undef REQUIRE_PLUGIN
 #include <adminmenu>
 #define REQUIRE_PLUGIN
+#pragma newdecls required
+#pragma semicolon 1
 
 #tryinclude <vip_version>
 
 #if !defined PL_VERSION
-#define PL_VERSION 						"4.0 Alpha 8"
+#define PL_VERSION 						"4.0 Alpha 9"
 #endif
 #define PL_AUTHOR 						"R1KO, FIVE and HLmod Community"
 
@@ -57,7 +55,7 @@ DBG_Level g_iDBGLevel = DBG_SQL;
 
 public Plugin myinfo =
 {
-	name = "VIP-Core-Reloaded",
+	name = "[VIP] Core",
 	author = PL_AUTHOR, // Special Thanks for R1KO
 	description = "Add vip status to player",
 	version = PL_VERSION, // MAJOR.MINOR D - Dev, RC - Release Condidate, R - Release
