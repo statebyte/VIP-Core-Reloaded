@@ -77,7 +77,7 @@
 [+] Forward VIP_OnFeatureRegistered  
 [+] Forward VIP_OnFeatureUnregistered  
 [-] Forward VIP_OnClientPreLoad  
-[+] Forward VIP_OnClientLoaded   // Гарантирует загрузку Storage - VIP_OnClientStorageLoaded
+[+] Forward VIP_OnClientLoaded   // Гарантирует загрузку Storage - VIP_OnClientStorageLoaded  
 [+] Forward VIP_OnVIPClientLoaded  
 [+] Forward VIP_OnClientDisconnect  
 [R] Forward VIP_OnVIPClientAdded  

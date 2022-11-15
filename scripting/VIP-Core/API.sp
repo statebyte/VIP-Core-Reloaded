@@ -232,7 +232,7 @@ public int Native_RemoveClientFeature(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	return g_ePlayerData[iClient].RemoveCustomFeature(sFeature);
@@ -247,7 +247,7 @@ public int Native_GiveClientFeature(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH], sValue[D_FEATUREVALUE_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH], sValue[VIP_FEATUREVALUE_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	GetNativeString(3, sValue, sizeof(sValue));
@@ -269,7 +269,7 @@ public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	return g_ePlayerData[iClient].GetFeatureToggleStatus(sFeature) == ENABLED;
@@ -289,7 +289,7 @@ public int Native_GetClientFeatureInt(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
@@ -314,7 +314,7 @@ public int Native_GetClientFeatureFloat(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
@@ -340,7 +340,7 @@ public int Native_GetClientFeatureString(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
@@ -368,7 +368,7 @@ public int Native_GetClientFeatureStatus(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	return view_as<int>(g_ePlayerData[iClient].GetFeatureToggleStatus(sFeature));
@@ -383,7 +383,7 @@ public int Native_SetClientFeatureStatus(Handle hPlugin, int iNumParams)
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
@@ -416,7 +416,7 @@ public int Native_SetClientFeatureStatus(Handle hPlugin, int iNumParams)
 
 public int Native_IsGroupExists(Handle hPlugin, int iNumParams)
 {
-	char sGroup[D_GROUPNAME_LENGTH];
+	char sGroup[VIP_GROUPNAME_LENGTH];
 	GetNativeString(1, sGroup, sizeof(sGroup));
 
 	return GetGroupIDByName(sGroup) == -1 ? 0 : 1;
@@ -429,7 +429,7 @@ public int Native_IsValidVIPGroup(Handle hPlugin, int iNumParams)
 
 public int Native_IsValidFeature(Handle hPlugin, int iNumParams)
 {
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, sFeature, sizeof(sFeature));
 
 	return IsFeatureExists(sFeature);
@@ -437,7 +437,7 @@ public int Native_IsValidFeature(Handle hPlugin, int iNumParams)
 
 public int Native_GetFeatureType(Handle hPlugin, int iNumParams)
 {
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, sFeature, sizeof(sFeature));
 
 	int iIndex = GetFeatureIDByKey(sFeature);
@@ -455,7 +455,7 @@ public int Native_GetFeatureType(Handle hPlugin, int iNumParams)
 
 public int Native_GetFeatureValueType(Handle hPlugin, int iNumParams)
 {
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, sFeature, sizeof(sFeature));
 
 	int iIndex = GetFeatureIDByKey(sFeature);
@@ -511,7 +511,7 @@ public int Native_GiveClientGroup(Handle hPlugin, int iNumParams)
 	int iTime = GetNativeCell(3);
 	bool bAddToDB = view_as<bool>(GetNativeCell(5));
 
-	char sGroup[D_GROUPNAME_LENGTH];
+	char sGroup[VIP_GROUPNAME_LENGTH];
 	GetNativeString(4, sGroup, sizeof(sGroup));
 
 	if(bAddToDB)
@@ -533,7 +533,7 @@ public int Native_RemoveClientGroup(Handle hPlugin, int iNumParams)
 	int iAdmin = GetNativeCell(1);
 	int iClient = GetNativeCell(2);
 
-	char sGroup[D_GROUPNAME_LENGTH];
+	char sGroup[VIP_GROUPNAME_LENGTH];
 	GetNativeString(3, sGroup, sizeof(sGroup));
 
 	bool bAddToDB = view_as<bool>(GetNativeCell(4));
@@ -641,7 +641,7 @@ public int Native_GetCurrentVersionInterface(Handle hPlugin, int iNumParams)
 
 public int Native_UnregisterFeature(Handle hPlugin, int iNumParams)
 {
-	char szFeature[D_FEATURENAME_LENGTH];
+	char szFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, szFeature, sizeof(szFeature));
 	
 	if (!IsFeatureExists(szFeature))
@@ -673,11 +673,11 @@ public int Native_IsVIPLoaded(Handle hPlugin, int iNumParams)
 
 public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 {
-	char szFeature[D_FEATURENAME_LENGTH];
+	char szFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, szFeature, sizeof(szFeature));
 
-	char sPluginName[D_FEATURENAME_LENGTH];
-	GetPluginFilename(hPlugin, sPluginName, D_FEATURENAME_LENGTH);
+	char sPluginName[VIP_FEATURENAME_LENGTH];
+	GetPluginFilename(hPlugin, sPluginName, VIP_FEATURENAME_LENGTH);
 	DebugMsg(DBG_INFO, "Register feature \"%s\" (%s)", szFeature, sPluginName);
 
 	if(IsFeatureExists(szFeature))
@@ -716,7 +716,7 @@ void SortFeatureList()
 
 	if(iLen == 0) return;
 
-	char sBuffer[D_FEATURENAME_LENGTH];
+	char sBuffer[VIP_FEATURENAME_LENGTH];
 	Feature hFeature;
 
 	ArrayList hArrSort = new ArrayList(sizeof(Feature));
@@ -752,7 +752,7 @@ public int Native_SaveClientStorageValue(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	char sFeature[D_FEATURENAME_LENGTH], sBuffer[1024];
+	char sFeature[VIP_FEATURENAME_LENGTH], sBuffer[1024];
 
 	GetNativeString(2, sFeature, sizeof(sFeature));
 	GetNativeString(3, sBuffer, sizeof(sBuffer));
@@ -768,7 +768,7 @@ public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	char sFeature[D_FEATURENAME_LENGTH];
+	char sFeature[VIP_FEATURENAME_LENGTH];
 
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
@@ -780,9 +780,9 @@ public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
 		g_ePlayerData[iClient].hStorage.GetArray(iIndex, hStorage, sizeof(hStorage));
 
 		SetNativeString(3, hStorage.Value, GetNativeCell(3));
+		return 1;
 	}
 	
-
 	return 0;
 }
 

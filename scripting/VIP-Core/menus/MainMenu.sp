@@ -108,7 +108,7 @@ int VIPInfoMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 {
-	char sBuffer[D_FEATURENAME_LENGTH];
+	char sBuffer[VIP_FEATURENAME_LENGTH];
 
 	switch(action)
 	{

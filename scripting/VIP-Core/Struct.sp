@@ -59,8 +59,8 @@ ServerData g_eServerData;
 
 enum struct PlayerFeature
 {
-	char Key[D_KEY_SIZE];
-	char Value[D_VALUE_SIZE];
+	char Key[VIP_FEATURENAME_LENGTH];
+	char Value[VIP_FEATUREVALUE_LENGTH];
 
 	int CurrentPriority;
 	int GroupID;
@@ -69,13 +69,13 @@ enum struct PlayerFeature
 
 enum struct PlayerStorage
 {
-	char Key[D_KEY_SIZE];
-	char Value[D_VALUE_SIZE];
+	char Key[VIP_FEATURENAME_LENGTH];
+	char Value[VIP_FEATUREVALUE_LENGTH];
 }
 
 enum struct GroupInfo
 {
-	char Name[D_GROUPNAME_LENGTH];
+	char Name[VIP_GROUPNAME_LENGTH];
 
 	// List of Feature (PlayerFeature)
 	ArrayList hFeatureList;
@@ -89,7 +89,7 @@ enum struct GroupInfo
 		//if(this.hExtendList) delete this.hExtendList;
 
 		this.hFeatureList = new ArrayList(sizeof(PlayerFeature));
-		this.hExtendList = new ArrayList(D_GROUPNAME_LENGTH);
+		this.hExtendList = new ArrayList(VIP_GROUPNAME_LENGTH);
 	}
 
 	void Clear()
@@ -151,14 +151,14 @@ ArrayList g_hGroups;
 
 enum struct PlayerGroup
 {
-	char Name[D_GROUPNAME_LENGTH];
+	char Name[VIP_GROUPNAME_LENGTH];
 	int ExpireTime;
 }
 
 // API
 enum struct Feature
 {
-	char Key[D_FEATURENAME_LENGTH];
+	char Key[VIP_FEATURENAME_LENGTH];
 
 	
 	VIP_ValueType ValType;
@@ -222,7 +222,7 @@ enum struct PlayerData
 	int CurrentTarget;
 	int CurrentGroup;
 	int CurrentTime;
-	char CurrentFeature[D_FEATURENAME_LENGTH];
+	char CurrentFeature[VIP_FEATURENAME_LENGTH];
 	int LastMenuType;
 
 	// VIP Menu
@@ -233,7 +233,7 @@ enum struct PlayerData
 		return this.GetGroupIDByName(sGroup) > -1;
 	}
 
-	void AddGroup(char sGroup[D_GROUPNAME_LENGTH], int iExpire = 0)
+	void AddGroup(char sGroup[VIP_GROUPNAME_LENGTH], int iExpire = 0)
 	{
 		int iIndex = this.GetGroupIDByName(sGroup);
 
@@ -553,7 +553,7 @@ enum struct PlayerData
 		GroupInfo hGroup;
 		g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
 
-		char sName[D_GROUPNAME_LENGTH];
+		char sName[VIP_GROUPNAME_LENGTH];
 		int iLen = hGroup.hExtendList.Length;
 		for(int i = 0; i < iLen; i++)
 		{
@@ -666,7 +666,7 @@ void LoadStructModule()
 {
 	g_hGroups = new ArrayList(sizeof(GroupInfo));
 	g_hFeatures = new ArrayList(sizeof(Feature));
-	g_hFeaturesSorted = new ArrayList(ByteCountToCells(D_FEATURENAME_LENGTH));
+	g_hFeaturesSorted = new ArrayList(ByteCountToCells(VIP_FEATURENAME_LENGTH));
 	g_hTimes = new ArrayList(sizeof(Times));
 
 	InitServerData();

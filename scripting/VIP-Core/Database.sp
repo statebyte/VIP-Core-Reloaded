@@ -269,7 +269,7 @@ void DB_RemovePlayerGroup(int iClient, char[] sGroup, int iTarget = 0)
 
 void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultSet[] results, any[] QueryData)
 {
-	char sGroup[D_GROUPNAME_LENGTH], sBuffer[256];
+	char sGroup[VIP_GROUPNAME_LENGTH], sBuffer[256];
 
 	while(results[0].FetchRow())
 	{
