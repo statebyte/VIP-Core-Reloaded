@@ -11,13 +11,13 @@ static Handle g_hGlobalForward_OnPlayerSpawn;
 static Handle g_hGlobalForward_OnFeatureToggle;
 static Handle g_hGlobalForward_OnFeatureRegistered;
 static Handle g_hGlobalForward_OnFeatureUnregistered;
-//static Handle g_hGlobalForward_OnClientLoadedPre;
+static Handle g_hGlobalForward_OnClientPreLoad;
 static Handle g_hGlobalForward_OnClientLoaded;
 static Handle g_hGlobalForward_OnVIPClientLoaded;
 static Handle g_hGlobalForward_OnClientDisconnect;
 static Handle g_hGlobalForward_OnStorageUpdate;
+static Handle g_hGlobalForward_OnConfigsLoaded;
 //static Handle g_hGlobalForward_OnShowClientInfo;
-//static Handle g_hGlobalForward_OnConfigsLoaded;
 
 void API_SetupForwards()
 {
@@ -33,6 +33,24 @@ void API_SetupForwards()
 	g_hGlobalForward_OnVIPClientLoaded				= CreateGlobalForward("VIP_OnVIPClientLoaded", ET_Ignore, Param_Cell);
 	g_hGlobalForward_OnClientDisconnect				= CreateGlobalForward("VIP_OnClientDisconnect", ET_Ignore, Param_Cell, Param_Cell);
 	g_hGlobalForward_OnStorageUpdate				= CreateGlobalForward("VIP_OnStorageUpdate", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnClientPreLoad				= CreateGlobalForward("VIP_OnClientPreLoad", ET_Hook, Param_Cell);
+	g_hGlobalForward_OnConfigsLoaded				= CreateGlobalForward("VIP_OnConfigsLoaded", ET_Ignore);
+}
+
+void CallForward_OnConfigsLoaded()
+{
+	Call_StartForward(g_hGlobalForward_OnConfigsLoaded);
+	Call_Finish();
+}
+
+bool CallForward_OnClientPreLoad(int iClient)
+{
+	bool bResult = true;
+	Call_StartForward(g_hGlobalForward_OnClientPreLoad);
+	Call_PushCell(iClient);
+	Call_Finish(bResult);
+
+	return bResult;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_max) 
@@ -63,8 +81,8 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	//RegNative(RemoveGroup);
 	//RegNative(GroupAddFeature);
 	//RegNative(GroupRemoveFeature);
-	//RegNative(GetGroupIDByName);
-	//RegNative(FillArrayByGroups);
+	RegNative(GetGroupIDByName);
+	RegNative(FillArrayByGroups);
 	
 
 	// Clients
@@ -197,6 +215,9 @@ void CallForward_OnVIPLoaded()
 		PrintToServer(" ");
 		PrintToServer("Authors: " ... PL_AUTHOR);
 		PrintToServer("Version: " ... PL_VERSION);
+		char sBuffer[256];
+		GetGameFolderName(sBuffer, sizeof(sBuffer));
+		PrintToServer("Game: %s", sBuffer);
 		PrintToServer("------------------- VIP Core ---------------------");
 	}
 	
@@ -216,6 +237,8 @@ void CallForward_OnRebuildFeatureList(int iClient)
 void CallForward_OnPlayerSpawn(int iClient)
 {
 	int iTeam = GetClientTeam(iClient);
+
+	//DebugMsg(DBG_INFO, "CallForward_OnPlayerSpawn - %N %i %i", iClient, iTeam, g_ePlayerData[iClient].bVIP);
 
 	Call_StartForward(g_hGlobalForward_OnPlayerSpawn);
 	Call_PushCell(iClient);
@@ -249,6 +272,36 @@ bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, con
 	Call_Finish(bResult);
 	
 	return bResult;
+}
+
+public int Native_FillArrayByGroups(Handle hPlugin, int iNumParams)
+{
+	ArrayList hArray = view_as<ArrayList>(GetNativeCell(1));
+
+	hArray.Clear();
+	
+	int iLen = g_hGroups.Length;
+	for (int i = 0; i < iLen; i++)
+	{
+		GroupInfo hGroup;
+		g_hGroups.GetArray(i, hGroup, sizeof(hGroup));
+		hArray.PushString(hGroup.Name);
+	}
+	
+	return hArray.Length;
+}
+
+public int Native_GetGroupIDByName(Handle hPlugin, int iNumParams)
+{
+	char sGroupName[VIP_GROUPNAME_LENGTH];
+	GetNativeString(1, sGroupName, sizeof(sGroupName));
+
+	if(sGroupName[0])
+	{
+		int iLen = 
+	}
+
+	return -1;
 }
 
 public int Native_FillArrayByFeatures(Handle hPlugin, int iNumParams)
@@ -741,8 +794,18 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 
 	hFeature.hPlugin = hPlugin;
 
-	hFeature.ToggleState = GetNativeCell(7);
-	hFeature.bCookie = GetNativeCell(8);
+	if(iNumParams > 6)
+	{
+		hFeature.ToggleState = GetNativeCell(7);
+		hFeature.bCookie = GetNativeCell(8);
+	}
+	else
+	{
+		hFeature.ToggleState = NO_ACCESS;
+		hFeature.bCookie = true;
+	}
+
+	
 
 	g_hFeatures.PushArray(hFeature, sizeof(hFeature));
 

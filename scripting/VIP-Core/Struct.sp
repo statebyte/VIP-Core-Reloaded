@@ -628,9 +628,12 @@ enum struct PlayerData
 		// TODO: Загрузка данных...
 		this.SetID();
 
-		DB_LoadPlayerData(this.iClient);
+		if(CallForward_OnClientPreLoad(this.iClient))
+		{
+			DB_LoadPlayerData(this.iClient);
 
-		this.RebuildFeatureList();
+			this.RebuildFeatureList();
+		}
 	}
 
 	void ClearData()

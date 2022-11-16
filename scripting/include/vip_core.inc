@@ -9,7 +9,7 @@
 #define VIP_FEATUREVALUE_LENGTH			128
 #define VIP_GROUPNAME_LENGTH			32
 
-// Тип базы данных...
+/* Тип базы данных */
 enum VIP_DatabaseUsage
 {
 	DB_None = 0,
