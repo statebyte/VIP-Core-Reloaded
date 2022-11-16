@@ -267,25 +267,25 @@ void DB_RemovePlayerGroup(int iClient, char[] sGroup, int iTarget = 0)
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
 }
 
-void DB_AddUserTransaction(Transaction hTh, int iClient)
-{
+// void DB_AddUserTransaction(Transaction hTh, int iClient)
+// {
 
-}
+// }
 
-void DB_GetVIPUsers(int iTarget)
-{
-	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "SELECT * FROM `"... TABLE_USERS ... "` WHERE (select count(*) from "...TABLE_FEATURES..." where account_id = "... TABLE_USERS ...".account_id) + (select count(*) from "... TABLE_GROUPS ..." where account_id = "... TABLE_USERS ...".account_id) > 0 ORDER BY name;");
+// void DB_GetVIPUsers(int iTarget)
+// {
+// 	char sQuery[1024];
+// 	FormatEx(sQuery, sizeof(sQuery), "SELECT * FROM `"... TABLE_USERS ... "` WHERE (select count(*) from "...TABLE_FEATURES..." where account_id = "... TABLE_USERS ...".account_id) + (select count(*) from "... TABLE_GROUPS ..." where account_id = "... TABLE_USERS ...".account_id) > 0 ORDER BY name;");
 
-	DebugMsg(DBG_SQL, sQuery);
+// 	DebugMsg(DBG_SQL, sQuery);
 
-	g_eServerData.DB.Query(SQL_LoadVIPPlayers, sQuery, iTarget);
-}
+// 	g_eServerData.DB.Query(SQL_LoadVIPPlayers, sQuery, iTarget);
+// }
 
-void SQL_LoadVIPPlayers(Database hOwner, DBResultSet hResult, const char[] szError, any data)
-{
+// void SQL_LoadVIPPlayers(Database hOwner, DBResultSet hResult, const char[] szError, any data)
+// {
 	
-}
+// }
 
 void SQL_LoadPlayerData(Database hDatabase, any data, int iNumQueries, DBResultSet[] results, any[] QueryData)
 {

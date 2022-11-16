@@ -298,7 +298,7 @@ public int Native_GetGroupIDByName(Handle hPlugin, int iNumParams)
 
 	if(sGroupName[0])
 	{
-		int iLen = 
+		return GetGroupIDByName(sGroupName);
 	}
 
 	return -1;
