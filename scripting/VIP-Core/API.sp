@@ -3,8 +3,8 @@
 
 static Handle g_hGlobalForward_OnVIPLoaded;
 static Handle g_hGlobalForward_OnRebuildFeatureList;
-//static Handle g_hGlobalForward_OnAddGroup;
-//static Handle g_hGlobalForward_OnRemoveGroup;
+static Handle g_hGlobalForward_OnAddGroup;
+static Handle g_hGlobalForward_OnRemoveGroup;
 static Handle g_hGlobalForward_OnClientGroupAdded;
 static Handle g_hGlobalForward_OnClientGroupRemoved;
 static Handle g_hGlobalForward_OnPlayerSpawn;
@@ -35,6 +35,8 @@ void API_SetupForwards()
 	g_hGlobalForward_OnStorageUpdate				= CreateGlobalForward("VIP_OnStorageUpdate", ET_Ignore, Param_Cell, Param_String);
 	g_hGlobalForward_OnClientPreLoad				= CreateGlobalForward("VIP_OnClientPreLoad", ET_Hook, Param_Cell);
 	g_hGlobalForward_OnConfigsLoaded				= CreateGlobalForward("VIP_OnConfigsLoaded", ET_Ignore);
+	g_hGlobalForward_OnAddGroup						= CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_String);
+	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_String);
 }
 
 void CallForward_OnConfigsLoaded()
@@ -42,6 +44,21 @@ void CallForward_OnConfigsLoaded()
 	Call_StartForward(g_hGlobalForward_OnConfigsLoaded);
 	Call_Finish();
 }
+
+void CallForward_OnAddGroup(char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnAddGroup);
+	Call_PushString(sGroup);
+	Call_Finish();
+}
+
+void CallForward_OnRemoveGroup(char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnRemoveGroup);
+	Call_PushString(sGroup);
+	Call_Finish();
+}
+
 
 bool CallForward_OnClientPreLoad(int iClient)
 {
@@ -77,10 +94,10 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	// Groups
 	RegNative(IsGroupExists);
 	RegNative(IsValidVIPGroup);
-	//RegNative(AddGroup);
-	//RegNative(RemoveGroup);
-	//RegNative(GroupAddFeature);
-	//RegNative(GroupRemoveFeature);
+	RegNative(AddGroup);
+	RegNative(RemoveGroup);
+	RegNative(GroupAddFeature);
+	RegNative(GroupRemoveFeature);
 	RegNative(GetGroupIDByName);
 	RegNative(FillArrayByGroups);
 	
@@ -247,7 +264,7 @@ void CallForward_OnPlayerSpawn(int iClient)
 	Call_Finish();
 }
 
-void CallForward_OnAddGroup(int iClient, char[] sGroup)
+void CallForward_OnClientAddGroup(int iClient, char[] sGroup)
 {
 	Call_StartForward(g_hGlobalForward_OnClientGroupAdded);
 	Call_PushCell(iClient);
@@ -255,7 +272,7 @@ void CallForward_OnAddGroup(int iClient, char[] sGroup)
 	Call_Finish();
 }
 
-void CallForward_OnRemoveGroup(int iClient, char[] sGroup)
+void CallForward_OnClientRemoveGroup(int iClient, char[] sGroup)
 {
 	Call_StartForward(g_hGlobalForward_OnClientGroupRemoved);
 	Call_PushCell(iClient);
@@ -290,6 +307,98 @@ public int Native_FillArrayByGroups(Handle hPlugin, int iNumParams)
 	
 	return hArray.Length;
 }
+
+public int Native_AddGroup(Handle hPlugin, int iNumParams)
+{
+	char sGroupName[VIP_GROUPNAME_LENGTH];
+	GetNativeString(1, sGroupName, sizeof(sGroupName));
+
+	int iIndex = GetGroupIDByName(sGroupName);
+	
+	if(iIndex == -1)
+	{
+		GroupInfo hGroup;
+		hGroup.Init();
+
+		hGroup.Name = sGroupName;
+
+		CallForward_OnAddGroup(sGroupName);
+		
+		return g_hGroups.PushArray(hGroup, sizeof(hGroup));	
+	}
+
+	return -1;
+}
+
+public int Native_RemoveGroup(Handle hPlugin, int iNumParams)
+{
+	char sGroupName[VIP_GROUPNAME_LENGTH];
+	GetNativeString(1, sGroupName, sizeof(sGroupName));
+
+	int iIndex = GetGroupIDByName(sGroupName);
+	
+	if(iIndex == -1)
+	{
+		return 0;
+	}
+
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
+
+	g_hGroups.Erase(iIndex);
+
+	CallForward_OnRemoveGroup(hGroup.Name);
+
+	return 1;
+}
+
+public int Native_GroupAddFeature(Handle hPlugin, int iNumParams)
+{
+	char sGroupName[VIP_GROUPNAME_LENGTH], sFeature[VIP_FEATURENAME_LENGTH], sValue[VIP_FEATUREVALUE_LENGTH];
+	GetNativeString(1, sGroupName, sizeof(sGroupName));
+	GetNativeString(2, sFeature, sizeof(sFeature));
+	GetNativeString(3, sValue, sizeof(sValue));
+
+	int iIndex = GetGroupIDByName(sGroupName);
+	
+	if(iIndex == -1)
+	{
+		return 0;
+	}
+
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
+
+	hGroup.AddFeature(sFeature, sValue);
+
+	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
+	
+	return 1;
+}
+
+public int Native_GroupRemoveFeature(Handle hPlugin, int iNumParams)
+{
+	char sGroupName[VIP_GROUPNAME_LENGTH], sFeature[VIP_FEATURENAME_LENGTH];
+	GetNativeString(1, sGroupName, sizeof(sGroupName));
+	GetNativeString(2, sFeature, sizeof(sFeature));
+
+	int iIndex = GetGroupIDByName(sGroupName);
+	
+	if(iIndex == -1)
+	{
+		return 0;
+	}
+
+	GroupInfo hGroup;
+	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
+
+	hGroup.DelFeature(sFeature);
+
+	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
+	
+	return 1;
+}
+
 
 public int Native_GetGroupIDByName(Handle hPlugin, int iNumParams)
 {

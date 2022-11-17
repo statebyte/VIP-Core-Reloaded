@@ -248,7 +248,7 @@ enum struct PlayerData
 		}
 
 		this.RebuildFeatureList();
-		CallForward_OnAddGroup(this.iClient, sGroup);
+		CallForward_OnClientAddGroup(this.iClient, sGroup);
 	}
 
 	void RemoveGroup(char[] sGroup)
@@ -259,7 +259,7 @@ enum struct PlayerData
 			this.hGroups.Erase(iIndex);
 
 			this.RebuildFeatureList();
-			CallForward_OnRemoveGroup(this.iClient, sGroup);
+			CallForward_OnClientRemoveGroup(this.iClient, sGroup);
 		}
 	}
 
