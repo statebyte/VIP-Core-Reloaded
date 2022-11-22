@@ -125,6 +125,8 @@ bool LoadGroupsConfig()
 
 	RebuildFeatureList();
 
+	CallForward_OnConfigsLoaded();
+
 	DebugMsg(DBG_INFO, "Current Line: %i", g_iCurrentLine);
 
 	return true;

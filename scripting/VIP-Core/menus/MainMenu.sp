@@ -5,6 +5,15 @@ void LoadMainMenu()
 	g_hMainMenu = new Menu(MainMenuHandler, MenuAction_Select|MenuAction_Cancel|MenuAction_End|MenuAction_DrawItem|MenuAction_DisplayItem|MenuAction_Display);
 
 	g_hMainMenu.AddItem("NO_FEATURES", "NO_FEATURES", ITEMDRAW_DISABLED);
+
+	LoadWaitingMenu();
+}
+
+void LoadWaitingMenu()
+{
+	//g_hWaitingPanel = new Panel();
+	g_hWaitingPanel.SetTitle("[VIP] Ожидайте...\n \n");
+	g_hWaitingPanel.AddItem("", "Данные загружаются...");
 }
 
 void OpenVIPInfo(int iClient)
@@ -260,6 +269,12 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 					Call_Finish(bResult);
 				}
 				else bResult = true;
+			}
+
+			if(!strcmp(sBuffer, "NO_FEATURES"))
+			{
+				bResult = true;
+				FormatEx(szDisplay, sizeof(szDisplay), "%t", "NO_FEATURES");
 			}
 
 			if (bResult)

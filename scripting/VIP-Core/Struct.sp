@@ -1,6 +1,14 @@
 
 // Structure...
 
+enum
+{
+	TIME_MODE_SECONDS = 0,
+	TIME_MODE_MINUTES,
+	TIME_MODE_HOURS,
+	TIME_MODE_DAYS
+}
+
 enum ChatHookType
 {
 	ChatHook_None = 0,
@@ -248,7 +256,7 @@ enum struct PlayerData
 		}
 
 		this.RebuildFeatureList();
-		CallForward_OnAddGroup(this.iClient, sGroup);
+		CallForward_OnClientAddGroup(this.iClient, sGroup);
 	}
 
 	void RemoveGroup(char[] sGroup)
@@ -259,7 +267,7 @@ enum struct PlayerData
 			this.hGroups.Erase(iIndex);
 
 			this.RebuildFeatureList();
-			CallForward_OnRemoveGroup(this.iClient, sGroup);
+			CallForward_OnClientRemoveGroup(this.iClient, sGroup);
 		}
 	}
 
@@ -628,9 +636,12 @@ enum struct PlayerData
 		// TODO: Загрузка данных...
 		this.SetID();
 
-		DB_LoadPlayerData(this.iClient);
+		if(CallForward_OnClientPreLoad(this.iClient))
+		{
+			DB_LoadPlayerData(this.iClient);
 
-		this.RebuildFeatureList();
+			this.RebuildFeatureList();
+		}
 	}
 
 	void ClearData()
