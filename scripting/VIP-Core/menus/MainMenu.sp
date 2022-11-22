@@ -11,9 +11,9 @@ void LoadMainMenu()
 
 void LoadWaitingMenu()
 {
-	//g_hWaitingPanel = new Panel();
+	g_hWaitingPanel = new Panel();
 	g_hWaitingPanel.SetTitle("[VIP] Ожидайте...\n \n");
-	g_hWaitingPanel.AddItem("", "Данные загружаются...");
+	g_hWaitingPanel.DrawItem("Данные загружаются...", ITEMDRAW_DISABLED);
 }
 
 void OpenVIPInfo(int iClient)
