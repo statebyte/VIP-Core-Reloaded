@@ -420,7 +420,7 @@ int AdminPlayerFeaturesInfoMenuHandler(Menu hMenu, MenuAction action, int iClien
 		}
 		case MenuAction_Select:
 		{
-			char sInfo[D_FEATURENAME_LENGTH];
+			char sInfo[VIP_FEATURENAME_LENGTH];
 			hMenu.GetItem(iItem, sInfo, sizeof(sInfo));
 
 			if(!strcmp(sInfo, "__save"))

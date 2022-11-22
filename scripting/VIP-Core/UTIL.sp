@@ -81,3 +81,61 @@ void UTIL_GetTimeFromStamp(char[] szBuffer, int iMaxLen, int iTimeStamp, int iCl
 		}
 	}
 }
+
+stock int UTIL_GetVipClientByAccountID(int iAccountID)
+{
+	for (int i = 1; i <= MaxClients; ++i)
+	{
+		if (IsClientInGame(i) && g_ePlayerData[i].bVIP && g_ePlayerData[i].AccountID == iAccountID) return i;
+	}
+	return 0;
+}
+
+int UTIL_SecondsToTime(int iTime)
+{
+	// TODO: Add cvar!
+	int iTimeType = TIME_MODE_SECONDS;
+	switch (iTimeType)
+	{
+		case TIME_MODE_SECONDS:return iTime;
+		case TIME_MODE_MINUTES:return iTime / 60;
+		case TIME_MODE_HOURS:return iTime / 3600;
+		case TIME_MODE_DAYS:return iTime / 86400;
+	}
+	
+	return -1;
+}
+
+int UTIL_TimeToSeconds(int iTime)
+{
+	// TODO: Add cvar!
+	int iTimeType = TIME_MODE_SECONDS;
+	switch (iTimeType)
+	{
+		case TIME_MODE_SECONDS:return iTime;
+		case TIME_MODE_MINUTES:return iTime * 60;
+		case TIME_MODE_HOURS:return iTime * 3600;
+		case TIME_MODE_DAYS:return iTime * 86400;
+	}
+	
+	return -1;
+}
+
+stock int UTIL_GetAccountIDFromSteamID(const char[] szSteamID)
+{
+	if (!strncmp(szSteamID, "STEAM_", 6))
+	{
+		return StringToInt(szSteamID[10]) << 1 | (szSteamID[8] - 48);
+	}
+
+	if (!strncmp(szSteamID, "[U:1:", 5) && szSteamID[strlen(szSteamID)-1] == ']')
+	{
+		char szBuffer[16];
+		strcopy(szBuffer, sizeof(szBuffer), szSteamID[5]);
+		szBuffer[strlen(szBuffer)-1] = 0;
+
+		return StringToInt(szBuffer);
+	}
+
+	return 0;
+}

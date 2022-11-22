@@ -5,6 +5,15 @@ void LoadMainMenu()
 	g_hMainMenu = new Menu(MainMenuHandler, MenuAction_Select|MenuAction_Cancel|MenuAction_End|MenuAction_DrawItem|MenuAction_DisplayItem|MenuAction_Display);
 
 	g_hMainMenu.AddItem("NO_FEATURES", "NO_FEATURES", ITEMDRAW_DISABLED);
+
+	LoadWaitingMenu();
+}
+
+void LoadWaitingMenu()
+{
+	//g_hWaitingPanel = new Panel();
+	g_hWaitingPanel.SetTitle("[VIP] Ожидайте...\n \n");
+	g_hWaitingPanel.AddItem("", "Данные загружаются...");
 }
 
 void OpenVIPInfo(int iClient)
@@ -27,7 +36,9 @@ void OpenVIPInfo(int iClient)
 			PlayerGroup hGroup;
 			g_ePlayerData[iClient].hGroups.GetArray(i, hGroup, sizeof(hGroup));
 
-			UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime - GetTime(), iClient);
+			if(hGroup.ExpireTime == 0) sBuffer = "NEVER";
+			else UTIL_GetTimeFromStamp(sBuffer, sizeof(sBuffer), hGroup.ExpireTime - GetTime(), iClient);
+			
 			Format(sBuffer, sizeof(sBuffer), "%s [%s]", hGroup.Name, sBuffer);
 
 			hMenu.AddItem("", sBuffer, ITEMDRAW_DISABLED);
@@ -108,7 +119,7 @@ int VIPInfoMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 
 int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 {
-	char sBuffer[D_FEATURENAME_LENGTH];
+	char sBuffer[VIP_FEATURENAME_LENGTH];
 
 	switch(action)
 	{
@@ -258,6 +269,12 @@ int MainMenuHandler(Menu hMenu, MenuAction action, int iClient, int iItem)
 					Call_Finish(bResult);
 				}
 				else bResult = true;
+			}
+
+			if(!strcmp(sBuffer, "NO_FEATURES"))
+			{
+				bResult = true;
+				FormatEx(szDisplay, sizeof(szDisplay), "%t", "NO_FEATURES");
 			}
 
 			if (bResult)

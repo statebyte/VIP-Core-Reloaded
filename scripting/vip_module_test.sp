@@ -10,6 +10,11 @@ public void OnPluginStart()
 
 public void VIP_OnVIPLoaded()
 {
+	if(VIP_GetCurrentVersionInterface() < 400)
+	{
+		SetFailState("VIP Core need to update!");
+	}
+
 	hHP.Register(VIP_NULL, SELECTABLE, OnSelect);
 	hMoney.Register(VIP_NULL, TOGGLABLE, OnSelect);
 	VIP_RegisterFeature("speed", VIP_NULL, TOGGLABLE, OnSelect);
@@ -25,7 +30,7 @@ public void OnPluginEnd()
 
 bool OnSelect(int iClient, char[] sFeature)
 {
-	char sValue[D_FEATUREVALUE_LENGTH];
+	char sValue[VIP_FEATUREVALUE_LENGTH];
 
 	VIP_GetClientFeatureString(iClient, sFeature, sValue, sizeof(sValue));
 

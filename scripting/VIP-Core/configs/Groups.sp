@@ -65,7 +65,7 @@ void LoadFeatureSortList()
 	DebugMsg(DBG_INFO, "LoadFeatureSortList");
 	g_hFeaturesSorted.Clear();
 
-	char sPath[PLATFORM_MAX_PATH], sBuffer[D_FEATURENAME_LENGTH];
+	char sPath[PLATFORM_MAX_PATH], sBuffer[VIP_FEATURENAME_LENGTH];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "%s/%s", CONFIG_MAIN_PATH, CONFIG_SORT_FILENAME);
 
 	if(FileExists(sPath))
@@ -125,6 +125,8 @@ bool LoadGroupsConfig()
 
 	RebuildFeatureList();
 
+	CallForward_OnConfigsLoaded();
+
 	DebugMsg(DBG_INFO, "Current Line: %i", g_iCurrentLine);
 
 	return true;
@@ -160,7 +162,7 @@ bool CheckParentGroup(int iIndex, char[] sGroup)
 	GroupInfo hGroup;
 	g_hGroups.GetArray(iIndex, hGroup, sizeof(hGroup));
 
-	char sBuf[D_GROUPNAME_LENGTH];
+	char sBuf[VIP_GROUPNAME_LENGTH];
 
 	int iSize = hGroup.hExtendList.Length;
 	for(int i = 0; i < iSize; i++)
