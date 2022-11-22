@@ -40,7 +40,7 @@ DBG_Level g_iDBGLevel = DBG_SQL;
 #include "VIP-Core/Downloads.sp"
 #include "VIP-Core/Sounds.sp"
 //#include "VIP-Core/Info.sp"
-//#include "VIP-Core/Colors.sp"
+#include "VIP-Core/Colors.sp"
 #include "VIP-Core/UTIL.sp"
 #include "VIP-Core/API.sp"
 #include "VIP-Core/menus/MainMenu.sp"

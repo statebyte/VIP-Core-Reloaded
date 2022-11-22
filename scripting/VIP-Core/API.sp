@@ -39,37 +39,6 @@ void API_SetupForwards()
 	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_String);
 }
 
-void CallForward_OnConfigsLoaded()
-{
-	Call_StartForward(g_hGlobalForward_OnConfigsLoaded);
-	Call_Finish();
-}
-
-void CallForward_OnAddGroup(char[] sGroup)
-{
-	Call_StartForward(g_hGlobalForward_OnAddGroup);
-	Call_PushString(sGroup);
-	Call_Finish();
-}
-
-void CallForward_OnRemoveGroup(char[] sGroup)
-{
-	Call_StartForward(g_hGlobalForward_OnRemoveGroup);
-	Call_PushString(sGroup);
-	Call_Finish();
-}
-
-
-bool CallForward_OnClientPreLoad(int iClient)
-{
-	bool bResult = true;
-	Call_StartForward(g_hGlobalForward_OnClientPreLoad);
-	Call_PushCell(iClient);
-	Call_Finish(bResult);
-
-	return bResult;
-}
-
 public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_max) 
 {
 	g_eServerData.Engine = GetEngineVersion();
@@ -103,8 +72,9 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	
 
 	// Clients
-	//RegNative(CheckClient);
 	RegNative(IsClientVIP);
+	RegNative(GetClientID);
+	RegNative(CheckClient);
 
 	RegNative(GetClientGroupName);
 	RegNative(GetClientGroupExpire);
@@ -134,17 +104,48 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetClientStorageValue);
 
 	// Helpers
-	RegNative(GetTimeFromStamp);
 	RegNative(LogMessage);
-	//RegNative(PrintToChatClient);
-	//RegNative(PrintToChatAll);
+	RegNative(PrintToChatClient);
+	RegNative(PrintToChatAll);
 	//RegNative(AddStringToggleStatus);
-	//RegNative(TimeToSeconds);
-	//RegNative(SecondsToTime);
+	RegNative(GetTimeFromStamp);
+	RegNative(TimeToSeconds);
+	RegNative(SecondsToTime);
 
 	RegPluginLibrary("vip_core");
 	
 	return APLRes_Success;
+}
+
+void CallForward_OnConfigsLoaded()
+{
+	Call_StartForward(g_hGlobalForward_OnConfigsLoaded);
+	Call_Finish();
+}
+
+void CallForward_OnAddGroup(char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnAddGroup);
+	Call_PushString(sGroup);
+	Call_Finish();
+}
+
+void CallForward_OnRemoveGroup(char[] sGroup)
+{
+	Call_StartForward(g_hGlobalForward_OnRemoveGroup);
+	Call_PushString(sGroup);
+	Call_Finish();
+}
+
+
+bool CallForward_OnClientPreLoad(int iClient)
+{
+	bool bResult = true;
+	Call_StartForward(g_hGlobalForward_OnClientPreLoad);
+	Call_PushCell(iClient);
+	Call_Finish(bResult);
+
+	return bResult;
 }
 
 void CallForward_OnClientLoaded(int iClient)
@@ -291,6 +292,26 @@ bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, con
 	return bResult;
 }
 
+public int Native_GetClientID(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+	if (CheckValidClient(iClient, false))
+	{
+		return g_ePlayerData[iClient].AccountID;
+	}
+	
+	return 0;
+}
+
+public int Native_CheckClient(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	g_ePlayerData[iClient].RebuildFeatureList();
+	
+	return 1;
+}
+
 public int Native_FillArrayByGroups(Handle hPlugin, int iNumParams)
 {
 	ArrayList hArray = view_as<ArrayList>(GetNativeCell(1));
@@ -372,6 +393,8 @@ public int Native_GroupAddFeature(Handle hPlugin, int iNumParams)
 	hGroup.AddFeature(sFeature, sValue);
 
 	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
+
+	RebuildFeatureList();
 	
 	return 1;
 }
@@ -395,6 +418,8 @@ public int Native_GroupRemoveFeature(Handle hPlugin, int iNumParams)
 	hGroup.DelFeature(sFeature);
 
 	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
+
+	RebuildFeatureList();
 	
 	return 1;
 }
@@ -1030,6 +1055,49 @@ public int Native_LogMessage(Handle hPlugin, int iNumParams)
 	VIP_LogMsg(szMessage);
 
 	return 0;
+}
+
+public int Native_PrintToChatClient(Handle hPlugin, int iNumParams)
+{
+	int iClient = GetNativeCell(1);
+
+	if (CheckValidClient(iClient, false))
+	{
+		char szMessage[PLATFORM_MAX_PATH];
+		SetGlobalTransTarget(iClient);
+		FormatNativeString(0, 2, 3, sizeof(szMessage), _, szMessage);
+
+		Colors_Print(iClient, szMessage);
+	}
+
+	return 0;
+}
+
+public int Native_PrintToChatAll(Handle hPlugin, int iNumParams)
+{
+	char szMessage[PLATFORM_MAX_PATH];
+
+	for (int i = 1; i <= MaxClients; ++i)
+	{
+		if (IsClientInGame(i) && !IsFakeClient(i))
+		{
+			SetGlobalTransTarget(i);
+			FormatNativeString(0, 1, 2, sizeof(szMessage), _, szMessage);
+			Colors_Print(i, szMessage);
+		}
+	}
+
+	return 0;
+}
+
+public int Native_TimeToSeconds(Handle hPlugin, int iNumParams)
+{
+	return UTIL_TimeToSeconds(GetNativeCell(1));
+}
+
+public int Native_SecondsToTime(Handle hPlugin, int iNumParams)
+{
+	return UTIL_SecondsToTime(GetNativeCell(1));
 }
 
 bool CheckValidClient(const int &iClient, bool bCheckVIP = true)

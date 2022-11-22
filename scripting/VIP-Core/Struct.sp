@@ -1,6 +1,14 @@
 
 // Structure...
 
+enum
+{
+	TIME_MODE_SECONDS = 0,
+	TIME_MODE_MINUTES,
+	TIME_MODE_HOURS,
+	TIME_MODE_DAYS
+}
+
 enum ChatHookType
 {
 	ChatHook_None = 0,

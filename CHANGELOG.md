@@ -10,19 +10,19 @@
 [x] - Функция переработана и может быть неправельная работа в старых модулях  
 
 - Natives:  
-[-] Native VIP_CheckClient  
+[+] Native VIP_CheckClient  
 [+] Native VIP_IsClientVIP  
-[R] Native VIP_GetClientID  
+[+] Native VIP_GetClientID  
 [R] Native VIP_GetClientAccessTime  
 [R] Native VIP_SetClientAccessTime  
 [x] Native VIP_GetClientVIPGroup  
 [R] Native VIP_SetClientVIPGroup  
 [+] Native VIP_IsGroupExists  
 [+] Native VIP_IsValidVIPGroup  
-[-] Native VIP_AddGroup  
-[-] Native VIP_RemoveGroup  
-[-] Native VIP_PrintToChatClient  
-[-] Native VIP_PrintToChatAll  
+[+] Native VIP_AddGroup  
+[+] Native VIP_RemoveGroup  
+[+] Native VIP_PrintToChatClient  
+[+] Native VIP_PrintToChatAll  
 [+] Native VIP_LogMessage  
 [+] Native VIP_SendClientVIPMenu  
 [R] Native VIP_GiveClientVIP  
@@ -52,8 +52,8 @@
 [+] Native VIP_GetClientStorageValue  
 [+] Native VIP_GetDatabase  
 [+] Native VIP_GetDatabaseType  
-[-] Native VIP_TimeToSeconds  
-[-] Native VIP_SecondsToTime  
+[+] Native VIP_TimeToSeconds  
+[+] Native VIP_SecondsToTime  
 [+] Native VIP_GetTimeFromStamp  
 [-] Native VIP_AddStringToggleStatus  
 [N] Native VIP_GiveClientGroup  
@@ -73,10 +73,10 @@
 [R] Forward VIP_OnClientStorageLoaded  
 [+] Forward VIP_OnFeatureToggle  
 [+] Forward VIP_OnVIPLoaded  
-[-] Forward VIP_OnConfigsLoaded  
+[+] Forward VIP_OnConfigsLoaded  
 [+] Forward VIP_OnFeatureRegistered  
 [+] Forward VIP_OnFeatureUnregistered  
-[-] Forward VIP_OnClientPreLoad  
+[+] Forward VIP_OnClientPreLoad  
 [+] Forward VIP_OnClientLoaded   // Гарантирует загрузку Storage - VIP_OnClientStorageLoaded  
 [+] Forward VIP_OnVIPClientLoaded  
 [+] Forward VIP_OnClientDisconnect  
