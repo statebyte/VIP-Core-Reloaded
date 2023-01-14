@@ -249,22 +249,22 @@ void DB_AddPlayerGroup(int iClient, char[] sGroup, int iExpire, int iTarget = 0)
 	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
 }
 
-void DB_SaveStorage(int iClient, char[] sKey, char[] sValue)
-{
-	char sQuery[1024];
-	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', '%s', %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
-	DebugMsg(DBG_SQL, sQuery);
-	
-	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery);
-}
-
 void DB_RemovePlayerGroup(int iClient, char[] sGroup, int iTarget = 0)
 {
 	char sQuery[1024];
 	FormatEx(sQuery, sizeof(sQuery), "DELETE FROM `" ... TABLE_GROUPS ... "` WHERE `account_id` = %i AND `sid` = %i AND `group` = '%s';", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sGroup);
 	DebugMsg(DBG_SQL, sQuery);
 	
-	g_eServerData.DB.Query(SQL_CallbackAddPlayerGroup, sQuery, iTarget);
+	g_eServerData.DB.Query(SQL_CallbackRemovePlayerGroup, sQuery, iTarget);
+}
+
+void DB_SaveStorage(int iClient, char[] sKey, char[] sValue)
+{
+	char sQuery[1024];
+	FormatEx(sQuery, sizeof(sQuery), "INSERT INTO `" ... TABLE_STORAGE ... "` (`account_id`, `sid`, `key`, `value`, `updated`) VALUES (%i, %i, '%s', '%s', %i) ON DUPLICATE KEY UPDATE `value` = '%s', `updated` = %i;", g_ePlayerData[iClient].AccountID, g_eServerData.ServerID, sKey, sValue, GetTime(), sValue, GetTime());
+	DebugMsg(DBG_SQL, sQuery);
+	
+	g_eServerData.DB.Query(SQL_CallbackUpdatePlayerStorage, sQuery);
 }
 
 // void DB_AddUserTransaction(Transaction hTh, int iClient)
@@ -347,6 +347,35 @@ void SQL_CallbackAddPlayerGroup(Database hOwner, DBResultSet hResult, const char
 		PrintToChat(data, "[VIP] Группа %s успешно добавлена в БД...", g_ePlayerData[data].CurrentGroup);
 	}
 
+	return;
+}
+
+void SQL_CallbackRemovePlayerGroup(Database hOwner, DBResultSet hResult, const char[] szError, any data)
+{
+	if(szError[0])
+	{
+		DebugMsg(DBG_INFO, szError);
+		PrintToChat(data, "[VIP] Ошибка удаления группы в БД");
+		return;
+	}
+
+	if(data > 0)
+	{
+		PrintToChat(data, "[VIP] Группа %s успешно удалена в БД...", g_ePlayerData[data].CurrentGroup);
+	}
+
+	return;
+}
+
+void SQL_CallbackUpdatePlayerStorage(Database hOwner, DBResultSet hResult, const char[] szError, any data)
+{
+	if(szError[0])
+	{
+		DebugMsg(DBG_INFO, szError);
+		PrintToChat(data, "[VIP] Ошибка обновления данных в БД");
+		return;
+	}
+	
 	return;
 }
 
