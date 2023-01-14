@@ -869,7 +869,7 @@ enum struct VIP_Feature
 
 	void Remove(int iClient, bool bSaveDB = false)
 	{
-		VIP_RemoveClientFeature(iClient, this.Name, bSaveDB)
+		VIP_RemoveClientFeature(iClient, this.Name, bSaveDB);
 	}
 }
 
