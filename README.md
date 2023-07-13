@@ -20,7 +20,7 @@
         src="https://img.shields.io/github/repo-size/theelsaud/VIP-Core-Reloaded"
     />
     <img
-        src="https://img.shields.io/github/workflow/status/theelsaud/VIP-Core-Reloaded/Test%20build"
+        src="https://img.shields.io/github/actions/workflow/status/theelsaud/VIP-Core-Reloaded/test.yml?branch=main"
     />
   </p>
 </div>
