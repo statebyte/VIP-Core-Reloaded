@@ -1,5 +1,5 @@
 
-#define RegNative(%0)	CreateNative("VIP_" ... %0, Native_%0)
+#define RegNative(%0) CreateNative("VIP_" ... #%0, Native_%0)
 
 static Handle g_hGlobalForward_OnVIPLoaded;
 static Handle g_hGlobalForward_OnRebuildFeatureList;
@@ -17,29 +17,29 @@ static Handle g_hGlobalForward_OnVIPClientLoaded;
 static Handle g_hGlobalForward_OnClientDisconnect;
 static Handle g_hGlobalForward_OnStorageUpdate;
 static Handle g_hGlobalForward_OnConfigsLoaded;
-//static Handle g_hGlobalForward_OnShowClientInfo;
+// static Handle g_hGlobalForward_OnShowClientInfo;
 
-void API_SetupForwards()
+void		  API_SetupForwards()
 {
-	g_hGlobalForward_OnVIPLoaded					= CreateGlobalForward("VIP_OnVIPLoaded", ET_Ignore);
-	g_hGlobalForward_OnRebuildFeatureList			= CreateGlobalForward("VIP_OnRebuildFeatureList", ET_Ignore, Param_Cell);
-	g_hGlobalForward_OnClientGroupAdded				= CreateGlobalForward("VIP_OnClientGroupAdded", ET_Ignore, Param_Cell, Param_String);
-	g_hGlobalForward_OnClientGroupRemoved			= CreateGlobalForward("VIP_OnClientGroupRemoved", ET_Ignore, Param_Cell, Param_String);
-	g_hGlobalForward_OnPlayerSpawn					= CreateGlobalForward("VIP_OnPlayerSpawn", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	g_hGlobalForward_OnFeatureToggle				= CreateGlobalForward("VIP_OnFeatureToggle", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
-	g_hGlobalForward_OnFeatureRegistered			= CreateGlobalForward("VIP_OnFeatureRegistered", ET_Ignore, Param_String);
-	g_hGlobalForward_OnFeatureUnregistered			= CreateGlobalForward("VIP_OnFeatureUnregistered", ET_Ignore, Param_String);
-	g_hGlobalForward_OnClientLoaded					= CreateGlobalForward("VIP_OnClientLoaded", ET_Ignore, Param_Cell, Param_Cell);
-	g_hGlobalForward_OnVIPClientLoaded				= CreateGlobalForward("VIP_OnVIPClientLoaded", ET_Ignore, Param_Cell);
-	g_hGlobalForward_OnClientDisconnect				= CreateGlobalForward("VIP_OnClientDisconnect", ET_Ignore, Param_Cell, Param_Cell);
-	g_hGlobalForward_OnStorageUpdate				= CreateGlobalForward("VIP_OnStorageUpdate", ET_Ignore, Param_Cell, Param_String);
-	g_hGlobalForward_OnClientPreLoad				= CreateGlobalForward("VIP_OnClientPreLoad", ET_Hook, Param_Cell);
-	g_hGlobalForward_OnConfigsLoaded				= CreateGlobalForward("VIP_OnConfigsLoaded", ET_Ignore);
-	g_hGlobalForward_OnAddGroup						= CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_String);
-	g_hGlobalForward_OnRemoveGroup					= CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_String);
+	g_hGlobalForward_OnVIPLoaded		   = CreateGlobalForward("VIP_OnVIPLoaded", ET_Ignore);
+	g_hGlobalForward_OnRebuildFeatureList  = CreateGlobalForward("VIP_OnRebuildFeatureList", ET_Ignore, Param_Cell);
+	g_hGlobalForward_OnClientGroupAdded	   = CreateGlobalForward("VIP_OnClientGroupAdded", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnClientGroupRemoved  = CreateGlobalForward("VIP_OnClientGroupRemoved", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnPlayerSpawn		   = CreateGlobalForward("VIP_OnPlayerSpawn", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hGlobalForward_OnFeatureToggle	   = CreateGlobalForward("VIP_OnFeatureToggle", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
+	g_hGlobalForward_OnFeatureRegistered   = CreateGlobalForward("VIP_OnFeatureRegistered", ET_Ignore, Param_String);
+	g_hGlobalForward_OnFeatureUnregistered = CreateGlobalForward("VIP_OnFeatureUnregistered", ET_Ignore, Param_String);
+	g_hGlobalForward_OnClientLoaded		   = CreateGlobalForward("VIP_OnClientLoaded", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForward_OnVIPClientLoaded	   = CreateGlobalForward("VIP_OnVIPClientLoaded", ET_Ignore, Param_Cell);
+	g_hGlobalForward_OnClientDisconnect	   = CreateGlobalForward("VIP_OnClientDisconnect", ET_Ignore, Param_Cell, Param_Cell);
+	g_hGlobalForward_OnStorageUpdate	   = CreateGlobalForward("VIP_OnStorageUpdate", ET_Ignore, Param_Cell, Param_String);
+	g_hGlobalForward_OnClientPreLoad	   = CreateGlobalForward("VIP_OnClientPreLoad", ET_Hook, Param_Cell);
+	g_hGlobalForward_OnConfigsLoaded	   = CreateGlobalForward("VIP_OnConfigsLoaded", ET_Ignore);
+	g_hGlobalForward_OnAddGroup			   = CreateGlobalForward("VIP_OnAddGroup", ET_Ignore, Param_String);
+	g_hGlobalForward_OnRemoveGroup		   = CreateGlobalForward("VIP_OnRemoveGroup", ET_Ignore, Param_String);
 }
 
-public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_max) 
+public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_max)
 {
 	g_eServerData.Engine = GetEngineVersion();
 
@@ -59,7 +59,7 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GetFeatureType);
 	RegNative(GetFeatureValueType);
 	RegNative(FillArrayByFeatures);
-	
+
 	// Groups
 	RegNative(IsGroupExists);
 	RegNative(IsValidVIPGroup);
@@ -69,7 +69,6 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(GroupRemoveFeature);
 	RegNative(GetGroupIDByName);
 	RegNative(FillArrayByGroups);
-	
 
 	// Clients
 	RegNative(IsClientVIP);
@@ -107,13 +106,13 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] szError, int err_
 	RegNative(LogMessage);
 	RegNative(PrintToChatClient);
 	RegNative(PrintToChatAll);
-	//RegNative(AddStringToggleStatus);
+	// RegNative(AddStringToggleStatus);
 	RegNative(GetTimeFromStamp);
 	RegNative(TimeToSeconds);
 	RegNative(SecondsToTime);
 
 	RegPluginLibrary("vip_core");
-	
+
 	return APLRes_Success;
 }
 
@@ -137,7 +136,6 @@ void CallForward_OnRemoveGroup(char[] sGroup)
 	Call_Finish();
 }
 
-
 bool CallForward_OnClientPreLoad(int iClient)
 {
 	bool bResult = true;
@@ -155,7 +153,7 @@ void CallForward_OnClientLoaded(int iClient)
 	Call_PushCell(g_ePlayerData[iClient].bVIP);
 	Call_Finish();
 
-	if(g_ePlayerData[iClient].bVIP)
+	if (g_ePlayerData[iClient].bVIP)
 	{
 		CallForward_OnVIPClientLoaded(iClient);
 	}
@@ -214,22 +212,22 @@ void CallForward_OnFeatureUnregistered(char[] sFeature)
 
 void CallForward_OnVIPLoaded()
 {
-	if(!g_eServerData.CoreIsReady)
+	if (!g_eServerData.CoreIsReady)
 	{
 		PrintToServer("------------------- VIP Core ---------------------");
 		PrintToServer("VIP Core is ready to working!");
 		PrintToServer(" ");
 		PrintToServer("Groups: %i", g_hGroups.Length);
 		PrintToServer("Database: %s", g_eServerData.DB_Type == DB_None ? "No" : "Yes");
-		
-		if(g_eServerData.DB_Type != DB_None)
+
+		if (g_eServerData.DB_Type != DB_None)
 		{
 			char sDriverName[64];
-			//SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
+			// SQL_ReadDriver(g_eServerData.DB).GetProduct(sDriverName, sizeof(sDriverName));
 			SQL_GetDriverProduct(SQL_ReadDriver(g_eServerData.DB), sDriverName, sizeof(sDriverName));
 			PrintToServer("Database Type: %s", sDriverName);
 		}
-		
+
 		PrintToServer(" ");
 		PrintToServer("Authors: " ... PL_AUTHOR);
 		PrintToServer("Version: " ... PL_VERSION);
@@ -238,7 +236,7 @@ void CallForward_OnVIPLoaded()
 		PrintToServer("Game: %s", sBuffer);
 		PrintToServer("------------------- VIP Core ---------------------");
 	}
-	
+
 	g_eServerData.CoreIsReady = true;
 
 	Call_StartForward(g_hGlobalForward_OnVIPLoaded);
@@ -256,7 +254,7 @@ void CallForward_OnPlayerSpawn(int iClient)
 {
 	int iTeam = GetClientTeam(iClient);
 
-	//DebugMsg(DBG_INFO, "CallForward_OnPlayerSpawn - %N %i %i", iClient, iTeam, g_ePlayerData[iClient].bVIP);
+	// DebugMsg(DBG_INFO, "CallForward_OnPlayerSpawn - %N %i %i", iClient, iTeam, g_ePlayerData[iClient].bVIP);
 
 	Call_StartForward(g_hGlobalForward_OnPlayerSpawn);
 	Call_PushCell(iClient);
@@ -288,7 +286,7 @@ bool Function_OnItemSelect(Handle hPlugin, Function FuncSelect, int iClient, con
 	Call_PushCell(iClient);
 	Call_PushString(szFeature);
 	Call_Finish(bResult);
-	
+
 	return bResult;
 }
 
@@ -299,7 +297,7 @@ public int Native_GetClientID(Handle hPlugin, int iNumParams)
 	{
 		return g_ePlayerData[iClient].AccountID;
 	}
-	
+
 	return 0;
 }
 
@@ -308,7 +306,7 @@ public int Native_CheckClient(Handle hPlugin, int iNumParams)
 	int iClient = GetNativeCell(1);
 
 	g_ePlayerData[iClient].RebuildFeatureList();
-	
+
 	return 1;
 }
 
@@ -317,7 +315,7 @@ public int Native_FillArrayByGroups(Handle hPlugin, int iNumParams)
 	ArrayList hArray = view_as<ArrayList>(GetNativeCell(1));
 
 	hArray.Clear();
-	
+
 	int iLen = g_hGroups.Length;
 	for (int i = 0; i < iLen; i++)
 	{
@@ -325,7 +323,7 @@ public int Native_FillArrayByGroups(Handle hPlugin, int iNumParams)
 		g_hGroups.GetArray(i, hGroup, sizeof(hGroup));
 		hArray.PushString(hGroup.Name);
 	}
-	
+
 	return hArray.Length;
 }
 
@@ -335,8 +333,8 @@ public int Native_AddGroup(Handle hPlugin, int iNumParams)
 	GetNativeString(1, sGroupName, sizeof(sGroupName));
 
 	int iIndex = GetGroupIDByName(sGroupName);
-	
-	if(iIndex == -1)
+
+	if (iIndex == -1)
 	{
 		GroupInfo hGroup;
 		hGroup.Init();
@@ -344,8 +342,8 @@ public int Native_AddGroup(Handle hPlugin, int iNumParams)
 		hGroup.Name = sGroupName;
 
 		CallForward_OnAddGroup(sGroupName);
-		
-		return g_hGroups.PushArray(hGroup, sizeof(hGroup));	
+
+		return g_hGroups.PushArray(hGroup, sizeof(hGroup));
 	}
 
 	return -1;
@@ -357,8 +355,8 @@ public int Native_RemoveGroup(Handle hPlugin, int iNumParams)
 	GetNativeString(1, sGroupName, sizeof(sGroupName));
 
 	int iIndex = GetGroupIDByName(sGroupName);
-	
-	if(iIndex == -1)
+
+	if (iIndex == -1)
 	{
 		return 0;
 	}
@@ -381,8 +379,8 @@ public int Native_GroupAddFeature(Handle hPlugin, int iNumParams)
 	GetNativeString(3, sValue, sizeof(sValue));
 
 	int iIndex = GetGroupIDByName(sGroupName);
-	
-	if(iIndex == -1)
+
+	if (iIndex == -1)
 	{
 		return 0;
 	}
@@ -395,7 +393,7 @@ public int Native_GroupAddFeature(Handle hPlugin, int iNumParams)
 	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
 
 	RebuildFeatureList();
-	
+
 	return 1;
 }
 
@@ -406,8 +404,8 @@ public int Native_GroupRemoveFeature(Handle hPlugin, int iNumParams)
 	GetNativeString(2, sFeature, sizeof(sFeature));
 
 	int iIndex = GetGroupIDByName(sGroupName);
-	
-	if(iIndex == -1)
+
+	if (iIndex == -1)
 	{
 		return 0;
 	}
@@ -420,17 +418,16 @@ public int Native_GroupRemoveFeature(Handle hPlugin, int iNumParams)
 	g_hGroups.SetArray(iIndex, hGroup, sizeof(hGroup));
 
 	RebuildFeatureList();
-	
+
 	return 1;
 }
-
 
 public int Native_GetGroupIDByName(Handle hPlugin, int iNumParams)
 {
 	char sGroupName[VIP_GROUPNAME_LENGTH];
 	GetNativeString(1, sGroupName, sizeof(sGroupName));
 
-	if(sGroupName[0])
+	if (sGroupName[0])
 	{
 		return GetGroupIDByName(sGroupName);
 	}
@@ -443,7 +440,7 @@ public int Native_FillArrayByFeatures(Handle hPlugin, int iNumParams)
 	ArrayList hArray = view_as<ArrayList>(GetNativeCell(1));
 
 	hArray.Clear();
-	
+
 	int iLen = g_hFeatures.Length;
 	for (int i = 0; i < iLen; i++)
 	{
@@ -451,7 +448,7 @@ public int Native_FillArrayByFeatures(Handle hPlugin, int iNumParams)
 		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
 		hArray.PushString(hFeature.Key);
 	}
-	
+
 	return hArray.Length;
 }
 
@@ -459,7 +456,7 @@ public int Native_RemoveClientFeature(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -474,7 +471,7 @@ public int Native_GiveClientFeature(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -484,7 +481,7 @@ public int Native_GiveClientFeature(Handle hPlugin, int iNumParams)
 
 	GetNativeString(3, sValue, sizeof(sValue));
 
-	if(GetNativeCell(4))
+	if (GetNativeCell(4))
 	{
 		DB_AddCustomFeature(iClient, sFeature, sValue);
 	}
@@ -496,7 +493,7 @@ public int Native_IsClientFeatureUse(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -516,7 +513,7 @@ public int Native_GetClientFeatureInt(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -526,7 +523,7 @@ public int Native_GetClientFeatureInt(Handle hPlugin, int iNumParams)
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
 
-	if(iIndex != -1)
+	if (iIndex != -1)
 	{
 		PlayerFeature hFeature;
 		g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
@@ -541,7 +538,7 @@ public int Native_GetClientFeatureFloat(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -551,7 +548,7 @@ public int Native_GetClientFeatureFloat(Handle hPlugin, int iNumParams)
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
 
-	if(iIndex != -1)
+	if (iIndex != -1)
 	{
 		PlayerFeature hFeature;
 		g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
@@ -565,9 +562,9 @@ public int Native_GetClientFeatureFloat(Handle hPlugin, int iNumParams)
 public int Native_GetClientFeatureString(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
-	int iLen = GetNativeCell(4);
+	int iLen	= GetNativeCell(4);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -577,7 +574,7 @@ public int Native_GetClientFeatureString(Handle hPlugin, int iNumParams)
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
 
-	if(iIndex != -1)
+	if (iIndex != -1)
 	{
 		PlayerFeature hFeature;
 		g_ePlayerData[iClient].hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
@@ -595,7 +592,7 @@ public int Native_GetClientFeatureStatus(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -610,7 +607,7 @@ public int Native_SetClientFeatureStatus(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(!CheckValidClient(iClient))
+	if (!CheckValidClient(iClient))
 	{
 		return ThrowNativeError(1, "Invalid Client index %i", iClient);
 	}
@@ -620,23 +617,23 @@ public int Native_SetClientFeatureStatus(Handle hPlugin, int iNumParams)
 
 	int iIndex = g_ePlayerData[iClient].GetFeatureIDByName(sFeature);
 
-	if(iIndex == -1)
+	if (iIndex == -1)
 	{
 		return ThrowNativeError(1, "Invalid Feature index - %s", sFeature);
 	}
 
-	int State = GetNativeCell(3);
+	int	 State	   = GetNativeCell(3);
 	bool bCallback = GetNativeCell(4);
-	bool bSave = GetNativeCell(5);
-	
+	bool bSave	   = GetNativeCell(5);
+
 	g_ePlayerData[iClient].ToggleFeatureStatus(sFeature, State);
 
-	if(bCallback)
+	if (bCallback)
 	{
 		CallForward_OnFeatureToggle(iClient, sFeature);
 	}
 
-	if(bSave)
+	if (bSave)
 	{
 		char sBuf[4];
 		IntToString(State, sBuf, sizeof(sBuf));
@@ -674,7 +671,7 @@ public int Native_GetFeatureType(Handle hPlugin, int iNumParams)
 
 	int iIndex = GetFeatureIDByKey(sFeature);
 
-	if(iIndex == -1)
+	if (iIndex == -1)
 	{
 		return ThrowNativeError(1, "Error index");
 	}
@@ -692,7 +689,7 @@ public int Native_GetFeatureValueType(Handle hPlugin, int iNumParams)
 
 	int iIndex = GetFeatureIDByKey(sFeature);
 
-	if(iIndex == -1)
+	if (iIndex == -1)
 	{
 		return ThrowNativeError(1, "Error index");
 	}
@@ -706,7 +703,7 @@ public int Native_GetFeatureValueType(Handle hPlugin, int iNumParams)
 public int Native_SendClientVIPMenu(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
-	if(GetNativeCell(2))
+	if (GetNativeCell(2))
 	{
 		g_hMainMenu.DisplayAt(iClient, MENU_TIME_FOREVER, g_ePlayerData[iClient].CurrentPage);
 	}
@@ -727,8 +724,8 @@ public int Native_GetDatabase(Handle hPlugin, int iNumParams)
 
 public int Native_GetClientGroupExpire(Handle hPlugin, int iNumParams)
 {
-	int iClient = GetNativeCell(1);
-	int iGroupID = GetNativeCell(2);
+	int			iClient	 = GetNativeCell(1);
+	int			iGroupID = GetNativeCell(2);
 
 	PlayerGroup hGroup;
 	g_ePlayerData[iClient].hGroups.GetArray(iGroupID, hGroup, sizeof(hGroup));
@@ -738,15 +735,15 @@ public int Native_GetClientGroupExpire(Handle hPlugin, int iNumParams)
 
 public int Native_GiveClientGroup(Handle hPlugin, int iNumParams)
 {
-	int iAdmin = GetNativeCell(1);
-	int iClient = GetNativeCell(2);
-	int iTime = GetNativeCell(3);
+	int	 iAdmin	  = GetNativeCell(1);
+	int	 iClient  = GetNativeCell(2);
+	int	 iTime	  = GetNativeCell(3);
 	bool bAddToDB = view_as<bool>(GetNativeCell(5));
 
 	char sGroup[VIP_GROUPNAME_LENGTH];
 	GetNativeString(4, sGroup, sizeof(sGroup));
 
-	if(bAddToDB)
+	if (bAddToDB)
 	{
 		// TODO
 		DB_AddPlayerGroup(iClient, sGroup, iTime);
@@ -762,16 +759,16 @@ public int Native_GiveClientGroup(Handle hPlugin, int iNumParams)
 
 public int Native_RemoveClientGroup(Handle hPlugin, int iNumParams)
 {
-	int iAdmin = GetNativeCell(1);
-	int iClient = GetNativeCell(2);
+	int	 iAdmin	 = GetNativeCell(1);
+	int	 iClient = GetNativeCell(2);
 
 	char sGroup[VIP_GROUPNAME_LENGTH];
 	GetNativeString(3, sGroup, sizeof(sGroup));
 
 	bool bAddToDB = view_as<bool>(GetNativeCell(4));
-	bool bNotify = view_as<bool>(GetNativeCell(5));
+	bool bNotify  = view_as<bool>(GetNativeCell(5));
 
-	if(bAddToDB)
+	if (bAddToDB)
 	{
 		// TODO
 		DB_RemovePlayerGroup(iClient, sGroup);
@@ -781,7 +778,7 @@ public int Native_RemoveClientGroup(Handle hPlugin, int iNumParams)
 
 	VIP_LogMsg("%L убрал группу %s игроку %L", iAdmin, sGroup, iClient);
 
-	if(bNotify)
+	if (bNotify)
 	{
 		// TODO
 	}
@@ -793,7 +790,7 @@ public int Native_GetClientVIPGroup(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
+	if (CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
 	{
 		PlayerGroup hGroup;
 		g_ePlayerData[iClient].hGroups.GetArray(0, hGroup, sizeof(hGroup));
@@ -807,7 +804,7 @@ public int Native_GetClientGroupCount(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(CheckValidClient(iClient))
+	if (CheckValidClient(iClient))
 	{
 		return g_ePlayerData[iClient].hGroups.Length;
 	}
@@ -819,7 +816,7 @@ public int Native_GetClientGroupName(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
+	if (CheckValidClient(iClient) && g_ePlayerData[iClient].hGroups.Length > 0)
 	{
 		PlayerGroup hGroup;
 		g_ePlayerData[iClient].hGroups.GetArray(GetNativeCell(4), hGroup, sizeof(hGroup));
@@ -833,7 +830,7 @@ public int Native_IsClientVIP(Handle hPlugin, int iNumParams)
 {
 	int iClient = GetNativeCell(1);
 
-	if(CheckValidClient(iClient))
+	if (CheckValidClient(iClient))
 	{
 		return g_ePlayerData[iClient].bVIP;
 	}
@@ -850,7 +847,7 @@ public int Native_UnregisterMe(Handle hPlugin, int iNumParams)
 
 	Feature hFeature;
 
-	int iLen = g_hFeatures.Length;
+	int		iLen = g_hFeatures.Length;
 	for (int i = 0; i < iLen; i++)
 	{
 		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
@@ -875,14 +872,14 @@ public int Native_UnregisterFeature(Handle hPlugin, int iNumParams)
 {
 	char szFeature[VIP_FEATURENAME_LENGTH];
 	GetNativeString(1, szFeature, sizeof(szFeature));
-	
+
 	if (!IsFeatureExists(szFeature))
 	{
 		return ThrowNativeError(SP_ERROR_NATIVE, "Feature \"%s\" is invalid", szFeature);
 	}
 
 	UnregisterFeature(szFeature);
-	
+
 	return 1;
 }
 
@@ -912,34 +909,32 @@ public int Native_RegisterFeature(Handle hPlugin, int iNumParams)
 	GetPluginFilename(hPlugin, sPluginName, VIP_FEATURENAME_LENGTH);
 	DebugMsg(DBG_INFO, "Register feature \"%s\" (%s)", szFeature, sPluginName);
 
-	if(IsFeatureExists(szFeature))
+	if (IsFeatureExists(szFeature))
 	{
 		return ThrowNativeError(SP_ERROR_NATIVE, "Feature \"%s\" already defined", szFeature);
 	}
 
 	Feature hFeature;
-	hFeature.Key = szFeature;
-	hFeature.ValType = view_as<VIP_ValueType>(GetNativeCell(2));
-	hFeature.Type = view_as<VIP_FeatureType>(GetNativeCell(3));
-	
-	hFeature.OnSelectCB = GetNativeCell(4);
+	hFeature.Key		 = szFeature;
+	hFeature.ValType	 = view_as<VIP_ValueType>(GetNativeCell(2));
+	hFeature.Type		 = view_as<VIP_FeatureType>(GetNativeCell(3));
+
+	hFeature.OnSelectCB	 = GetNativeCell(4);
 	hFeature.OnDisplayCB = GetNativeCell(5);
-	hFeature.OnDrawCB = GetNativeCell(6);
+	hFeature.OnDrawCB	 = GetNativeCell(6);
 
-	hFeature.hPlugin = hPlugin;
+	hFeature.hPlugin	 = hPlugin;
 
-	if(iNumParams > 6)
+	if (iNumParams > 6)
 	{
 		hFeature.ToggleState = GetNativeCell(7);
-		hFeature.bCookie = GetNativeCell(8);
+		hFeature.bCookie	 = GetNativeCell(8);
 	}
 	else
 	{
 		hFeature.ToggleState = NO_ACCESS;
-		hFeature.bCookie = true;
+		hFeature.bCookie	 = true;
 	}
-
-	
 
 	g_hFeatures.PushArray(hFeature, sizeof(hFeature));
 
@@ -956,20 +951,20 @@ void SortFeatureList()
 {
 	int iLen = g_hFeaturesSorted.Length;
 
-	if(iLen == 0) return;
+	if (iLen == 0) return;
 
-	char sBuffer[VIP_FEATURENAME_LENGTH];
-	Feature hFeature;
+	char	  sBuffer[VIP_FEATURENAME_LENGTH];
+	Feature	  hFeature;
 
 	ArrayList hArrSort = new ArrayList(sizeof(Feature));
 
-	for(int i = 0; i < iLen; i++)
+	for (int i = 0; i < iLen; i++)
 	{
 		g_hFeaturesSorted.GetString(i, sBuffer, sizeof(sBuffer));
 
 		int iIndex = GetFeatureIDByKey(sBuffer);
 
-		if(iIndex != -1)
+		if (iIndex != -1)
 		{
 			g_hFeatures.GetArray(iIndex, hFeature, sizeof(hFeature));
 			hArrSort.PushArray(hFeature, sizeof(hFeature));
@@ -978,11 +973,11 @@ void SortFeatureList()
 
 	iLen = g_hFeatures.Length;
 
-	for(int i = 0; i < iLen; i++)
+	for (int i = 0; i < iLen; i++)
 	{
 		g_hFeatures.GetArray(i, hFeature, sizeof(hFeature));
 
-		if(g_hFeaturesSorted.FindString(hFeature.Key) != -1) continue;
+		if (g_hFeaturesSorted.FindString(hFeature.Key) != -1) continue;
 
 		hArrSort.PushArray(hFeature, sizeof(hFeature));
 	}
@@ -992,7 +987,7 @@ void SortFeatureList()
 
 public int Native_SaveClientStorageValue(Handle hPlugin, int iNumParams)
 {
-	int iClient = GetNativeCell(1);
+	int	 iClient = GetNativeCell(1);
 
 	char sFeature[VIP_FEATURENAME_LENGTH], sBuffer[1024];
 
@@ -1008,7 +1003,7 @@ public int Native_SaveClientStorageValue(Handle hPlugin, int iNumParams)
 
 public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
 {
-	int iClient = GetNativeCell(1);
+	int	 iClient = GetNativeCell(1);
 
 	char sFeature[VIP_FEATURENAME_LENGTH];
 
@@ -1016,7 +1011,7 @@ public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
 
 	int iIndex = g_ePlayerData[iClient].GetStorageIDByName(sFeature);
 
-	if(iIndex != -1)
+	if (iIndex != -1)
 	{
 		PlayerStorage hStorage;
 		g_ePlayerData[iClient].hStorage.GetArray(iIndex, hStorage, sizeof(hStorage));
@@ -1024,7 +1019,7 @@ public int Native_GetClientStorageValue(Handle hPlugin, int iNumParams)
 		SetNativeString(3, hStorage.Value, GetNativeCell(3));
 		return 1;
 	}
-	
+
 	return 0;
 }
 
@@ -1042,7 +1037,7 @@ public int Native_GetTimeFromStamp(Handle hPlugin, int iNumParams)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1051,7 +1046,7 @@ public int Native_LogMessage(Handle hPlugin, int iNumParams)
 	char szMessage[512];
 	SetGlobalTransTarget(LANG_SERVER);
 	FormatNativeString(0, 1, 2, sizeof(szMessage), _, szMessage);
-	
+
 	VIP_LogMsg(szMessage);
 
 	return 0;
@@ -1126,9 +1121,9 @@ bool CheckValidClient(const int &iClient, bool bCheckVIP = true)
 			return false;
 		}
 		*/
-		
+
 		return g_ePlayerData[iClient].bVIP;
 	}
-	
+
 	return true;
 }
