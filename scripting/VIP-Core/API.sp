@@ -1,5 +1,5 @@
 
-#define RegNative(%0)	CreateNative("VIP_" ... #%0, Native_%0)
+#define RegNative(%0)	CreateNative("VIP_" ... %0, Native_%0)
 
 static Handle g_hGlobalForward_OnVIPLoaded;
 static Handle g_hGlobalForward_OnRebuildFeatureList;
